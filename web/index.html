@@ -1,0 +1,1229 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style></head><body><title>GTM ROI Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Archivo:wght@400;600;800;900&family=Instrument+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: four numbered workbench cards (load → bucket → analyze → strategy) on the same sunny packaging ground as the shelf map */
+:root{
+  --ground:#FFD23F; --ground-2:#FFC21A; --ink:#1B1430; --paper:#FFFDF6; --white:#FFFFFF;
+  --muted:#5B5270; --line:#E6DFCB; --soft:#F6F1E2;
+  --spend:#E0661A; --arr:#2F6BE0;            /* the two chart series */
+  --heat:#2F6BE0;                            /* sequential hue for the heatmap */
+  --good:#1E8C50; --warn:#B87900; --bad:#C8352A;  /* status: verdict pills only */
+  --font-display:"Bagel Fat One","Arial Black",system-ui,sans-serif;
+  --font-body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-label:"Archivo","Helvetica Neue",Arial,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{background:var(--ground)}
+body{color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.5;padding-inline:16px;padding-block:28px 48px;
+  background:radial-gradient(circle at 10% 4%,var(--ground-2) 0 120px,transparent 121px),radial-gradient(circle at 95% 14%,var(--ground-2) 0 80px,transparent 81px),var(--ground)}
+.wrap{max-width:1200px;margin:0 auto;display:grid;gap:22px}
+header{display:grid;gap:8px}
+.eyebrow{font-family:var(--font-label);font-weight:800;font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+.eyebrow span{background:var(--ink);color:var(--ground);padding:3px 9px;border-radius:999px}
+h1{font-family:var(--font-display);font-weight:400;font-size:clamp(40px,7.5vw,84px);line-height:.95;margin:6px 0 0;text-wrap:balance}
+h1 em{font-style:normal;color:var(--arr);-webkit-text-stroke:2px var(--ink)}
+.sub{font-size:clamp(16px,2vw,19px);max-width:64ch;margin:0;font-weight:500}
+.steps{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.steps a{font-family:var(--font-label);font-weight:800;font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink);text-decoration:none;background:var(--paper);border:2px solid var(--ink);border-radius:999px;padding:4px 12px}
+.steps a b{font-family:var(--font-display);font-weight:400;margin-right:6px}
+
+.card{background:var(--paper);border:3px solid var(--ink);border-radius:22px;box-shadow:6px 6px 0 var(--ink);padding:20px;display:grid;gap:16px;min-width:0}
+.card-h{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.num{font-family:var(--font-display);font-size:34px;line-height:1;background:var(--ink);color:var(--ground);width:52px;height:52px;border-radius:14px;display:grid;place-items:center;flex:none}
+.card-h h2{font-family:var(--font-display);font-weight:400;font-size:clamp(26px,3.4vw,36px);line-height:1.05;margin:0}
+.card-h p{margin:0;color:var(--muted);flex-basis:100%;max-width:70ch}
+.card-h .titles{display:grid;gap:4px;min-width:0;flex:1}
+h3{font-family:var(--font-label);font-weight:900;font-size:13px;letter-spacing:.1em;text-transform:uppercase;margin:0}
+.note{font-size:12.5px;color:var(--muted);margin:0}
+
+button,.btn{font-family:var(--font-label);font-weight:800;font-size:13px;letter-spacing:.03em;border:2px solid var(--ink);border-radius:999px;padding:8px 16px;background:var(--paper);color:var(--ink);cursor:pointer;transition:transform .12s}
+button:hover{transform:translateY(-1px)}
+button.primary{background:var(--ink);color:var(--ground)}
+button:disabled{opacity:.45;cursor:not-allowed;transform:none}
+button:focus-visible,select:focus-visible,input:focus-visible,label.drop:focus-within{outline:3px solid var(--arr);outline-offset:2px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+
+/* step 1 */
+.drops{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+label.drop{display:grid;gap:6px;border:2px dashed var(--ink);border-radius:16px;padding:16px;background:var(--white);cursor:pointer;min-width:0}
+label.drop.over{background:var(--soft)}
+label.drop input{position:absolute;opacity:0;width:1px;height:1px}
+.drop .t{font-family:var(--font-label);font-weight:900;font-size:15px}
+.drop .s{font-size:13px;color:var(--muted)}
+.drop .st{font-size:13px;font-weight:600;overflow-wrap:anywhere}
+.badge{display:inline-block;font-family:var(--font-label);font-weight:800;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;border:1.5px solid var(--ink);border-radius:5px;padding:1px 6px;vertical-align:1px;background:var(--paper)}
+.badge.sample{background:var(--ground)}
+.badge.ai{background:#DCE7FB}
+.badge.manual{background:var(--soft)}
+details{border-top:1px dashed var(--ink);padding-top:10px}
+summary{cursor:pointer;font-family:var(--font-label);font-weight:800;font-size:13px}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;font-size:13px;margin-top:8px}
+.cols code{font-size:12px;background:var(--soft);padding:1px 5px;border-radius:4px}
+.gm{display:flex;align-items:center;gap:8px;font-size:14px}
+.gm input{width:72px;font:inherit;border:2px solid var(--ink);border-radius:10px;padding:4px 8px;background:var(--white)}
+.err{color:var(--bad);font-weight:600;font-size:14px;margin:0}
+
+/* step 2 */
+.log{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.log li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;font-size:14px}
+.log .bar{grid-column:1/-1;height:8px;background:var(--line);border-radius:4px;overflow:hidden}
+.log .bar span{display:block;height:100%;background:var(--ink);border-radius:4px}
+.log b{font-variant-numeric:tabular-nums}
+.tablebox{overflow-x:auto;border:2px solid var(--ink);border-radius:14px;background:var(--white)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{padding:7px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-family:var(--font-label);font-weight:800;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:var(--soft);white-space:nowrap}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+select{font:inherit;font-size:13px;border:2px solid var(--ink);border-radius:8px;padding:3px 6px;background:var(--white);max-width:200px}
+.ai-out{font-size:13.5px;min-height:1.2em;margin:0}
+
+/* step 3 */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.kpi{border:2px solid var(--ink);border-radius:14px;background:var(--white);padding:12px 14px;display:grid;gap:2px;min-width:0}
+.kpi .l{font-family:var(--font-label);font-weight:800;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.kpi .v{font-family:var(--font-display);font-size:30px;line-height:1.1;font-variant-numeric:tabular-nums}
+.kpi .d{font-size:12.5px;color:var(--muted)}
+.panel{border:2px solid var(--ink);border-radius:16px;background:var(--white);padding:14px;display:grid;gap:10px;min-width:0;align-content:start}
+.panel-h{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline}
+.seg{display:inline-flex;border:2px solid var(--ink);border-radius:999px;overflow:hidden}
+.seg button{border:0;border-radius:0;padding:4px 12px;font-size:12px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--ground)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px}
+.heat td.cell{text-align:right;font-variant-numeric:tabular-nums;font-weight:600;cursor:default;border:2px solid var(--white);border-radius:6px}
+.heat th.rowh{position:sticky;left:0;background:var(--white);color:var(--ink);text-transform:none;letter-spacing:0;font-size:13px;font-family:var(--font-body);font-weight:600}
+.heat td.tot,.heat th.tot{font-weight:800;background:var(--soft)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12.5px;color:var(--muted);align-items:center}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.ramp{width:120px;height:10px;border-radius:5px;background:linear-gradient(90deg,color-mix(in oklab,var(--heat) 6%,white),var(--heat))}
+
+.bars{display:grid;gap:10px}
+.brow{display:grid;grid-template-columns:120px minmax(0,1fr);gap:4px 10px;align-items:center;font-size:13px}
+.brow .lab{font-weight:600;min-width:0;overflow-wrap:anywhere}
+.track{display:grid;gap:3px;min-width:0}
+.b{height:12px;border-radius:0 4px 4px 0;position:relative;min-width:2px}
+.bwrap{display:flex;align-items:center;gap:6px;min-width:0}
+.bwrap .val{font-size:12px;font-variant-numeric:tabular-nums;color:var(--ink);white-space:nowrap}
+.pill{display:inline-flex;align-items:center;gap:4px;font-family:var(--font-label);font-weight:800;font-size:11px;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:2px 8px;color:#fff;white-space:nowrap}
+.pill.good{background:var(--good)} .pill.warn{background:var(--warn)} .pill.bad{background:var(--bad)}
+
+/* step 4 */
+.plays{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;list-style:none;margin:0;padding:0}
+.play{border:2px solid var(--ink);border-radius:14px;background:var(--white);padding:12px 14px;display:grid;gap:6px;align-content:start}
+.play .k{font-family:var(--font-label);font-weight:900;font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+.play .h{font-weight:600;font-size:15px}
+.play .p{font-size:13.5px;color:var(--muted);margin:0}
+.memo{border:2px solid var(--ink);border-radius:14px;background:var(--white);padding:14px 16px;font-size:14.5px;white-space:pre-wrap;max-width:80ch;min-height:2em}
+.memo:empty{display:none}
+
+.keyrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.keyrow input{flex:1 1 260px;min-width:0;font:inherit;font-size:14px;border:2px solid var(--ink);border-radius:10px;padding:7px 10px;background:var(--white)}
+.chip{font-family:var(--font-label);font-weight:800;font-size:11px;letter-spacing:.06em;text-transform:uppercase;border:2px solid var(--ink);border-radius:999px;padding:2px 10px}
+.chip.on{background:var(--good);color:#fff}.chip.off{background:var(--paper)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.note a{color:var(--ink);font-weight:600}
+#tip{position:fixed;z-index:20;pointer-events:none;background:var(--ink);color:var(--paper);font-size:12.5px;padding:7px 10px;border-radius:8px;max-width:260px;line-height:1.4;box-shadow:3px 3px 0 rgba(0,0,0,.15)}
+#tip b{color:var(--ground)}
+footer{font-size:12px;line-height:1.55;max-width:100ch}
+@media (max-width:520px){.brow{grid-template-columns:92px minmax(0,1fr)}.card{padding:16px}.num{width:44px;height:44px;font-size:28px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow"><span>Finance &amp; Strategy work sample · Oct 2026</span></div>
+    <h1>The GTM <em>ROI</em> Lab</h1>
+    <p class="sub">Drop in a sales export and a GTM spend export. The agent sorts every row into Confido's eight products, six industries and seven GTM channels, then shows where revenue comes from and which dollars pay back.</p>
+    <nav class="steps" aria-label="Steps">
+      <a href="#load"><b>1</b>Load</a><a href="#bucket"><b>2</b>Bucket</a><a href="#analyze"><b>3</b>Analyze</a><a href="#strategy"><b>4</b>Strategy</a>
+    </nav>
+  </header>
+
+  <!-- 1 LOAD -->
+  <section class="card" id="load">
+    <div class="card-h"><div class="num">1</div><div class="titles"><h2>Load your CSVs</h2>
+      <p>Two files: closed deals from the CRM, and GTM spend from the GL or card feed. Messy labels are fine; that's what step 2 is for. Files stay in your browser.</p></div></div>
+    <div class="drops">
+      <label class="drop" id="drop-sales">
+        <input type="file" id="file-sales" accept=".csv,text/csv">
+        <span class="t">Sales / deals CSV</span>
+        <span class="s">Drop a file here or click to choose</span>
+        <span class="st" id="st-sales"></span>
+      </label>
+      <label class="drop" id="drop-spend">
+        <input type="file" id="file-spend" accept=".csv,text/csv">
+        <span class="t">GTM spend CSV</span>
+        <span class="s">Drop a file here or click to choose</span>
+        <span class="st" id="st-spend"></span>
+      </label>
+    </div>
+    <div class="row">
+      <button type="button" id="use-sample">Reload sample data</button>
+      <label class="gm" for="gm">Gross margin <input id="gm" type="number" min="1" max="100" step="1" value="75">%</label>
+      <p class="note">Used for ROI and payback. 75% is a common SaaS assumption; change it to yours.</p>
+    </div>
+    <p class="err" id="load-err" hidden></p>
+    <details>
+      <summary>Columns the agent looks for</summary>
+      <div class="cols">
+        <div><h3>Sales CSV</h3>
+          <p class="note">Required: <code>deal_id</code> <code>close_date</code> <code>industry</code> <code>products</code> <code>arr_usd</code> <code>stage</code> <code>lead_source</code>. Optional: <code>created_date</code> (for sales cycle), <code>deal_type</code> (New / Expansion), <code>customer</code>. Common aliases like <code>amount</code>, <code>ACV</code>, <code>source</code>, <code>segment</code> are recognised.</p></div>
+        <div><h3>GTM spend CSV</h3>
+          <p class="note">Required: <code>date</code> <code>amount_usd</code> and at least one of <code>vendor</code> / <code>description</code> / <code>gl_account</code>. Optional: <code>target_industry</code>, so event spend aimed at one aisle counts against that aisle.</p></div>
+      </div>
+    </details>
+  </section>
+
+  <!-- 2 BUCKET -->
+  <section class="card" id="bucket">
+    <div class="card-h"><div class="num">2</div><div class="titles"><h2>Bucket every row</h2>
+      <p>Keyword rules place what they can. Anything ambiguous lands in the review list instead of being guessed. Ask Claude to classify those, or pick a bucket yourself.</p></div></div>
+    <ul class="log" id="log"></ul>
+    <div class="panel" id="connect" hidden>
+      <div class="panel-h"><h3>Connect Claude</h3><span class="chip off" id="conn-status">Not connected</span></div>
+      <div id="conn-byok" hidden>
+        <div class="keyrow">
+          <label for="api-key" class="sr">Anthropic API key</label>
+          <input id="api-key" type="password" placeholder="sk-ant-api03-…  paste your Anthropic API key" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" data-1p-ignore data-lpignore="true" data-form-type="other">
+          <button type="button" class="primary" id="key-use">Use key</button>
+          <button type="button" id="key-forget" hidden>Forget key</button>
+        </div>
+        <p class="note" id="key-msg" aria-live="polite"></p>
+        <p class="note"><a href="https://platform.claude.com/settings/keys" target="_blank" rel="noopener noreferrer">Get an API key in the Claude Console ↗</a> · Your key stays in this tab's memory only. It is sent straight to api.anthropic.com and nowhere else, never saved in the browser, the URL or on a server, and it's forgotten when you close the tab. Tip: use a key with a monthly spend limit.</p>
+      </div>
+      <div id="conn-server" hidden>
+        <p class="note">Claude runs through this site's server, which holds the API key. Your browser never sees it.</p>
+        <div class="keyrow" id="code-row" hidden>
+          <label for="access-code" class="sr">Access code</label>
+          <input id="access-code" type="password" placeholder="Access code" autocomplete="off" spellcheck="false" data-1p-ignore data-lpignore="true">
+          <button type="button" class="primary" id="code-use">Unlock</button>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-h"><h3 id="review-title">Needs review</h3>
+        <div class="row"><button type="button" class="primary" id="ask-classify">Classify with Claude</button><button type="button" id="stop-classify" hidden>Stop</button></div></div>
+      <p class="ai-out" id="classify-out"></p>
+      <div class="tablebox"><table id="review"><thead><tr><th>Rows</th><th>Field</th><th>Raw value</th><th>Bucket</th><th>Source</th></tr></thead><tbody></tbody></table></div>
+    </div>
+    <div class="row" id="export-row" hidden>
+      <button type="button" id="dl-sales">Download bucketed sales CSV</button>
+      <button type="button" id="dl-spend">Download bucketed spend CSV</button>
+      <button type="button" id="dl-roi">Download channel ROI CSV</button>
+    </div>
+  </section>
+
+  <!-- 3 ANALYZE -->
+  <section class="card" id="analyze">
+    <div class="card-h"><div class="num">3</div><div class="titles"><h2>ROI analysis</h2>
+      <p id="period"></p></div></div>
+    <div class="kpis" id="kpis"></div>
+
+    <div class="panel">
+      <div class="panel-h"><h3>Product × industry contribution (won ARR, new + expansion)</h3>
+        <div class="seg" role="group" aria-label="Heatmap values"><button type="button" id="hm-usd" aria-pressed="true">$ ARR</button><button type="button" id="hm-pct" aria-pressed="false">% of industry</button></div></div>
+      <p class="note">Multi-product deals are split across products in proportion to list price. Darker means more ARR.</p>
+      <div class="tablebox"><table class="heat" id="heat"></table></div>
+      <div class="legend"><span class="ramp"></span><span>Less → more ARR</span></div>
+    </div>
+
+    <div class="grid2">
+      <div class="panel">
+        <div class="panel-h"><h3>Spend vs new ARR by channel</h3></div>
+        <div class="legend"><span><i style="background:var(--spend)"></i>GTM spend</span><span><i style="background:var(--arr)"></i>New ARR won</span></div>
+        <div class="bars" id="spend-arr"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-h"><h3>ROI multiple by channel</h3></div>
+        <p class="note">First-year gross profit per $1 of spend. 2× or more: scale. 1–2×: keep and tune. Under 1×: fix or cut.</p>
+        <div class="bars" id="roi-bars"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-h"><h3>Channel scorecard</h3></div>
+      <div class="tablebox"><table id="ch-table"></table></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-h"><h3>Industry scorecard</h3></div>
+      <p class="note">Spend tagged to an industry counts against it. Untagged spend is spread by each industry's share of new opportunities.</p>
+      <div class="tablebox"><table id="ind-table"></table></div>
+    </div>
+
+    <div class="grid2">
+      <div class="panel">
+        <div class="panel-h"><h3>What drives deal size: products per deal</h3></div>
+        <div class="bars" id="f-products"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-h"><h3>What drives speed: median sales cycle</h3></div>
+        <div class="bars" id="f-cycle"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 STRATEGY -->
+  <section class="card" id="strategy">
+    <div class="card-h"><div class="num">4</div><div class="titles"><h2>Where to push next</h2>
+      <p>Plays computed straight from the tables above. Ask Claude to turn them into a short memo for the exec team.</p></div></div>
+    <ul class="plays" id="plays"></ul>
+    <div class="row"><button type="button" class="primary" id="ask-memo">Write the strategy memo with Claude</button><button type="button" id="stop-memo" hidden>Stop</button></div>
+    <p class="ai-out" id="memo-status"></p>
+    <div class="memo" id="memo"></div>
+  </section>
+
+  <footer>Independent work sample by Harshit Singh; not affiliated with or endorsed by Confido. The sample files are synthetic and invented for this demo. Nothing you upload leaves your browser unless you press a Claude button, which sends only the unmatched labels or the summary tables to Anthropic.</footer>
+</div>
+<div id="tip" hidden></div>
+
+<script id="rules-json" type="application/json">{
+  "_about": "Bucketing rules. Each list is checked in order; the first keyword found (case-insensitive substring) wins. Edit these to fit your data.",
+  "products": ["Cash Application","Deductions Management","Auto-Disputes","Trade Promotions","Sales Forecasting","Sales Analytics","Demand Planning","Supply Planning"],
+  "list_price_usd": {"Cash Application":14000,"Deductions Management":24000,"Auto-Disputes":12000,"Trade Promotions":20000,"Sales Forecasting":12000,"Sales Analytics":9000,"Demand Planning":16000,"Supply Planning":12000},
+  "industries": ["Beauty & Personal Care","Beverage","Food","Health & Wellness","Home Goods","Pet"],
+  "channels": ["Events","Paid digital","Content & media","Outbound","Partners","Referrals","Inbound organic"],
+  "spend_only_buckets": ["Brand & overhead"],
+  "industry_exclude": ["foodservice","multi","baby"],
+  "industry_rules": [
+    ["Pet", ["pet","dog","cat food"]],
+    ["Beauty & Personal Care", ["beauty","personal care","skin","hair","deodorant","soap","cosmetic","/pc"]],
+    ["Health & Wellness", ["health","wellness","supplement","vitamin","nutrition","protein"]],
+    ["Home Goods", ["home","household","clean","paper","laundry"]],
+    ["Beverage", ["bev","drink","soda","spirit","rtd","coffee","tea","juice","water","kombucha"]],
+    ["Food", ["food","snack","pantry","grocery","frozen","bakery"]]
+  ],
+  "product_full_platform": ["full platform","all modules","full suite"],
+  "product_exclude": ["s&op","retail data"],
+  "product_rules": [
+    ["Deductions Management", ["deduction","dm"]],
+    ["Cash Application", ["cash"]],
+    ["Auto-Disputes", ["dispute"]],
+    ["Trade Promotions", ["tpm","trade"]],
+    ["Sales Forecasting", ["forecast"]],
+    ["Sales Analytics", ["analytic"]],
+    ["Demand Planning", ["demand","dp"]],
+    ["Supply Planning", ["supply","production"]]
+  ],
+  "product_exact_tokens": ["dm","dp"],
+  "expansion_sources": ["existing customer","csm","account management"],
+  "lead_source_rules": [
+    ["Events", ["expo","newtopia"," live","superzoo","trade show","booth"]],
+    ["Paid digital", ["ads","paid","linkedin","google","meta"]],
+    ["Content & media", ["webinar","podcast","radio","newsletter","blog","content"]],
+    ["Outbound", ["outbound","sdr","cold","apollo"]],
+    ["Partners", ["partner","broker","distributor","accounting","netsuite","cfo"]],
+    ["Referrals", ["referral","investor","founder network"]],
+    ["Inbound organic", ["organic","website","seo","inbound","direct"]]
+  ],
+  "spend_rules": [
+    ["Events", ["expo","booth","newtopia","bevnet live","nosh live","superzoo","events","swag","drayage"]],
+    ["Paid digital", ["linkedin","google ads","advertising","paid"]],
+    ["Content & media", ["newsletter","webinar","podcast","sponsorship","content"]],
+    ["Outbound", ["sdr","apollo","sales tools","sales comp"]],
+    ["Referrals", ["referral"]],
+    ["Partners", ["partner","broker","co-marketing"]],
+    ["Inbound organic", ["seo","website","web"]]
+  ]
+}
+</script>
+<script id="sample-sales" type="text/csv">deal_id,created_date,close_date,customer,industry,products,arr_usd,stage,deal_type,lead_source
+D-1193,2026-01-01,2026-02-08,Pebble Home,Hair care,Cash-app / demand plan,74000,Closed Won,New,Expo West 2026
+D-1100,2026-01-05,2026-02-26,Clever Goods,Frozen foods,Cash App,6000,Closed Won,New,SDR outbound
+D-1278,2026-01-12,2026-03-02,Wildfern Pantry,Skincare,DM,24500,Closed Lost,New,Webinar w/ partner
+D-1265,2026-01-06,2026-03-04,Maple Sips,Pet food,Forecasting,14000,Closed Lost,New,Apollo sequence
+D-1239,2026-01-02,2026-03-08,Field Tonic,Pet food,Cash App,9500,Closed Lost,New,Apollo sequence
+D-1122,2026-01-16,2026-03-10,Coast Naturals,Deodorant & soap,Production planning & sales forecast,13000,Closed Lost,New,linkedin paid
+D-1046,2026-01-10,2026-03-12,Hearth Sips,Beauty/PC,Auto disputes,35000,Closed Lost,New,linkedin paid
+D-1175,2026-01-01,2026-03-12,Meadow Kitchen,Coffee/tea,POS analytics,9000,Closed Lost,New,SEO
+D-1055,2026-01-01,2026-03-14,Oak Glow,Home & kitchen,supply plan; Auto disputes,14500,Closed Lost,New,Google Ads
+D-1197,2026-01-01,2026-03-15,Golden Paws,Skincare,Auto disputes / sales forecast,21500,Closed Lost,New,Indie Beauty Expo
+D-1020,2026-01-01,2026-03-16,Field Supply,Beverage,TPM; Deduction management,39500,Closed Won,New,SEO
+D-1052,2026-01-11,2026-03-17,Wildfern Co.,Functional soda,Auto disputes; Sales analytics,17000,Closed Lost,New,SuperZoo
+D-1238,2026-01-09,2026-03-17,Sunny Goods,Food,Sales analytics / Deductions,26500,Closed Lost,New,Indie Beauty Expo
+D-1037,2026-01-16,2026-03-21,Willow Co.,Pet,AR cash app / Supply planning,37500,Closed Won,New,Indie Beauty Expo
+D-1040,2026-01-01,2026-03-21,Juniper Pantry,Multi-category,Cash-app & Analytics,16500,Closed Lost,New,Inbound - direct
+D-1049,2026-01-28,2026-03-23,Hearth Botanics,Beverage,AR cash app,5500,Closed Lost,New,Newsletter sponsor
+D-1058,2026-01-15,2026-03-23,Meadow Sips,Frozen foods,Trade spend planning,20000,Closed Lost,New,Investor intro
+D-1138,2026-01-26,2026-03-26,Cedar Kitchen,Pet food,Cash-app,11500,Closed Won,New,Referral - customer
+D-1044,2026-01-26,2026-03-27,Peak Paws,Multi-category,cash application,11500,Closed Lost,New,Indie Beauty Expo
+D-1089,2026-01-06,2026-03-27,Hearth Wellness,Sports nutrition,POS analytics,8000,Closed Won,New,NetSuite partner
+D-1114,2026-01-02,2026-03-27,Pebble Provisions,Spirits & RTD,"deductions mgmt, demand plan, cash application",40000,Closed Lost,New,LinkedIn Ads
+D-1206,2026-02-05,2026-03-27,Lark Provisions,vitamins,POS analytics,9500,Closed Lost,New,SDR outbound
+D-1237,2026-01-31,2026-03-27,Maple Naturals,Bev,Auto disputes,20000,Closed Lost,New,Expo West 2026
+D-1257,2026-01-12,2026-03-27,Bright Paws,Wellness,DM,15500,Closed Lost,New,Cold call
+D-1080,2026-01-26,2026-03-28,Sunny Brands,Food & Snacks,"deductions mgmt, Analytics",42500,Closed Lost,New,Cold call
+D-1236,2026-02-08,2026-03-29,Peak Pantry,Pet,Forecasting,29500,Closed Lost,New,Indie Beauty Expo
+D-1001,2026-01-10,2026-03-30,Bold Pantry,Functional soda,Deductions / Trade spend planning / Auto disputes,100500,Closed Won,New,Natural Products Expo West
+D-1021,2026-01-23,2026-03-30,Clever Snacks,beverages,deductions mgmt / Trade spend planning,52000,Closed Won,New,Podcast sponsorship
+D-1143,2026-02-14,2026-03-30,Bold Snacks,Functional soda,trade promotions,15500,Closed Won,New,Founder network
+D-1072,2026-02-22,2026-03-31,Fresh Sips,Skincare,Auto disputes,12000,Closed Lost,New,Inbound - direct
+D-1076,2026-01-15,2026-04-01,Lark Tonic,Bev,"AR cash app, DM",61500,Closed Won,New,Customer referral
+D-1115,2026-02-03,2026-04-01,Bright Supply,Bev,cash application; Deduction management,29000,Closed Won,New,Paid search
+D-1268,2026-02-12,2026-04-01,Juniper Home,Deodorant & soap,Demand planning,7000,Closed Lost,New,linkedin paid
+D-1228,2026-01-29,2026-04-03,Coast Snacks,Supplements,Production planning; DM; cash application,20500,Closed Lost,New,Meta ads
+D-1296,2026-01-11,2026-04-03,Fresh Glow,Home goods,Cash App; Deductions; trade promotions,77500,Closed Lost,New,Cold email
+D-1066,2026-01-07,2026-04-05,Cedar Labs,Sports nutrition,Trade spend planning; Supply planning,42000,Closed Lost,New,Paid search
+D-1074,2026-02-03,2026-04-05,Wildfern Harvest,Hair care,AR cash app & demand plan,20000,Closed Lost,New,Website demo request
+D-1151,2026-01-17,2026-04-05,Meadow Tonic,FOOD,Forecasting / POS analytics,42500,Closed Lost,New,Cold email
+D-1095,2026-02-12,2026-04-06,Meadow Co.,Packaged food,AR cash app,15000,Closed Lost,New,Blog / content
+D-1196,2026-02-04,2026-04-06,Sunny Co.,Pet food,sales forecast,13000,Closed Won,New,Fractional CFO partner
+D-1172,2026-02-22,2026-04-07,Hearth Snacks,Beauty/PC,AR cash app & Forecasting & Deduction management,72500,Closed Won,New,Indie Beauty Expo
+D-1181,2026-02-12,2026-04-07,Meadow Provisions,Cleaning,"Demand planning, POS analytics",28000,Closed Lost,New,Trade show
+D-1014,2026-02-06,2026-04-08,Lark Goods,Food,Sales analytics; DP; DM,53500,Closed Won,New,Trade show
+D-1199,2026-01-18,2026-04-08,Cedar Pantry,Pet,Sales Forecasting; TPM; POS analytics; demand plan,75500,Closed Lost,New,Natural Products Expo West
+D-1290,2026-02-04,2026-04-09,Field Harvest,Wellness,Demand planning,21000,Closed Won,New,Broker partner
+D-1034,2026-02-27,2026-04-10,Sunny Sips,Beauty/PC,sales forecast,12000,Closed Lost,New,Indie Beauty Expo
+D-1166,2026-01-24,2026-04-11,Bright Botanics,Pet,trade promotions; Cash App; Disputes automation; DP,20000,Closed Won,New,Inbound - direct
+D-1090,2026-01-22,2026-04-12,Peak Supply,Home & kitchen,Deductions,20500,Closed Won,New,Organic / website
+D-1035,2026-02-19,2026-04-14,Bright Kitchen,beverages,auto-dispute,11000,Closed Lost,New,Outbound - SDR
+D-1053,2026-02-12,2026-04-14,Coast Home,Pet food,cash application & supply plan & Trade spend planning,101000,Closed Lost,New,Distributor referral
+D-1137,2026-02-07,2026-04-15,Maple Labs,vitamins,TPM,15500,Closed Lost,New,Meta ads
+D-1030,2026-02-05,2026-04-16,Oak Pantry,FOOD,cash application / Supply planning,47500,Closed Won,New,Investor intro
+D-1182,2026-01-17,2026-04-16,Wildfern Bites,Foodservice,trade promotions; Production planning,39500,Closed Lost,New,Cold call
+D-1246,2026-02-01,2026-04-19,Willow Brands,vitamins,sales forecast; cash application,26500,Closed Lost,New,Website demo request
+D-1221,2026-01-14,2026-04-20,Lark Bites,Food,Auto disputes & deductions mgmt & Trade promo,122500,Closed Won,New,Distributor referral
+D-1230,2026-01-29,2026-04-20,Bright Naturals,Health & Wellness,Cash App + DM + Supply planning,55000,Closed Lost,New,LinkedIn Ads
+D-1240,2026-02-10,2026-04-20,Pebble Tonic,Pet,POS analytics,8500,Closed Lost,New,Outbound - SDR
+D-1264,2026-01-26,2026-04-20,Pebble Harvest,Packaged food,Production planning / Cash-app,16000,Closed Lost,New,Taste Radio podcast
+D-1073,2026-03-06,2026-04-24,Sunny Pantry,Pet treats,Demand planning + sales forecast,26000,Closed Won,New,Indie Beauty Expo
+D-1042,2026-03-09,2026-04-25,Hearth Paws,Frozen foods,AR cash app & Production planning,76000,Closed Lost,New,Newtopia Now
+D-1159,2026-02-21,2026-04-25,Peak Botanics,Pantry / grocery,Sales analytics,8000,Closed Lost,New,Paid search
+D-1164,2026-02-27,2026-04-26,Bright Goods,Personal care,sales forecast & cash application,33000,Closed Lost,New,Accounting firm partner
+D-1226,2026-02-23,2026-04-27,Meadow Wellness,Sports nutrition,Forecasting & Auto disputes,44000,Closed Won,New,Customer referral
+D-1050,2026-02-20,2026-04-28,Golden Wellness,Packaged food,Demand planning + Trade promo + POS analytics,33000,Closed Lost,New,Accounting firm partner
+D-1202,2026-02-12,2026-04-28,Golden Botanics,Pantry / grocery,auto-dispute & Trade promo & DM & sales forecast,47500,Closed Lost,New,Website demo request
+D-1209,2026-01-21,2026-04-28,Willow Naturals,FOOD,"Production planning, DM, Auto disputes, Sales analytics",55500,Closed Lost,New,Podcast sponsorship
+D-1260,2026-02-17,2026-04-28,Hearth Harvest,Foodservice,Production planning; Demand planning,28000,Closed Lost,New,linkedin paid
+D-1059,2026-02-14,2026-04-29,Meadow Labs,Beverage,"Disputes automation, DP",44000,Closed Lost,New,SDR outbound
+D-1126,2026-03-06,2026-04-29,Peak Harvest,Drinks,cash application + deductions mgmt,68000,Closed Lost,New,SDR outbound
+D-1231,2026-02-20,2026-04-29,Juniper Naturals,Bev,trade promotions,17000,Closed Won,New,Trade show
+D-1116,2026-02-28,2026-04-30,Lark Labs,Drinks,Production planning & deductions mgmt,61500,Closed Lost,New,NetSuite partner
+D-1259,2026-02-10,2026-04-30,Field Snacks,Home goods,"Disputes automation, Cash App",40500,Closed Won,New,Investor intro
+D-1113,2026-02-14,2026-05-01,Bold Home,Packaged food,cash application,24500,Closed Won,New,Natural Products Expo West
+D-1133,2026-01-23,2026-05-01,Meadow Brands,Frozen foods,Supply planning + auto-dispute + Deduction management,96500,Closed Lost,New,Expo West 2026
+D-1018,2026-02-15,2026-05-02,Sunny Labs,Food,Analytics,5500,Closed Lost,New,Meta ads
+D-1063,2026-03-14,2026-05-02,Coast Co.,Hair care,sales forecast,21000,Closed Won,New,NOSH Live
+D-1156,2026-02-09,2026-05-02,Bold Paws,pet care,trade promotions / AR cash app / Deductions,49500,Closed Lost,New,Indie Beauty Expo
+D-1256,2026-03-20,2026-05-03,Clever Supply,Hair care,cash application,21000,Closed Lost,New,Indie Beauty Expo
+D-1003,2026-03-18,2026-05-05,Field Goods,Pet,cash application,10000,Closed Lost,New,Paid search
+D-1251,2026-03-08,2026-05-06,Bold Botanics,Pantry / grocery,Deduction management,23500,Closed Won,New,Website demo request
+D-1068,2026-02-11,2026-05-08,Hearth Labs,Spirits & RTD,deductions mgmt + AR cash app + Trade promo,49500,Closed Won,New,Accounting firm partner
+D-1005,2026-03-13,2026-05-11,Coast Provisions,Household,Auto disputes; supply plan,43500,Closed Lost,New,Newtopia Now
+D-1031,2026-03-13,2026-05-11,Fresh Bites,Personal care,sales forecast & Cash-app,22000,Closed Lost,New,Podcast sponsorship
+D-1218,2026-01-16,2026-05-11,Field Botanics,FOOD,"Deductions, Cash-app, Disputes automation, Trade promo, Forecasting, Sales analytics, DP, Supply planning",99500,Closed Won,New,Organic / website
+D-1311,2026-04-16,2026-05-11,Pebble Home,Hair care,Sales analytics,8500,Closed Won,expansion,Existing customer
+D-1079,2026-02-02,2026-05-12,Maple Botanics,Beverage,AR cash app + deductions mgmt + TPM + Auto disputes,61500,Closed Lost,New,Inbound - direct
+D-1201,2026-03-09,2026-05-12,Meadow Snacks,Home goods,Sales analytics,10500,Closed Won,New,BevNET Live
+D-1267,2026-03-16,2026-05-13,Juniper Paws,snacks,Trade promo / POS analytics / demand plan,37500,Closed Lost,New,BevNET Live
+D-1016,2026-03-08,2026-05-14,Pebble Bites,Frozen foods,AR cash app; Deductions; trade promotions,122000,Closed Lost,New,NOSH Live
+D-1085,2026-03-21,2026-05-14,Oak Provisions,Pet treats,"Disputes automation, Forecasting, supply plan",47000,Closed Lost,New,Accounting firm partner
+D-1160,2026-02-21,2026-05-14,Clever Glow,Health & Wellness,DP; Deductions,29000,Closed Lost,New,Newtopia Now
+D-1189,2026-03-13,2026-05-14,Bold Glow,Beverage,Auto disputes + Forecasting,21000,Closed Lost,New,Meta ads
+D-1232,2026-03-12,2026-05-14,Clever Bites,Food & Snacks,demand plan + Forecasting,14000,Closed Lost,New,Google Ads
+D-1083,2026-03-07,2026-05-16,Peak Snacks,Multi-category,"deductions mgmt, Analytics, Sales Forecasting",23000,Closed Lost,New,Customer referral
+D-1286,2026-03-15,2026-05-16,Bright Harvest,Health & Wellness,sales forecast + DM + Demand planning + Supply planning,74000,Closed Lost,New,Podcast sponsorship
+D-1019,2026-03-20,2026-05-17,Oak Co.,Frozen foods,"Forecasting, Trade promo, Auto disputes",72500,Closed Lost,New,Podcast sponsorship
+D-1039,2026-03-05,2026-05-17,Maple Snacks,Packaged food,Cash-app + Analytics,14000,Closed Lost,New,Outbound - SDR
+D-1041,2026-02-08,2026-05-17,Field Co.,Paper goods,deductions mgmt; supply plan,40500,Closed Lost,New,BevNET Live
+D-1195,2026-01-20,2026-05-17,Juniper Harvest,Packaged food,Full platform,107500,Closed Won,New,Cold call
+D-1152,2026-03-31,2026-05-18,Bright Pantry,Personal care,auto-dispute,5000,Closed Lost,New,Newsletter sponsor
+D-1123,2026-03-16,2026-05-20,North Harvest,snacks,TPM & Demand planning,39000,Closed Won,New,Outbound - SDR
+D-1180,2026-03-15,2026-05-20,Willow Sips,Coffee/tea,"sales forecast, cash application, Auto disputes",49500,Closed Lost,New,SDR outbound
+D-1147,2026-03-24,2026-05-21,Sunny Paws,Food,"Forecasting, cash application",23500,Closed Lost,New,Inbound - direct
+D-1229,2026-03-12,2026-05-21,Hearth Bites,Health & Wellness,DP; Auto disputes,30500,Closed Won,New,Expo West 2026
+D-1227,2026-03-25,2026-05-22,Field Bites,Pet food,S&OP bundle,19000,Closed Won,New,Distributor referral
+D-1243,2026-02-17,2026-05-22,Fresh Labs,Food & Snacks,Analytics; sales forecast,12000,Closed Lost,New,Podcast sponsorship
+D-1043,2026-03-13,2026-05-23,Coast Labs,Household,Analytics; Sales Forecasting,15500,Closed Lost,New,linkedin paid
+D-1060,2026-02-13,2026-05-23,Oak Harvest,vitamins,supply plan; AR cash app; demand plan; POS analytics,65500,Closed Lost,New,Apollo sequence
+D-1318,2026-04-28,2026-05-23,Field Supply,Beverage,Supply planning,12500,Closed Won,expansion,Account management
+D-1075,2026-03-19,2026-05-24,North Naturals,Beverage,sales forecast,15500,Closed Lost,New,Indie Beauty Expo
+D-1017,2026-03-28,2026-05-25,Bold Labs,Pet,Deduction management; Demand planning; cash application,62500,Closed Lost,New,Cold email
+D-1214,2026-03-11,2026-05-26,Sunny Roots,Household,Deductions; Cash App,27500,Closed Won,New,Other
+D-1253,2026-02-20,2026-05-26,Pebble Botanics,vitamins,DM & Production planning & AR cash app,43000,Closed Lost,New,Taste Radio podcast
+D-1178,2026-04-08,2026-05-27,Clever Tonic,Coffee/tea,Supply planning + trade promotions,38000,Closed Lost,New,Cold email
+D-1179,2026-03-10,2026-05-27,Juniper Goods,Drinks,Disputes automation,8000,Closed Won,New,Indie Beauty Expo
+D-1258,2026-03-29,2026-05-27,Golden Tonic,Bev,auto-dispute,21500,Closed Won,New,Fractional CFO partner
+D-1284,2026-04-14,2026-05-27,Maple Harvest,Pet food,TPM & Sales analytics,19500,Closed Lost,New,Google Ads
+D-1200,2026-02-14,2026-05-28,Meadow Goods,Supplements,supply plan; trade promotions; demand plan; Deductions,38000,Closed Lost,New,Podcast sponsorship
+D-1184,2026-02-25,2026-05-29,Bright Bites,Home & kitchen,Auto disputes,30500,Closed Won,New,Expo West 2026
+D-1186,2026-02-04,2026-05-29,Hearth Co.,Pet,Deductions / AR cash app / Auto disputes / Trade promo / sales forecast / Sales analytics / DP / Production planning,107500,Closed Lost,New,Google Ads
+D-1082,2026-02-03,2026-05-30,Bright Wellness,Deodorant & soap,Full suite,263500,Closed Lost,New,Expo West 2026
+D-1006,2026-03-23,2026-05-31,Fresh Home,Home goods,Deductions,20500,Closed Lost,New,SuperZoo
+D-1144,2026-04-17,2026-05-31,Wildfern Sips,Pet food,auto-dispute,12500,Closed Lost,New,Customer referral
+D-1289,2026-03-27,2026-05-31,Bright Labs,Pet treats,"Auto disputes, DP",29000,Closed Won,New,Fractional CFO partner
+D-1313,2026-05-06,2026-05-31,Sunny Co.,Pet food,AR cash app,18500,Closed Won,expansion,Account management
+D-1139,2026-03-24,2026-06-02,North Bites,Bev,TPM; AR cash app,45500,Closed Lost,New,SDR outbound
+D-1169,2026-03-11,2026-06-04,Pebble Snacks,snacks,cash application; Auto disputes; deductions mgmt,45500,Closed Lost,New,SDR outbound
+D-1213,2026-03-22,2026-06-04,Clever Harvest,Coffee/tea,Trade spend planning,13000,Closed Won,New,Taste Radio podcast
+D-1170,2026-02-09,2026-06-05,Maple Home,Cleaning,Auto disputes / Demand planning / cash application / Sales Forecasting,71000,Closed Lost,New,Natural Products Expo West
+D-1266,2026-04-07,2026-06-05,Field Provisions,Packaged food,Production planning,14500,Closed Won,New,Accounting firm partner
+D-1307,2026-05-12,2026-06-06,Bold Pantry,Functional soda,AR cash app,18500,Closed Won,Upsell,Account management
+D-1317,2026-05-13,2026-06-07,Meadow Wellness,Sports nutrition,trade promotions,29500,Closed Won,Upsell,CSM upsell
+D-1162,2026-03-24,2026-06-08,Oak Goods,Supplements,Forecasting,11000,Closed Won,New,Trade show
+D-1185,2026-04-19,2026-06-08,Clever Paws,Hair care,Analytics,13500,Closed Lost,New,Apollo sequence
+D-1241,2026-04-07,2026-06-08,Meadow Home,Drinks,Sales Forecasting & Deduction management,21500,Closed Lost,New,Google Ads
+D-1255,2026-03-31,2026-06-08,Willow Goods,Food & Snacks,Deduction management; TPM; Cash App,37000,Closed Won,New,Fractional CFO partner
+D-1282,2026-03-23,2026-06-08,Fresh Botanics,vitamins,Forecasting,9000,Closed Lost,New,Blog / content
+D-1288,2026-04-13,2026-06-08,Bright Brands,Personal care,"Sales Forecasting, supply plan",19500,Closed Won,New,Cold call
+D-1103,2026-03-11,2026-06-09,Peak Home,Home goods,trade promotions,23500,Closed Lost,New,Founder network
+D-1167,2026-03-31,2026-06-09,Coast Roots,Pantry / grocery,Deductions,30500,Closed Lost,New,Natural Products Expo West
+D-1106,2026-03-12,2026-06-11,Fresh Paws,Wellness,Demand planning + DM,37000,Closed Lost,New,Website demo request
+D-1225,2026-03-25,2026-06-12,Cedar Wellness,beverages,"DP, Deductions, Disputes automation",54000,Closed Lost,New,NetSuite partner
+D-1148,2026-03-01,2026-06-13,Field Naturals,vitamins,Supply planning / sales forecast / Deduction management / Auto disputes,47000,Closed Lost,New,Newsletter sponsor
+D-1161,2026-04-12,2026-06-13,Cedar Botanics,Packaged food,deductions mgmt; TPM,38000,Closed Lost,New,Cold call
+D-1071,2026-04-15,2026-06-14,Golden Co.,Beauty/PC,cash application / Forecasting,18500,Closed Lost,New,Broker partner
+D-1245,2026-05-01,2026-06-14,Clever Co.,Beverage,demand plan,41000,Closed Lost,New,Natural Products Expo West
+D-1102,2026-04-01,2026-06-15,Bold Sips,Pet food,Forecasting + Auto disputes,23000,Closed Lost,New,Paid search
+D-1108,2026-04-22,2026-06-17,Fresh Naturals,snacks,TPM + Production planning,46000,Closed Lost,New,Indie Beauty Expo
+D-1008,2026-05-03,2026-06-18,Golden Bites,Foodservice,"Cash App, Deduction management",30500,Closed Lost,New,Organic / website
+D-1027,2026-04-06,2026-06-18,Maple Wellness,Packaged food,Deduction management + Production planning + Sales analytics,59000,Closed Won,New,Broker partner
+D-1220,2026-04-27,2026-06-18,Bright Glow,Hair care,supply plan + DP,17500,Closed Won,New,Paid search
+D-1032,2026-05-02,2026-06-19,North Sips,Paper goods,deductions mgmt,25000,Closed Lost,New,Founder network
+D-1275,2026-03-20,2026-06-19,Pebble Paws,Sports nutrition,Deductions; trade promotions; Cash-app; Supply planning,77000,Closed Won,New,Outbound - SDR
+D-1012,2026-05-02,2026-06-21,Coast Glow,Pet food,Trade promo / sales forecast,30000,Closed Lost,New,Webinar w/ partner
+D-1087,2026-04-28,2026-06-21,Pebble Brands,Supplements,Cash-app / auto-dispute,26000,Closed Lost,New,Cold call
+D-1292,2026-04-09,2026-06-21,Wildfern Tonic,Drinks,supply plan + POS analytics + Trade spend planning,44000,Closed Lost,New,Customer referral
+D-1247,2026-01-17,2026-06-22,Hearth Supply,Sports nutrition,Deduction management + Cash App + Auto disputes + TPM + sales forecast + Sales analytics + demand plan + Supply planning,77500,Closed Lost,New,LinkedIn Ads
+D-1069,2026-04-10,2026-06-23,Bold Kitchen,pet care,TPM & cash application & sales forecast,57500,Closed Lost,New,Accounting firm partner
+D-1223,2026-05-28,2026-06-23,Bright Home,Beauty,trade promotions,19000,Closed Lost,New,Google Ads
+D-1211,2026-05-01,2026-06-24,Field Sips,snacks,"Forecasting, DM",24500,Closed Lost,New,linkedin paid
+D-1210,2026-05-12,2026-06-25,Clever Brands,Pet food,trade promotions; DP,54000,Closed Lost,New,Referral - customer
+D-1235,2026-04-10,2026-06-26,Pebble Sips,beverages,TPM & Sales analytics,20000,Closed Won,New,Paid search
+D-1254,2026-04-08,2026-06-26,North Labs,Frozen foods,DM,31000,Closed Lost,New,Trade show
+D-1051,2026-04-23,2026-06-27,Sunny Home,Wellness,Sales analytics & Trade spend planning,16500,Closed Lost,New,Meta ads
+D-1094,2026-04-26,2026-06-27,Field Kitchen,pet care,DM; Trade promo; AR cash app; Supply planning,103000,Closed Lost,New,Investor intro
+D-1252,2026-05-08,2026-06-28,Cedar Bites,Beverage,Trade promo,24500,Closed Won,New,Website demo request
+D-1272,2026-05-10,2026-06-28,Coast Wellness,Beauty,sales forecast & AR cash app,36500,Closed Lost,New,SDR outbound
+D-1084,2026-04-03,2026-06-29,North Provisions,Packaged food,"Auto disputes, POS analytics",21500,Closed Lost,New,Meta ads
+D-1132,2026-05-12,2026-06-30,Golden Harvest,Pantry / grocery,demand plan + Supply planning,13500,Closed Won,New,Taste Radio podcast
+D-1024,2026-04-28,2026-07-02,Maple Pantry,Deodorant & soap,Sales analytics,12000,Closed Won,New,Customer referral
+D-1104,2026-04-15,2026-07-02,Wildfern Supply,Packaged food,deductions mgmt & Cash-app,41500,Closed Lost,New,Blog / content
+D-1303,2026-06-07,2026-07-02,Hearth Wellness,Sports nutrition,auto-dispute,13500,Closed Won,expansion,Account management
+D-1038,2026-04-18,2026-07-03,Meadow Supply,Bev,Supply planning & Auto disputes & DM,56500,Closed Lost,New,NetSuite partner
+D-1110,2026-05-11,2026-07-03,Bold Roots,Coffee/tea,TPM + Deduction management + DP,34000,Closed Lost,New,Website demo request
+D-1109,2026-04-18,2026-07-04,Willow Home,FOOD,Forecasting + supply plan,24500,Closed Lost,New,Blog / content
+D-1271,2026-04-23,2026-07-04,Coast Goods,FOOD,Deduction management; auto-dispute,33500,Closed Lost,New,SEO
+D-1004,2026-05-02,2026-07-05,Wildfern Snacks,Cleaning,trade promotions & Auto disputes & AR cash app,45500,Closed Lost,New,Paid search
+D-1244,2026-04-24,2026-07-05,Bold Tonic,Pet,Sales Forecasting & Supply planning & Analytics & Trade promo,17000,Closed Lost,New,linkedin paid
+D-1015,2026-04-28,2026-07-06,Sunny Provisions,pet care,TPM; Deductions,32000,Closed Lost,New,NOSH webinar
+D-1128,2026-04-07,2026-07-06,Willow Wellness,Paper goods,supply plan,21000,Closed Won,New,Natural Products Expo West
+D-1131,2026-05-06,2026-07-06,Pebble Wellness,Frozen foods,DM,23000,Closed Won,New,Customer referral
+D-1250,2026-05-08,2026-07-07,Peak Kitchen,Food & Snacks,cash application,14000,Closed Won,New,Broker partner
+D-1283,2026-05-21,2026-07-07,Wildfern Labs,Pet food,POS analytics,6000,Closed Lost,New,Website demo request
+D-1119,2026-04-13,2026-07-08,Meadow Roots,beverages,demand plan + Deductions + Sales Forecasting,12000,Closed Won,New,Accounting firm partner
+D-1121,2026-04-11,2026-07-08,Juniper Kitchen,Food,"AR cash app, Production planning, Sales analytics",67500,Closed Lost,New,SuperZoo
+D-1165,2026-05-20,2026-07-08,Hearth Goods,Personal care,"Deductions, Sales Forecasting",24500,Closed Lost,New,Inbound - direct
+D-1145,2026-05-03,2026-07-09,Cedar Supply,Drinks,"deductions mgmt, supply plan, TPM, AR cash app",39500,Closed Lost,New,SDR outbound
+D-1191,2026-04-13,2026-07-10,North Home,Wellness,TPM; DM; DP,78500,Closed Lost,New,Outbound - SDR
+D-1207,2026-05-04,2026-07-10,North Brands,Spirits & RTD,deductions mgmt,38500,Closed Won,New,BevNET Live
+D-1091,2026-05-10,2026-07-11,Willow Roots,Personal care,Cash-app,37000,Closed Lost,New,BevNET Live
+D-1173,2026-05-07,2026-07-11,Maple Co.,Packaged food,DM,23500,Closed Lost,New,Investor intro
+D-1291,2026-04-16,2026-07-11,Lark Snacks,Food & Snacks,Deductions + trade promotions,28500,Closed Won,New,Trade show
+D-1309,2026-06-16,2026-07-11,Clever Snacks,beverages,Sales Forecasting,12000,Closed Won,expansion,Existing customer
+D-1078,2026-05-15,2026-07-12,Bold Co.,Hair care,demand plan,12500,Closed Lost,New,SDR outbound
+D-1088,2026-05-28,2026-07-15,Maple Bites,Bev,Deduction management,36000,Closed Lost,New,Trade show
+D-1157,2026-05-13,2026-07-15,Lark Brands,Frozen foods,Deduction management & Sales analytics,22500,Closed Lost,New,Google Ads
+D-1096,2026-04-10,2026-07-16,Golden Snacks,Cleaning,supply plan / cash application / DM,62000,Closed Won,New,Expo West 2026
+D-1168,2026-05-29,2026-07-16,Lark Naturals,Skincare,trade promotions,29500,Closed Won,New,Newtopia Now
+D-1187,2026-04-17,2026-07-16,Pebble Labs,Household,"Deductions, Demand planning, Trade promo",52500,Closed Won,New,Google Ads
+D-1304,2026-06-21,2026-07-16,Coast Co.,Hair care,supply plan / Deduction management,30000,Closed Won,Expansion,CSM upsell
+D-1093,2026-05-04,2026-07-17,Lark Sips,Supplements,Auto disputes,13500,Closed Won,New,Accounting firm partner
+D-1174,2026-06-04,2026-07-18,Lark Co.,Beauty,"Deduction management, Cash App",59000,Closed Won,New,Trade show
+D-1070,2026-06-14,2026-07-19,Oak Roots,Beauty/PC,demand plan + Forecasting,18500,Closed Lost,New,SDR outbound
+D-1204,2026-05-04,2026-07-19,Clever Home,Pantry / grocery,Cash App / Auto disputes,27000,Closed Lost,New,LinkedIn Ads
+D-1320,2026-06-24,2026-07-19,Juniper Naturals,Bev,Cash App,21500,Closed Won,expansion,CSM upsell
+D-1045,2026-04-06,2026-07-20,Golden Goods,Pantry / grocery,Full suite,72000,Closed Lost,New,Expo West 2026
+D-1249,2026-03-11,2026-07-20,Peak Naturals,Frozen foods,"Deduction management, Cash-app, Disputes automation, Trade promo, Forecasting, Sales analytics, Demand planning, Supply planning",209000,Closed Won,New,Referral - customer
+D-1314,2026-06-25,2026-07-20,Meadow Snacks,Home goods,Trade promo,21500,Closed Won,Upsell,Existing customer
+D-1319,2026-06-25,2026-07-20,Lark Goods,Food,Trade promo,22500,Closed Won,Upsell,Existing customer
+D-1025,2026-05-10,2026-07-21,Willow Labs,Supplements,trade promotions,13500,Closed Lost,New,LinkedIn Ads
+D-1047,2026-05-17,2026-07-21,Golden Provisions,Packaged food,auto-dispute + DP,22500,Closed Won,New,Taste Radio podcast
+D-1099,2026-05-14,2026-07-23,Fresh Pantry,Frozen foods,Deductions & trade promotions,53500,Closed Lost,New,Referral - customer
+D-1262,2026-05-21,2026-07-23,Bright Tonic,Drinks,auto-dispute & cash application & deductions mgmt,23500,Closed Lost,New,LinkedIn Ads
+D-1105,2026-05-12,2026-07-25,Clever Provisions,Baby & kids,"auto-dispute, Cash-app",26500,Closed Lost,New,Cold email
+D-1279,2026-04-08,2026-07-25,Maple Provisions,Sports nutrition,Deduction management & Forecasting & Sales analytics & Trade spend planning,125500,Closed Lost,New,Broker partner
+D-1033,2026-05-22,2026-07-26,Sunny Glow,Food,"Production planning, Sales Forecasting, Trade spend planning",41000,Closed Lost,New,SDR outbound
+D-1125,2026-06-17,2026-07-26,Lark Botanics,Spirits & RTD,trade promotions,25500,Closed Won,New,Newtopia Now
+D-1310,2026-07-01,2026-07-26,Golden Tonic,Bev,supply plan,11000,Closed Won,Upsell,Existing customer
+D-1112,2026-05-13,2026-07-28,Meadow Pantry,Paper goods,Deductions + Cash-app,40500,Closed Lost,New,Founder network
+D-1203,2026-04-28,2026-07-28,North Pantry,Home & kitchen,demand plan & Deductions & Cash App,56000,Closed Lost,New,Newtopia Now
+D-1192,2026-05-23,2026-07-29,Peak Glow,Packaged food,Supply planning + Demand planning,25500,Closed Lost,New,NOSH webinar
+D-1316,2026-07-04,2026-07-29,North Harvest,snacks,POS analytics,7500,Closed Won,Upsell,CSM upsell
+D-1140,2026-05-27,2026-07-31,Field Pantry,Functional soda,demand plan / Trade spend planning / Deduction management,36000,Closed Lost,New,Meta ads
+D-1097,2026-05-27,2026-08-01,Hearth Home,Food,deductions mgmt; Trade promo,68000,Closed Won,New,Founder network
+D-1287,2026-05-29,2026-08-01,Wildfern Kitchen,Pet food,Deductions,26500,Closed Lost,New,Google Ads
+D-1299,2026-07-07,2026-08-01,Field Snacks,Home goods,DM; sales forecast,33000,Closed Won,Upsell,CSM upsell
+D-1007,2026-06-03,2026-08-02,Sunny Wellness,Beverage,S&OP bundle,9000,Closed Won,New,Blog / content
+D-1013,2026-06-05,2026-08-02,Lark Roots,Paper goods,Disputes automation,24500,Closed Won,New,Expo West 2026
+D-1155,2026-06-10,2026-08-03,Oak Home,Skincare,"Trade spend planning, Sales Forecasting, Sales analytics",22500,Closed Lost,New,Paid search
+D-1280,2026-05-31,2026-08-04,Bold Goods,Food & Snacks,DM + trade promotions,57000,Closed Lost,New,Outbound - SDR
+D-1293,2026-07-14,2026-08-05,Sunny Tonic,Personal care,Sales Forecasting,24500,Closed Lost,New,Apollo sequence
+D-1308,2026-07-11,2026-08-05,Peak Supply,Home & kitchen,DP,18000,Closed Won,Upsell,CSM upsell
+D-1056,2026-05-17,2026-08-06,Clever Botanics,Supplements,Forecasting,14000,Closed Won,New,Trade show
+D-1065,2026-05-28,2026-08-06,Cedar Harvest,Bev,Analytics + Production planning + TPM,75000,Closed Lost,New,Natural Products Expo West
+D-1150,2026-05-09,2026-08-06,Willow Provisions,beverages,Trade promo + Sales analytics + Deductions + Supply planning,96500,Closed Lost,New,SuperZoo
+D-1234,2026-06-01,2026-08-06,Golden Supply,Supplements,Production planning + Deduction management + Trade spend planning,73000,Closed Lost,New,Cold email
+D-1002,2026-05-29,2026-08-07,Hearth Brands,Pet,auto-dispute / Deduction management / AR cash app / Sales Forecasting,82500,Closed Lost,New,BevNET Live
+D-1026,2026-05-05,2026-08-07,Golden Sips,Pet treats,trade promotions & Demand planning & sales forecast,63500,Closed Won,New,Newtopia Now
+D-1111,2026-06-26,2026-08-08,Cedar Provisions,Pet,trade promotions,21500,Closed Lost,New,Cold email
+D-1285,2026-05-02,2026-08-09,Juniper Brands,Pantry / grocery,Supply planning; Sales analytics; DP,36000,Closed Won,New,Distributor referral
+D-1297,2026-07-15,2026-08-09,Bright Botanics,Pet,Supply planning,11500,Closed Won,Expansion,Account management
+D-1009,2026-06-06,2026-08-10,Hearth Kitchen,Spirits & RTD,"Cash App, TPM",26000,Closed Lost,New,Investor intro
+D-1277,2026-05-23,2026-08-10,Hearth Glow,Frozen foods,Retail data add-on,153000,Closed Won,New,Board member intro
+D-1061,2026-06-09,2026-08-11,Clever Roots,Beauty,POS analytics; Forecasting,24000,Closed Lost,New,Investor intro
+D-1081,2026-06-01,2026-08-12,Bold Supply,Frozen foods,Supply planning & Auto disputes,39000,Closed Lost,New,Accounting firm partner
+D-1023,2026-06-10,2026-08-13,Oak Tonic,Packaged food,DM + demand plan,34000,Closed Lost,New,Natural Products Expo West
+D-1101,2026-05-19,2026-08-15,Maple Roots,Food,POS analytics / Deductions,50000,Closed Lost,New,Newsletter sponsor
+D-1177,2026-06-05,2026-08-15,North Glow,Baby & kids,DP; Cash-app; Sales Forecasting; Auto disputes,53500,Closed Lost,New,Expo West 2026
+D-1154,2026-06-08,2026-08-16,Peak Provisions,beverages,"sales forecast, Production planning, Sales analytics",22000,Closed Lost,New,Inbound - direct
+D-1120,2026-06-13,2026-08-17,Clever Kitchen,Frozen foods,auto-dispute,21500,Closed Lost,New,SuperZoo
+D-1163,2026-06-02,2026-08-18,Sunny Supply,Household,Trade promo / deductions mgmt,65000,Closed Lost,New,NOSH Live
+D-1208,2026-07-17,2026-08-18,Juniper Labs,Beauty/PC,TPM,24000,Closed Won,New,SuperZoo
+D-1141,2026-05-20,2026-08-19,Golden Labs,Pet,demand plan / POS analytics / Disputes automation,46500,Closed Won,New,Apollo sequence
+D-1298,2026-07-25,2026-08-19,Lark Tonic,Bev,Production planning & sales forecast,24500,Closed Won,expansion,Existing customer
+D-1233,2026-05-27,2026-08-20,Peak Tonic,Spirits & RTD,trade promotions / cash application,46000,Closed Lost,New,Newsletter sponsor
+D-1276,2026-06-28,2026-08-20,Oak Botanics,Hair care,DM,30000,Closed Lost,New,Trade show
+D-1127,2026-04-23,2026-08-21,Juniper Bites,snacks,All modules,105000,Closed Lost,New,NOSH webinar
+D-1224,2026-06-23,2026-08-22,Peak Roots,pet care,"Trade promo, cash application",25000,Closed Lost,New,Google Ads
+D-1146,2026-04-13,2026-08-23,Juniper Glow,FOOD,Deduction management / cash application / Auto disputes / Trade promo / Sales Forecasting / Sales analytics / demand plan / Production planning,164500,Closed Lost,New,Distributor referral
+D-1158,2026-06-05,2026-08-23,Coast Kitchen,Functional soda,sales forecast / Cash App / deductions mgmt / Analytics,88000,Closed Lost,New,Distributor referral
+D-1205,2026-06-19,2026-08-23,Wildfern Paws,Drinks,Auto disputes,12500,Closed Lost,New,Accounting firm partner
+D-1270,2026-06-21,2026-08-23,Pebble Goods,Coffee/tea,sales forecast,25000,Closed Won,New,Investor intro
+D-1300,2026-07-29,2026-08-23,Pebble Wellness,Frozen foods,AR cash app / sales forecast,39000,Closed Won,Upsell,CSM upsell
+D-1136,2026-06-09,2026-08-24,Golden Brands,snacks,"Auto disputes, trade promotions",24000,Closed Won,New,Inbound - direct
+D-1176,2026-06-09,2026-08-24,Coast Botanics,Home & kitchen,supply plan & demand plan,23500,Closed Lost,New,NOSH webinar
+D-1190,2026-06-13,2026-08-24,Sunny Kitchen,beverages,Trade promo; DM; auto-dispute; POS analytics,107000,Closed Lost,New,Natural Products Expo West
+D-1302,2026-07-30,2026-08-24,Sunny Pantry,Pet treats,Disputes automation + TPM,32000,Closed Won,Upsell,Account management
+D-1274,2026-05-18,2026-08-25,Fresh Tonic,Food,Auto disputes / DM / cash application / Analytics,43000,Closed Lost,New,linkedin paid
+D-1315,2026-07-31,2026-08-25,Oak Pantry,FOOD,Auto disputes / Sales analytics,18000,Closed Won,Upsell,CSM upsell
+D-1217,2026-05-25,2026-08-26,Sunny Harvest,Supplements,"DP, Analytics, Deduction management",91500,Closed Lost,New,Trade show
+D-1281,2026-07-04,2026-08-26,North Botanics,Wellness,Deduction management,25500,Closed Lost,New,Board member intro
+D-1130,2026-05-23,2026-08-27,Bold Brands,Sports nutrition,cash application; DP; POS analytics,46500,Closed Lost,New,SDR outbound
+D-1219,2026-07-03,2026-08-28,Juniper Provisions,Beverage,Trade spend planning,19500,Closed Lost,New,BevNET Live
+D-1242,2026-06-24,2026-08-28,North Paws,Coffee/tea,Trade promo / sales forecast / DM,41500,Closed Lost,New,SDR outbound
+D-1212,2026-07-01,2026-08-29,Lark Kitchen,snacks,auto-dispute / Deductions,28500,Closed Lost,New,Website demo request
+D-1261,2026-06-04,2026-08-29,Willow Paws,Packaged food,cash application + Deductions,30000,Closed Won,New,Apollo sequence
+D-1194,2026-06-16,2026-08-30,Coast Paws,Bev,"Deduction management, Analytics, sales forecast",46000,Closed Lost,New,Natural Products Expo West
+D-1149,2026-06-24,2026-08-31,Willow Harvest,Household,Auto disputes,10000,Closed Lost,New,Google Ads
+D-1321,2026-08-08,2026-09-02,Bright Bites,Home & kitchen,supply plan,13500,Closed Won,expansion,CSM upsell
+D-1077,2026-06-12,2026-09-03,Peak Co.,Health & Wellness,TPM; Supply planning,62500,Closed Lost,New,Founder network
+D-1306,2026-08-09,2026-09-03,Oak Goods,Supplements,Trade spend planning,30500,Closed Won,expansion,CSM upsell
+D-1057,2026-07-27,2026-09-04,Sunny Snacks,Hair care,AR cash app,11000,Closed Lost,New,Blog / content
+D-1301,2026-08-11,2026-09-05,Cedar Bites,Beverage,DM,15500,Closed Won,Expansion,Existing customer
+D-1216,2026-07-12,2026-09-06,Bold Provisions,Beverage,TPM,34000,Closed Won,New,NOSH webinar
+D-1064,2026-07-02,2026-09-07,Wildfern Wellness,Food & Snacks,TPM,27500,Closed Lost,New,Blog / content
+D-1054,2026-06-11,2026-09-08,Maple Brands,beverages,TPM; demand plan,107500,Closed Lost,New,Customer referral
+D-1010,2026-07-05,2026-09-09,Coast Pantry,Personal care,Sales Forecasting,7500,Closed Lost,New,Taste Radio podcast
+D-1263,2026-07-12,2026-09-11,Wildfern Botanics,Personal care,Trade promo + demand plan,56000,Closed Lost,New,Customer referral
+D-1305,2026-08-17,2026-09-11,Bold Home,Packaged food,Forecasting + Production planning,28000,Closed Won,Expansion,CSM upsell
+D-1107,2026-06-15,2026-09-12,Willow Botanics,vitamins,Demand planning / Cash App / auto-dispute / trade promotions,47500,Closed Lost,New,SuperZoo
+D-1322,2026-08-18,2026-09-12,Field Harvest,Wellness,Analytics,6500,Closed Won,Upsell,CSM upsell
+D-1098,2026-07-04,2026-09-13,Fresh Brands,Wellness,Sales analytics & Deduction management & cash application,47000,Closed Lost,New,Fractional CFO partner
+D-1022,2026-07-03,2026-09-14,Bold Bites,Hair care,cash application + Sales analytics,39500,Closed Lost,New,Distributor referral
+D-1086,2026-07-18,2026-09-14,Coast Supply,Paper goods,supply plan,11000,Closed Lost,New,Inbound - direct
+D-1135,2026-07-24,2026-09-14,Wildfern Roots,Pet treats,AR cash app,9500,Closed Lost,New,Newtopia Now
+D-1188,2026-08-08,2026-09-14,North Tonic,Skincare,Sales analytics,8500,Closed Won,New,Newsletter sponsor
+D-1312,2026-08-21,2026-09-15,Lark Co.,Beauty,POS analytics,9000,Closed Won,Upsell,CSM upsell
+D-1117,2026-07-03,2026-09-17,Cedar Sips,Food,Deductions + DP + sales forecast,54000,Closed Lost,New,Accounting firm partner
+D-1153,2026-07-03,2026-09-17,Pebble Naturals,Food & Snacks,TPM; Auto disputes; POS analytics,75000,Closed Lost,New,Apollo sequence
+D-1029,2026-07-09,2026-09-18,Bright Provisions,snacks,TPM,13500,Closed Lost,New,Inbound - direct
+D-1124,2026-07-12,2026-09-18,Field Wellness,Spirits & RTD,Deduction management / Cash App,101500,Closed Lost,New,Newsletter sponsor
+D-1215,2026-05-14,2026-09-18,Cedar Naturals,Pantry / grocery,"Deductions, Cash App, Disputes automation, TPM, Sales Forecasting, Analytics, Demand planning, Production planning",103500,Closed Lost,New,Organic / website
+D-1198,2026-06-26,2026-09-19,Golden Home,Frozen foods,trade promotions; supply plan,16500,Closed Lost,New,SDR outbound
+D-1118,2026-07-29,2026-09-20,Cedar Brands,Beauty/PC,Sales analytics,13000,Closed Lost,New,Accounting firm partner
+D-1134,2026-07-22,2026-09-20,Bright Roots,pet care,sales forecast / Deduction management,36500,Closed Won,New,Paid search
+D-1183,2026-08-18,2026-09-20,Cedar Glow,Deodorant & soap,POS analytics,11500,Closed Won,New,Referral - customer
+D-1248,2026-07-31,2026-09-20,Golden Kitchen,Pet,DM & TPM,45000,Closed Lost,New,Meta ads
+D-1222,2026-07-07,2026-09-21,Hearth Tonic,Hair care,Retail data add-on,38000,Closed Lost,New,Investor intro
+D-1273,2026-07-23,2026-09-21,Pebble Supply,Supplements,DP,24500,Closed Lost,New,Investor intro
+D-1171,2026-07-17,2026-09-23,Cedar Co.,Beauty/PC,Retail data add-on,59500,Closed Lost,New,Podcast sponsorship
+D-1092,2026-07-09,2026-09-24,North Snacks,snacks,Production planning,12000,Closed Lost,New,Cold email
+D-1048,2026-07-06,2026-09-26,Sunny Naturals,Wellness,"supply plan, Demand planning",17000,Closed Lost,New,LinkedIn Ads
+D-1011,2026-07-12,2026-09-27,Golden Naturals,Cleaning,DP + deductions mgmt + Trade promo,81500,Closed Won,New,Newsletter sponsor
+D-1129,2026-07-27,2026-09-27,Field Home,Functional soda,Deduction management; trade promotions,39500,Closed Won,New,SDR outbound
+D-1269,2026-07-31,2026-09-27,Pebble Kitchen,Pet food,sales forecast,10000,Closed Lost,New,SEO
+D-1295,2026-07-18,2026-09-27,Coast Sips,Coffee/tea,Analytics,7500,Closed Lost,New,LinkedIn Ads
+D-1028,2026-07-27,2026-09-29,Maple Supply,Frozen foods,Deduction management; Trade spend planning,62000,Closed Lost,New,Paid search
+D-1036,2026-07-29,2026-09-29,Willow Kitchen,Skincare,Analytics; sales forecast; Cash App,57000,Closed Won,New,Trade show
+D-1062,2026-07-15,2026-09-30,Pebble Pantry,Pantry / grocery,deductions mgmt; Cash App,99500,Closed Lost,New,SuperZoo
+D-1067,2026-06-19,2026-09-30,Field Roots,vitamins,POS analytics; Auto disputes; Cash-app,53000,Closed Lost,New,Accounting firm partner
+D-1142,2026-07-28,2026-09-30,Field Glow,Baby & kids,deductions mgmt,19000,Closed Lost,New,LinkedIn Ads
+D-1294,2026-07-07,2026-09-30,Maple Kitchen,Paper goods,Auto disputes; Supply planning; Trade spend planning,38500,Closed Lost,New,NetSuite partner
+</script>
+<script id="sample-spend" type="text/csv">date,vendor,description,amount_usd,gl_account,target_industry
+2026-01-06,NOSH,NOSH newsletter / webinar sponsorship,8253.66,6200 Content,Food
+2026-01-12,Webflow / SEO agency,Website + SEO retainer,11240.44,Marketing - web,
+2026-01-14,LinkedIn,LinkedIn Campaign Manager - Jan,26179.5,Paid Social,
+2026-01-14,Payroll allocation,SDR team cost allocation (GTM),49141.63,6500 Sales comp,
+2026-01-19,Taste Radio,Podcast ad read,5106.79,Sponsorships,Beverage
+2026-01-20,Referral program,Customer & investor referral payouts,9782.38,6600 Referrals,
+2026-01-21,Google,Google Ads search,19492.52,6100 Advertising,
+2026-01-24,Partner program,Accounting firm + broker co-marketing,20354.12,6600 Partnerships,
+2026-01-26,Apollo.io,Apollo seats + data credits,5720.13,Software - sales,
+2026-02-06,Webflow / SEO agency,Website + SEO retainer,10412.03,Marketing - web,
+2026-02-08,Referral program,Customer & investor referral payouts,7478.23,6600 Referrals,
+2026-02-10,Google,Google Ads search,14078.82,Paid search,
+2026-02-11,Taste Radio,Podcast ad read,4527.11,Sponsorships,Beverage
+2026-02-12,NOSH,NOSH newsletter / webinar sponsorship,6071.65,Sponsorships,Food
+2026-02-13,Payroll allocation,SDR team cost allocation (GTM),49051.85,6500 Sales comp,
+2026-02-13,Partner program,Accounting firm + broker co-marketing,19465.55,6600 Partnerships,
+2026-02-16,Apollo.io,Apollo seats + data credits,5981.54,6400 Sales tools,
+2026-02-26,LinkedIn,LinkedIn Campaign Manager - Feb,28748.86,6100-ADV,
+2026-03-07,Taste Radio,Podcast ad read,5497.67,Sponsorships,Beverage
+2026-03-10,Partner program,Accounting firm + broker co-marketing,19828.22,6600 Partnerships,
+2026-03-10,Referral program,Customer & investor referral payouts,10702.06,6600 Referrals,
+2026-03-12,Google,Google Ads search,19547.27,Paid search,
+2026-03-13,Apollo.io,Apollo seats + data credits,6049.14,6400 Sales tools,
+2026-03-14,Travel,Expo West travel & hotels (team of 9),41500,Travel - events,
+2026-03-18,NOSH,NOSH newsletter / webinar sponsorship,8373.81,6200 Content,Food
+2026-03-21,LinkedIn,LinkedIn Campaign Manager - Mar,29417.7,6100 Advertising,
+2026-03-22,Payroll allocation,SDR team cost allocation (GTM),49682.94,6500 Sales comp,
+2026-03-22,Webflow / SEO agency,Website + SEO retainer,10732.72,Marketing - web,
+2026-03-23,New Hope Network,"Expo West booth, build & drayage",168000,6700 Events,
+2026-03-25,Agency,Agency retainer - Q1,18201.6,6900 Misc marketing,
+2026-04-04,Webflow / SEO agency,Website + SEO retainer,10135.4,Marketing - web,
+2026-04-06,BevNET Live,BevNET Live sponsor package,38000,6700 Events,Beverage
+2026-04-07,Referral program,Customer & investor referral payouts,7470.91,6600 Referrals,
+2026-04-09,Taste Radio,Podcast ad read,6465.03,Sponsorships,Beverage
+2026-04-14,Google,Google Ads search,18084.36,Paid search,
+2026-04-14,Partner program,Accounting firm + broker co-marketing,15598.6,6600 Partnerships,
+2026-04-19,NOSH,NOSH newsletter / webinar sponsorship,7879.43,Sponsorships,Food
+2026-04-20,LinkedIn,LinkedIn Campaign Manager - Apr,30187.6,6100 Advertising,
+2026-04-24,Apollo.io,Apollo seats + data credits,6791.33,Software - sales,
+2026-04-24,Payroll allocation,SDR team cost allocation (GTM),48231.29,6500 Sales comp,
+2026-05-03,Webflow / SEO agency,Website + SEO retainer,12872.63,Marketing - web,
+2026-05-08,Brand agency,Brand refresh project,36000,6900 Misc marketing,
+2026-05-09,Taste Radio,Podcast ad read,6070.53,Sponsorships,Beverage
+2026-05-13,NOSH,NOSH newsletter / webinar sponsorship,6237.01,Sponsorships,Food
+2026-05-15,Google,Google Ads search,14577.9,6100 Advertising,
+2026-05-18,Payroll allocation,SDR team cost allocation (GTM),51059.62,6500 Sales comp,
+2026-05-18,Partner program,Accounting firm + broker co-marketing,21764.32,6600 Partnerships,
+2026-05-20,Referral program,Customer & investor referral payouts,7801.15,6600 Referrals,
+2026-05-21,Apollo.io,Apollo seats + data credits,5689.85,6400 Sales tools,
+2026-05-21,Newtopia Now,Booth + sponsorship,72000,6700 Events,
+2026-05-23,LinkedIn,LinkedIn Campaign Manager - May,30104.99,6100 Advertising,
+2026-06-07,Apollo.io,Apollo seats + data credits,6646.87,Software - sales,
+2026-06-12,Webflow / SEO agency,Website + SEO retainer,10312.79,6300 Web,
+2026-06-13,Agency,Agency retainer - Q2,20829.47,6900 Misc marketing,
+2026-06-14,NOSH,NOSH newsletter / webinar sponsorship,8169.69,Sponsorships,Food
+2026-06-15,Partner program,Accounting firm + broker co-marketing,21534.05,6600 Partnerships,
+2026-06-16,Taste Radio,Podcast ad read,5869.33,Sponsorships,Beverage
+2026-06-17,Referral program,Customer & investor referral payouts,10222.23,6600 Referrals,
+2026-06-19,NOSH Live,NOSH Live sponsorship,34000,6700 Events,Food
+2026-06-20,Payroll allocation,SDR team cost allocation (GTM),48409.43,6500 Sales comp,
+2026-06-22,Google,Google Ads search,19092.65,6100 Advertising,
+2026-06-25,LinkedIn,LinkedIn Campaign Manager - Jun,30020.99,6100 Advertising,
+2026-07-03,LinkedIn,LinkedIn Campaign Manager - Jul,28409.22,6100-ADV,
+2026-07-05,Google,Google Ads search,15125.31,6100 Advertising,
+2026-07-09,Payroll allocation,SDR team cost allocation (GTM),50326.43,6500 Sales comp,
+2026-07-17,Referral program,Customer & investor referral payouts,10695.49,6600 Referrals,
+2026-07-19,Partner program,Accounting firm + broker co-marketing,15884.89,6600 Partnerships,
+2026-07-19,Swag Co,Branded cans & swag for events,12500,6700 Events,
+2026-07-22,Webflow / SEO agency,Website + SEO retainer,12537.7,6300 Web,
+2026-07-24,Apollo.io,Apollo seats + data credits,5806.37,Software - sales,
+2026-07-24,NOSH,NOSH newsletter / webinar sponsorship,8922.88,6200 Content,Food
+2026-07-25,Taste Radio,Podcast ad read,4664.9,Sponsorships,Beverage
+2026-08-03,Referral program,Customer & investor referral payouts,10786.02,6600 Referrals,
+2026-08-07,Payroll allocation,SDR team cost allocation (GTM),48164.51,6500 Sales comp,
+2026-08-07,Webflow / SEO agency,Website + SEO retainer,10439.49,Marketing - web,
+2026-08-10,Taste Radio,Podcast ad read,6224.8,Sponsorships,Beverage
+2026-08-11,LinkedIn,LinkedIn Campaign Manager - Aug,33529.28,6100-ADV,
+2026-08-14,Partner program,Accounting firm + broker co-marketing,18407.05,6600 Partnerships,
+2026-08-16,Google,Google Ads search,15651.26,6100 Advertising,
+2026-08-19,Apollo.io,Apollo seats + data credits,6885.07,Software - sales,
+2026-08-20,SuperZoo,SuperZoo booth,46000,6700 Events,Pet
+2026-08-26,NOSH,NOSH newsletter / webinar sponsorship,7383.92,6200 Content,Food
+2026-09-04,LinkedIn,LinkedIn Campaign Manager - Sep,29477.97,6100-ADV,
+2026-09-05,Referral program,Customer & investor referral payouts,8112.04,6600 Referrals,
+2026-09-07,NOSH,NOSH newsletter / webinar sponsorship,8313.37,6200 Content,Food
+2026-09-15,Apollo.io,Apollo seats + data credits,6930.58,6400 Sales tools,
+2026-09-15,Taste Radio,Podcast ad read,6055.06,Sponsorships,Beverage
+2026-09-16,Partner program,Accounting firm + broker co-marketing,21132.85,6600 Partnerships,
+2026-09-17,Agency,Agency retainer - Q3,19435.21,6900 Misc marketing,
+2026-09-18,Google,Google Ads search,17036.25,6100 Advertising,
+2026-09-18,Payroll allocation,SDR team cost allocation (GTM),50781.62,6500 Sales comp,
+2026-09-19,Webflow / SEO agency,Website + SEO retainer,12406.09,6300 Web,
+2026-09-19,Indie Beauty Expo,IBE booth + samples,29000,6700 Events,Beauty & Personal Care
+</script>
+<script>
+const R = JSON.parse(document.getElementById("rules-json").textContent);
+const UN = "Unassigned";
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt$ = v => v==null||!isFinite(v) ? "–" : (Math.abs(v)>=1e6 ? "$"+(v/1e6).toFixed(2)+"M" : Math.abs(v)>=1e3 ? "$"+Math.round(v/1e3).toLocaleString()+"K" : "$"+Math.round(v));
+const fmtX = v => v==null||!isFinite(v) ? "–" : v.toFixed(1)+"×";
+const pct = v => v==null||!isFinite(v) ? "–" : Math.round(v*100)+"%";
+
+/* ---------- CSV ---------- */
+function parseCSV(text){
+  text = text.replace(/^﻿/,"");
+  const rows=[]; let row=[], f="", q=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(q){ if(c==='"'){ if(text[i+1]==='"'){f+='"';i++;} else q=false; } else f+=c; }
+    else if(c==='"') q=true;
+    else if(c===','){ row.push(f); f=""; }
+    else if(c==='\n'||c==='\r'){ if(c==='\r'&&text[i+1]==='\n') i++; row.push(f); f=""; if(row.some(x=>x.trim()!=="")) rows.push(row); row=[]; }
+    else f+=c;
+  }
+  row.push(f); if(row.some(x=>x.trim()!=="")) rows.push(row);
+  if(!rows.length) return {head:[],rows:[]};
+  const head=rows[0].map(h=>h.trim().toLowerCase().replace(/[^a-z0-9]+/g,"_").replace(/^_|_$/g,""));
+  return {head, rows: rows.slice(1).map(r=>Object.fromEntries(head.map((h,i)=>[h,(r[i]??"").trim()])))};
+}
+const ALIASES = {
+  sales:{deal_id:["deal_id","id","opportunity_id","opp_id","deal"],close_date:["close_date","closed_date","closedate","date_closed","close"],
+    created_date:["created_date","create_date","created","created_at","open_date"],customer:["customer","account","account_name","company"],
+    industry:["industry","category","segment","vertical"],products:["products","product","modules","module","sku"],
+    arr_usd:["arr_usd","arr","amount","acv","amount_usd","value"],stage:["stage","status","outcome"],deal_type:["deal_type","type","opportunity_type"],
+    lead_source:["lead_source","source","channel","lead_channel","original_source"]},
+  spend:{date:["date","txn_date","posted_date","month"],vendor:["vendor","payee","merchant"],description:["description","memo","desc","line_item"],
+    amount_usd:["amount_usd","amount","cost","spend","usd"],gl_account:["gl_account","gl","account","category"],target_industry:["target_industry","industry","segment"]}
+};
+const REQUIRED = {sales:["deal_id","close_date","industry","products","arr_usd","stage","lead_source"], spend:["date","amount_usd"]};
+function normalize(kind, parsed){
+  const map={}; const A=ALIASES[kind];
+  for(const k in A){ const hit=A[k].find(a=>parsed.head.includes(a)); if(hit) map[k]=hit; }
+  const missing=REQUIRED[kind].filter(k=>!map[k]);
+  if(kind==="spend" && !map.vendor && !map.description && !map.gl_account) missing.push("vendor or description or gl_account");
+  if(missing.length) throw new Error(`${kind==="sales"?"Sales":"Spend"} CSV is missing: ${missing.join(", ")}.`);
+  return parsed.rows.map(r=>{const o={}; for(const k in A) o[k]=map[k]?r[map[k]]:""; return o;});
+}
+const num = s => { const v=parseFloat(String(s).replace(/[$,\s]/g,"")); return isFinite(v)?v:0; };
+
+/* ---------- rules (mirror of pipeline.py) ---------- */
+const firstMatch=(t,rules)=>{t=t.toLowerCase(); for(const [b,ws] of rules) if(ws.some(w=>t.includes(w))) return b; return null;};
+function ruleIndustry(raw){ const t=(raw||"").toLowerCase().trim(); if(!t||R.industry_exclude.some(x=>t.includes(x))) return null; return firstMatch(t,R.industry_rules); }
+function ruleProducts(raw){
+  const t=(raw||"").toLowerCase().trim();
+  if(!t||R.product_exclude.some(x=>t.includes(x))) return null;
+  if(R.product_full_platform.some(x=>t.includes(x))) return [...R.products];
+  const out=[];
+  for(const tok of t.split(/[+;,&/]/).map(x=>x.trim()).filter(Boolean)){
+    let hit=null;
+    for(const [b,ws] of R.product_rules){ if(ws.some(w=>R.product_exact_tokens.includes(w)?tok===w:tok.includes(w))){hit=b;break;} }
+    if(!hit) return null;
+    if(!out.includes(hit)) out.push(hit);
+  }
+  return out.length?out:null;
+}
+function ruleLead(raw){ const t=(raw||"").toLowerCase(); if(R.expansion_sources.some(x=>t.includes(x))) return "Expansion"; return firstMatch(t,R.lead_source_rules); }
+function ruleSpend(r){ return firstMatch([r.vendor,r.description,r.gl_account].join(" "),R.spend_rules); }
+
+/* ---------- state ---------- */
+const S = { salesRaw:[], spendRaw:[], salesName:"", spendName:"", isSample:true, ov:{} , ovSrc:{} };
+const key=(field,raw)=>field+"|"+String(raw||"").toLowerCase().trim();
+let M=null; // computed model
+
+function compute(){
+  const gm=Math.min(1,Math.max(.01,num($("gm").value)/100));
+  const review=[]; const stats={industry:[0,0],products:[0,0],lead_source:[0,0],spend:[0,0]};
+  const pickOv=(field,raw,ruled)=>{ const k=key(field,raw); if(k in S.ov) return {v:S.ov[k],src:S.ovSrc[k]}; return {v:ruled,src:ruled==null?null:"rule"}; };
+  const deals=S.salesRaw.map(r=>{
+    const ri=ruleIndustry(r.industry), rp=ruleProducts(r.products), rl=ruleLead(r.lead_source);
+    const ind=pickOv("industry",r.industry,ri), pr=pickOv("products",r.products,rp), ld=pickOv("lead_source",r.lead_source,rl);
+    stats.industry[1]++; stats.products[1]++; stats.lead_source[1]++;
+    if(ri) stats.industry[0]++; if(rp) stats.products[0]++; if(rl) stats.lead_source[0]++;
+    const prods = pr.v==null||pr.v===UN ? null : (Array.isArray(pr.v)?pr.v:[pr.v]);
+    for(const [f,ruled,res] of [["industry",ri,ind],["products",rp,pr],["lead_source",rl,ld]]) if(ruled==null) review.push({file:"sales",id:r.deal_id,field:f,raw:r[f],res});
+    const dt=(r.deal_type||"").toLowerCase().trim();
+    const ch=ld.v||UN;
+    return {...r, industry_bucket:ind.v||UN, products_list:prods, product_buckets:prods?prods.join("|"):UN, channel_bucket:ch,
+      is_won:(r.stage||"").toLowerCase().trim()==="closed won", is_exp:dt==="expansion"||dt==="upsell"||ch==="Expansion", arr:num(r.arr_usd)};
+  });
+  const spend=S.spendRaw.map((r,i)=>{
+    const rc=ruleSpend(r); const raw=[r.vendor,r.description].filter(Boolean).join(" | ")||r.gl_account;
+    const c=pickOv("spend",raw,rc); stats.spend[1]++; if(rc) stats.spend[0]++;
+    if(rc==null) review.push({file:"spend",id:"S-"+(i+1),field:"spend",raw,res:c});
+    const ti=(r.target_industry||"").trim();
+    return {...r,row_id:"S-"+(i+1),channel_bucket:c.v||UN,industry_bucket:ti?(ruleIndustry(ti)||""):"",amount:num(r.amount_usd)};
+  });
+  const won=deals.filter(d=>d.is_won), newWon=won.filter(d=>!d.is_exp), newOpps=deals.filter(d=>!d.is_exp);
+
+  // product x industry
+  const mat={}; const add=(p,i,v)=>{mat[p]=mat[p]||{}; mat[p][i]=(mat[p][i]||0)+v;};
+  for(const d of won){
+    if(!d.products_list){ add(UN,d.industry_bucket,d.arr); continue; }
+    const tot=d.products_list.reduce((a,p)=>a+R.list_price_usd[p],0);
+    for(const p of d.products_list) add(p,d.industry_bucket,d.arr*R.list_price_usd[p]/tot);
+  }
+  // channels
+  const spendBy={}; spend.forEach(s=>spendBy[s.channel_bucket]=(spendBy[s.channel_bucket]||0)+s.amount);
+  const ch=R.channels.map(c=>{
+    const o=newOpps.filter(d=>d.channel_bucket===c), w=o.filter(d=>d.is_won), arr=w.reduce((a,d)=>a+d.arr,0), sp=spendBy[c]||0, gp=arr*gm;
+    return {channel:c,spend:sp,opps:o.length,won:w.length,win:o.length?w.length/o.length:0,arr,avg:w.length?arr/w.length:0,
+      cac:w.length?sp/w.length:null,roi:sp?gp/sp:null,payback:gp?sp/(gp/12):null};
+  });
+  const unSpend=Object.entries(spendBy).filter(([k])=>!R.channels.includes(k)).reduce((a,[,v])=>a+v,0);
+  // industries
+  const oppShare={}; newOpps.forEach(d=>oppShare[d.industry_bucket]=(oppShare[d.industry_bucket]||0)+1);
+  const totOpps=R.industries.reduce((a,i)=>a+(oppShare[i]||0),0)||1;
+  const indSpend={}; R.industries.forEach(i=>indSpend[i]=0);
+  spend.forEach(s=>{ if(R.industries.includes(s.industry_bucket)) indSpend[s.industry_bucket]+=s.amount; else R.industries.forEach(i=>indSpend[i]+=s.amount*(oppShare[i]||0)/totOpps); });
+  const days=d=>d.created_date&&d.close_date?(new Date(d.close_date)-new Date(d.created_date))/864e5:null;
+  const median=a=>{a=a.filter(x=>x!=null&&isFinite(x)).sort((x,y)=>x-y); if(!a.length) return null; const m=a.length>>1; return a.length%2?a[m]:(a[m-1]+a[m])/2;};
+  const ind=R.industries.map(i=>{
+    const o=newOpps.filter(d=>d.industry_bucket===i), w=o.filter(d=>d.is_won), arr=w.reduce((a,d)=>a+d.arr,0);
+    const exp=won.filter(d=>d.is_exp&&d.industry_bucket===i).reduce((a,d)=>a+d.arr,0);
+    return {industry:i,spend:indSpend[i],opps:o.length,won:w.length,win:o.length?w.length/o.length:0,arr,exp,cycle:median(w.map(days)),roi:indSpend[i]?arr*gm/indSpend[i]:null};
+  });
+  // factors
+  const bySize=[1,2,3,4].map(n=>{const w=newWon.filter(d=>d.products_list&&(n<4?d.products_list.length===n:d.products_list.length>=4)); return {n,count:w.length,avg:w.length?w.reduce((a,d)=>a+d.arr,0)/w.length:0};});
+  const totalSpend=spend.reduce((a,s)=>a+s.amount,0), newArr=newWon.reduce((a,d)=>a+d.arr,0), expArr=won.filter(d=>d.is_exp).reduce((a,d)=>a+d.arr,0);
+  const dates=deals.map(d=>d.close_date).filter(Boolean).sort();
+  M={gm,deals,spend,review,stats,mat,ch,ind,bySize,unSpend,
+     sum:{newArr,expArr,totalSpend,newCust:newWon.length,cac:newWon.length?totalSpend/newWon.length:null,roi:totalSpend?newArr*gm/totalSpend:null,payback:newArr?totalSpend/(newArr*gm/12):null,from:dates[0],to:dates[dates.length-1]}};
+  return M;
+}
+
+/* ---------- render ---------- */
+let hmMode="usd";
+function render(){
+  compute();
+  renderLoadStatus(); renderLog(); renderReview(); renderKpis(); renderHeat(); renderChannels(); renderIndustries(); renderFactors(); renderPlays();
+  $("export-row").hidden=false;
+}
+function renderLoadStatus(){
+  const tag=S.isSample?' <span class="badge sample">Sample data</span>':"";
+  $("st-sales").innerHTML=`${esc(S.salesName)} · ${S.salesRaw.length} rows${tag}`;
+  $("st-spend").innerHTML=`${esc(S.spendName)} · ${S.spendRaw.length} rows${tag}`;
+}
+function renderLog(){
+  const L=[["Industry → 6 aisles",M.stats.industry],["Products → 8 modules",M.stats.products],["Lead source → 7 channels",M.stats.lead_source],["Spend lines → channels",M.stats.spend]];
+  const fixed=M.review.filter(r=>r.res.v!=null).length;
+  $("log").innerHTML=L.map(([l,[a,b]])=>`<li><span>${l}: rules placed <b>${a}</b> of <b>${b}</b></span><b>${pct(b?a/b:0)}</b><div class="bar"><span style="width:${b?a/b*100:0}%"></span></div></li>`).join("")+
+    `<li><span>Rows needing review: <b>${M.review.length}</b> · resolved <b>${fixed}</b></span><b></b></li>`;
+}
+function optionsFor(field){
+  if(field==="industry") return [...R.industries,UN];
+  if(field==="products") return [...R.products,UN];
+  if(field==="lead_source") return [...R.channels,"Expansion",UN];
+  return [...R.channels,...R.spend_only_buckets,UN];
+}
+function renderReview(){
+  $("review-title").textContent=`Needs review (${M.review.length})`;
+  const tb=$("review").querySelector("tbody");
+  if(!M.review.length){ tb.innerHTML=`<tr><td colspan="5">Every row was placed by the rules.</td></tr>`; $("ask-classify").disabled=true; return; }
+  $("ask-classify").disabled=!AI.ready();
+  const groups=[]; const gi={};
+  M.review.forEach(r=>{const k=key(r.field,r.raw); if(!(k in gi)){gi[k]=groups.length;groups.push({...r,ids:[]});} groups[gi[k]].ids.push(r.id);});
+  M.reviewGroups=groups;
+  $("review-title").textContent=`Needs review: ${groups.length} label${groups.length>1?"s":""} across ${M.review.length} rows`;
+  tb.innerHTML=groups.map((r,idx)=>{
+    const cur=Array.isArray(r.res.v)?r.res.v[0]:r.res.v;
+    const opts=optionsFor(r.field).map(o=>`<option${o===(cur||UN)?" selected":""}>${esc(o)}</option>`).join("");
+    const src=r.res.src==="ai"?'<span class="badge ai">Claude</span>':r.res.src==="manual"?'<span class="badge manual">You</span>':'<span class="note">Unplaced</span>';
+    const label={industry:"Industry",products:"Products",lead_source:"Lead source",spend:"Spend channel"}[r.field];
+    const multi=Array.isArray(r.res.v)&&r.res.v.length>1?` <span class="note">+${r.res.v.length-1} more</span>`:"";
+    const ids=esc(r.ids[0])+(r.ids.length>1?` <span class="note">+${r.ids.length-1}</span>`:"");
+    return `<tr><td style="white-space:nowrap" title="${esc(r.ids.join(", "))}">${ids}</td><td>${label}</td><td>${esc(r.raw)}</td><td><select id="rv-${idx}" data-idx="${idx}" aria-label="Bucket for ${esc(r.raw)}">${opts}</select>${multi}</td><td>${src}</td></tr>`;
+  }).join("");
+  tb.querySelectorAll("select").forEach(s=>s.onchange=()=>{
+    const r=M.reviewGroups[+s.dataset.idx]; const k=key(r.field,r.raw);
+    S.ov[k]= s.value===UN?UN:(r.field==="products"?[s.value]:s.value); S.ovSrc[k]="manual"; render();
+  });
+}
+function renderKpis(){
+  const s=M.sum;
+  $("period").textContent=`Closed deals ${s.from||"?"} to ${s.to||"?"} · gross margin ${Math.round(M.gm*100)}%`;
+  const K=[["New ARR won",fmt$(s.newArr),`${s.newCust} new customers`],["Expansion ARR",fmt$(s.expArr),`${pct(s.expArr/(s.newArr+s.expArr||1))} of all won ARR`],
+    ["GTM spend",fmt$(s.totalSpend),M.unSpend?`${fmt$(M.unSpend)} not tied to a channel`:"all tied to a channel"],["Blended ROI",fmtX(s.roi),"first-year gross profit per $1"],
+    ["Blended CAC",fmt$(s.cac),"spend per new customer"],["Payback",s.payback?s.payback.toFixed(1)+" mo":"–","on gross profit"]];
+  $("kpis").innerHTML=K.map(([l,v,d])=>`<div class="kpi"><span class="l">${l}</span><span class="v">${v}</span><span class="d">${d}</span></div>`).join("");
+}
+function heatColor(t){ return `color-mix(in oklab, var(--heat) ${Math.round(6+t*94)}%, white)`; }
+function renderHeat(){
+  const prods=[...R.products]; if(M.mat[UN]) prods.push(UN);
+  const inds=[...R.industries]; if(prods.some(p=>M.mat[p]&&M.mat[p][UN])) inds.push(UN);
+  const cell=(p,i)=>(M.mat[p]&&M.mat[p][i])||0;
+  const colT=Object.fromEntries(inds.map(i=>[i,prods.reduce((a,p)=>a+cell(p,i),0)]));
+  const rowT=Object.fromEntries(prods.map(p=>[p,inds.reduce((a,i)=>a+cell(p,i),0)]));
+  const grand=Object.values(colT).reduce((a,b)=>a+b,0);
+  const val=(p,i)=>hmMode==="usd"?cell(p,i):(colT[i]?cell(p,i)/colT[i]:0);
+  const max=Math.max(...prods.flatMap(p=>inds.map(i=>val(p,i))),1e-9);
+  const short={"Beauty & Personal Care":"Beauty & PC","Health & Wellness":"Health & Well."};
+  let h=`<thead><tr><th>Product</th>${inds.map(i=>`<th class="n">${esc(short[i]||i)}</th>`).join("")}<th class="n tot">Total</th></tr></thead><tbody>`;
+  for(const p of prods){
+    h+=`<tr><th class="rowh">${esc(p)}</th>`;
+    for(const i of inds){
+      const v=val(p,i), t=v/max, dark=t>.55;
+      const shown=hmMode==="usd"?(v?fmt$(v):"–"):(v?Math.round(v*100)+"%":"–");
+      const tip=`<b>${esc(p)}</b> in <b>${esc(i)}</b><br>${fmt$(cell(p,i))} ARR · ${pct(colT[i]?cell(p,i)/colT[i]:0)} of ${esc(i)} · ${pct(rowT[p]?cell(p,i)/rowT[p]:0)} of ${esc(p)}`;
+      h+=`<td class="cell" data-tip="${esc(tip)}" style="background:${heatColor(t)};color:${dark?"#fff":"var(--ink)"}">${shown}</td>`;
+    }
+    h+=`<td class="n tot">${fmt$(rowT[p])}</td></tr>`;
+  }
+  h+=`<tr><th class="rowh tot">Total</th>${inds.map(i=>`<td class="n tot">${fmt$(colT[i])}</td>`).join("")}<td class="n tot">${fmt$(grand)}</td></tr></tbody>`;
+  $("heat").innerHTML=h;
+}
+const verdict=(r,ind)=>r==null?["warn","No spend"]:r>=2?["good",ind?"▲ Grow":"▲ Scale"]:r>=1?["warn","● Tune"]:["bad",ind?"▼ Rethink":"▼ Fix or cut"];
+const pct1=v=>v==null||!isFinite(v)?"–":(v>0&&v<.01?(v*100).toFixed(1)+"%":Math.round(v*100)+"%");
+function renderChannels(){
+  const max=Math.max(...M.ch.flatMap(c=>[c.spend,c.arr]),1);
+  $("spend-arr").innerHTML=M.ch.map(c=>`<div class="brow"><span class="lab">${esc(c.channel)}</span><div class="track">
+     <div class="bwrap" data-tip="<b>${esc(c.channel)}</b><br>Spend ${fmt$(c.spend)}"><div class="b" style="width:${c.spend/max*100*.82}%;background:var(--spend)"></div><span class="val">${fmt$(c.spend)}</span></div>
+     <div class="bwrap" data-tip="<b>${esc(c.channel)}</b><br>New ARR ${fmt$(c.arr)} from ${c.won} deals"><div class="b" style="width:${c.arr/max*100*.82}%;background:var(--arr)"></div><span class="val">${fmt$(c.arr)}</span></div></div></div>`).join("");
+  const rmax=Math.max(...M.ch.map(c=>c.roi||0),2.2);
+  $("roi-bars").innerHTML=M.ch.map(c=>{const [k,l]=verdict(c.roi);
+    return `<div class="brow"><span class="lab">${esc(c.channel)}</span><div class="bwrap" data-tip="<b>${esc(c.channel)}</b><br>${fmtX(c.roi)} · CAC ${fmt$(c.cac)} · payback ${c.payback?c.payback.toFixed(1)+" mo":"–"}">
+      <div class="b" style="width:${(c.roi||0)/rmax*100*.6}%;background:var(--ink)"></div><span class="val">${fmtX(c.roi)}</span><span class="pill ${k}">${l}</span></div></div>`;}).join("");
+  $("ch-table").innerHTML=`<thead><tr><th>Channel</th><th class="n">Spend</th><th class="n">Opps</th><th class="n">Won</th><th class="n">Win rate</th><th class="n">New ARR</th><th class="n">Avg deal</th><th class="n">CAC</th><th class="n">ROI</th><th class="n">Payback</th><th>Verdict</th></tr></thead><tbody>`+
+    M.ch.map(c=>{const [k,l]=verdict(c.roi); return `<tr><td>${esc(c.channel)}</td><td class="n">${fmt$(c.spend)}</td><td class="n">${c.opps}</td><td class="n">${c.won}</td><td class="n">${pct(c.win)}</td><td class="n">${fmt$(c.arr)}</td><td class="n">${fmt$(c.avg)}</td><td class="n">${fmt$(c.cac)}</td><td class="n">${fmtX(c.roi)}</td><td class="n">${c.payback?c.payback.toFixed(1)+" mo":"–"}</td><td><span class="pill ${k}">${l}</span></td></tr>`;}).join("")+"</tbody>";
+}
+function renderIndustries(){
+  $("ind-table").innerHTML=`<thead><tr><th>Industry</th><th class="n">Allocated spend</th><th class="n">Opps</th><th class="n">Won</th><th class="n">Win rate</th><th class="n">New ARR</th><th class="n">Expansion ARR</th><th class="n">Median cycle</th><th class="n">ROI</th><th>Verdict</th></tr></thead><tbody>`+
+    M.ind.map(r=>{const [k,l]=verdict(r.roi,true); return `<tr><td>${esc(r.industry)}</td><td class="n">${fmt$(r.spend)}</td><td class="n">${r.opps}</td><td class="n">${r.won}</td><td class="n">${pct(r.win)}</td><td class="n">${fmt$(r.arr)}</td><td class="n">${fmt$(r.exp)}</td><td class="n">${r.cycle!=null?Math.round(r.cycle)+" days":"–"}</td><td class="n">${fmtX(r.roi)}</td><td><span class="pill ${k}">${l}</span></td></tr>`;}).join("")+"</tbody>";
+}
+function renderFactors(){
+  const mx=Math.max(...M.bySize.map(b=>b.avg),1);
+  $("f-products").innerHTML=M.bySize.map(b=>`<div class="brow"><span class="lab">${b.n<4?b.n:"4+"} product${b.n>1?"s":""} <span class="note">(${b.count})</span></span>
+    <div class="bwrap" data-tip="<b>${b.n<4?b.n:"4+"} products</b><br>avg new ARR ${fmt$(b.avg)} across ${b.count} deals"><div class="b" style="width:${b.avg/mx*100*.8}%;background:var(--arr)"></div><span class="val">${fmt$(b.avg)}</span></div></div>`).join("");
+  const cy=M.ind.filter(r=>r.cycle!=null); const cm=Math.max(...cy.map(r=>r.cycle),1);
+  $("f-cycle").innerHTML=cy.map(r=>`<div class="brow"><span class="lab">${esc(r.industry)}</span>
+    <div class="bwrap" data-tip="<b>${esc(r.industry)}</b><br>median ${Math.round(r.cycle)} days, created to closed won"><div class="b" style="width:${r.cycle/cm*100*.8}%;background:var(--ink)"></div><span class="val">${Math.round(r.cycle)} days</span></div></div>`).join("");
+}
+function plays(){
+  const P=[]; const ch=M.ch.filter(c=>c.spend>0&&c.roi!=null);
+  const best=[...ch].sort((a,b)=>b.roi-a.roi)[0], worst=[...ch].sort((a,b)=>a.roi-b.roi)[0];
+  if(best) P.push({k:"Scale",tone:"good",h:`Put more behind ${best.channel}`,p:`${fmtX(best.roi)} ROI with a ${fmt$(best.cac)} CAC and ${best.payback.toFixed(1)}-month payback. Win rate ${pct(best.win)} on ${best.opps} opportunities.`});
+  if(worst&&worst!==best) P.push({k:"Fix or cut",tone:"bad",h:`Rework ${worst.channel}`,p:`${fmt$(worst.spend)} spent for ${fmt$(worst.arr)} new ARR (${fmtX(worst.roi)}). CAC is ${fmt$(worst.cac)}. Moving half of it to ${best?best.channel:"the top channel"}, even at half that channel's current ROI, would buy about ${fmt$((worst.spend/2)*((best?best.roi:1)/2)/M.gm)} in new ARR instead of ${fmt$(worst.arr/2)}.`});
+  const inds=M.ind.filter(r=>r.roi!=null&&r.won>0); const bi=[...inds].sort((a,b)=>b.roi-a.roi)[0];
+  if(bi) P.push({k:"Focus aisle",tone:"good",h:`${bi.industry} pays back fastest`,p:`${fmtX(bi.roi)} ROI, ${pct(bi.win)} win rate${bi.cycle?`, ${Math.round(bi.cycle)}-day median cycle`:""}. Aim the next event and partner push here.`});
+  // whitespace
+  const prods=R.products, all=R.industries; const cell=(p,i)=>(M.mat[p]&&M.mat[p][i])||0;
+  const colT=Object.fromEntries(all.map(i=>[i,[...prods,UN].reduce((a,p)=>a+cell(p,i),0)]));
+  const grand=Object.values(colT).reduce((a,b)=>a+b,0)||1;
+  const rowT=Object.fromEntries(prods.map(p=>[p,all.reduce((a,i)=>a+cell(p,i),0)]));
+  let ws=[];
+  for(const p of prods) for(const i of all){ const sp=rowT[p]/grand, si=colT[i]?cell(p,i)/colT[i]:0;
+    if(colT[i]/grand>=.08&&sp>=.08&&si<sp*.5) ws.push({p,i,gap:(sp-si)*colT[i],si,sp}); }
+  ws.sort((a,b)=>b.gap-a.gap); const w=ws[0];
+  if(w) P.push({k:"Cross-sell",tone:"warn",h:`${w.p} is under-sold in ${w.i}`,p:`${pct1(w.si)} of ${w.i} ARR vs ${pct1(w.sp)} across all aisles. Closing half that gap is about ${fmt$(w.gap/2)} in expansion ARR.`});
+  const one=M.bySize[0], three=M.bySize.filter(b=>b.n>=3&&b.count>0);
+  const big=three.length?three.reduce((a,b)=>({count:a.count+b.count,sum:a.sum+b.avg*b.count}),{count:0,sum:0}):null;
+  if(one.count&&big&&big.count){ const avg3=big.sum/big.count; P.push({k:"Bundle",tone:"good",h:`Lead with a 3-module bundle`,p:`Deals with 3+ products average ${fmt$(avg3)} vs ${fmt$(one.avg)} for a single product (${(avg3/one.avg).toFixed(1)}×). ${pct(one.count/(M.sum.newCust||1))} of new deals still start with one product.`}); }
+  return P;
+}
+function renderPlays(){
+  M.plays=plays();
+  const ic={good:"▲",warn:"●",bad:"▼"};
+  $("plays").innerHTML=M.plays.map(p=>`<li class="play"><span class="k"><span class="pill ${p.tone}">${ic[p.tone]} ${esc(p.k)}</span></span><span class="h">${esc(p.h)}</span><p class="p">${esc(p.p)}</p></li>`).join("");
+}
+
+/* ---------- tooltip ---------- */
+const tip=$("tip");
+document.addEventListener("pointerover",e=>{const t=e.target.closest("[data-tip]"); if(!t){tip.hidden=true;return;} tip.innerHTML=t.dataset.tip; tip.hidden=false;});
+document.addEventListener("pointermove",e=>{ if(tip.hidden) return; const w=tip.offsetWidth,h=tip.offsetHeight; let x=e.clientX+14,y=e.clientY+14; if(x+w>innerWidth-8)x=e.clientX-w-14; if(y+h>innerHeight-8)y=e.clientY-h-14; tip.style.left=x+"px"; tip.style.top=y+"px";});
+document.addEventListener("scroll",()=>tip.hidden=true,{passive:true});
+
+/* ---------- loading ---------- */
+function showErr(m){ $("load-err").textContent=m; $("load-err").hidden=!m; }
+function loadSample(){
+  S.salesRaw=normalize("sales",parseCSV($("sample-sales").textContent.trim())); S.salesName="sample_sales.csv";
+  S.spendRaw=normalize("spend",parseCSV($("sample-spend").textContent.trim())); S.spendName="sample_gtm_spend.csv";
+  S.isSample=true; S.ov={}; S.ovSrc={}; showErr(""); $("memo").textContent=""; $("memo-status").textContent=""; $("classify-out").textContent=""; render();
+}
+function readFile(kind,file){
+  const fr=new FileReader();
+  fr.onload=()=>{ try{
+      const rows=normalize(kind,parseCSV(String(fr.result)));
+      if(!rows.length) throw new Error(`${file.name} has no data rows.`);
+      if(kind==="sales"){S.salesRaw=rows;S.salesName=file.name;} else {S.spendRaw=rows;S.spendName=file.name;}
+      S.isSample=false; S.ov={}; S.ovSrc={}; showErr(""); $("memo").textContent=""; render();
+    }catch(e){ showErr(e.message+" Check the column list below."); } };
+  fr.onerror=()=>showErr(`Could not read ${file.name}.`);
+  fr.readAsText(file);
+}
+for(const kind of ["sales","spend"]){
+  const inp=$("file-"+kind), drop=$("drop-"+kind);
+  inp.onchange=()=>inp.files[0]&&readFile(kind,inp.files[0]);
+  drop.addEventListener("dragover",e=>{e.preventDefault();drop.classList.add("over");});
+  drop.addEventListener("dragleave",()=>drop.classList.remove("over"));
+  drop.addEventListener("drop",e=>{e.preventDefault();drop.classList.remove("over");const f=e.dataTransfer.files[0]; if(f) readFile(kind,f);});
+}
+$("use-sample").onclick=loadSample;
+$("gm").oninput=()=>{ if(num($("gm").value)>0) render(); };
+$("hm-usd").onclick=()=>{hmMode="usd";$("hm-usd").setAttribute("aria-pressed","true");$("hm-pct").setAttribute("aria-pressed","false");renderHeat();};
+$("hm-pct").onclick=()=>{hmMode="pct";$("hm-pct").setAttribute("aria-pressed","true");$("hm-usd").setAttribute("aria-pressed","false");renderHeat();};
+
+/* ---------- Claude connection ----------
+   Three ways to reach Claude, tried in this order:
+   1. Inside claude.ai (artifact): the viewer's own Claude account via window.claude "sample". No key involved.
+   2. Hosted with a server key: POST /api/claude. The key lives in a Vercel environment variable and never reaches the browser.
+   3. Bring your own key: the viewer pastes a key. It is held only in a closure variable in this tab's memory, sent only to
+      api.anthropic.com, never written to localStorage/sessionStorage/cookies, the URL, the DOM or the console,
+      and it is dropped on "Forget key" or when the tab closes. */
+const MODELS={classify:"claude-haiku-5-5",memo:"claude-sonnet-5-5"}, MAXTOK={classify:2000,memo:1200};
+const AI=(()=>{
+  let mode=null, sample=null, needsCode=false, accessCode=null, byoKey=null;
+  const fail=(code,text)=>{ throw {code,text}; };
+  const httpCode=s=>s===401?"invalid_key":s===403?"forbidden":s===429?"rate_limited":s===400?"bad_request":(s===503||s===529)?"overloaded":"upstream_error";
+  async function call(task,prompt,signal){
+    try{
+      if(mode==="server"){
+        const h={"content-type":"application/json"}; if(accessCode) h["x-access-code"]=accessCode;
+        const r=await fetch("/api/claude",{method:"POST",headers:h,body:JSON.stringify({task,prompt}),signal,credentials:"same-origin",cache:"no-store",referrerPolicy:"no-referrer"});
+        const d=await r.json().catch(()=>({}));
+        if(!r.ok) fail(d.error||httpCode(r.status));
+        return d.text||"";
+      }
+      if(mode==="byok"){
+        if(!byoKey) fail("no_key");
+        const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",signal,credentials:"omit",cache:"no-store",referrerPolicy:"no-referrer",
+          headers:{"content-type":"application/json","x-api-key":byoKey,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+          body:JSON.stringify({model:MODELS[task],max_tokens:MAXTOK[task],messages:[{role:"user",content:prompt}]})});
+        const d=await r.json().catch(()=>({}));
+        if(!r.ok) fail(httpCode(r.status));
+        return (d.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("");
+      }
+      fail("not_connected");
+    }catch(e){ if(e&&e.name==="AbortError") fail("cancelled"); if(e&&e.code) throw e; fail("network"); }
+  }
+  function parseJSON(t){
+    try{ return JSON.parse(t); }catch(_){}
+    const f=t.match(/```(?:json)?\s*([\s\S]*?)```/); if(f){ try{ return JSON.parse(f[1]); }catch(_){} }
+    const a=t.search(/[\[{]/), b=Math.max(t.lastIndexOf("]"),t.lastIndexOf("}"));
+    if(a>=0&&b>a){ try{ return JSON.parse(t.slice(a,b+1)); }catch(_){} }
+    fail("invalid_json",t);
+  }
+  return {
+    get mode(){ return mode; }, get needsCode(){ return needsCode&&!accessCode; },
+    ready(){ return mode==="artifact" || (mode==="server"&&!(needsCode&&!accessCode)) || (mode==="byok"&&!!byoKey); },
+    async init(){
+      const C=window.claude;
+      sample = C&&C.use ? await C.use("sample").catch(()=>null) : null;
+      if(sample){ mode="artifact"; return; }
+      if(/^https?:$/.test(location.protocol)){
+        try{ const r=await fetch("/api/claude",{method:"GET",cache:"no-store",credentials:"same-origin"});
+             if(r.ok){ const d=await r.json(); if(d&&d.serverKey){ mode="server"; needsCode=!!d.needsCode; return; } } }catch(_){}
+      }
+      mode="byok";
+    },
+    setKey(k){ byoKey=k; }, setCode(c){ accessCode=c; },
+    forget(){ byoKey=null; accessCode=null; },
+    hint(){ return byoKey?"sk-ant-…"+byoKey.slice(-4):""; },
+    async json(prompt,{task,signal}){ if(mode==="artifact") return sample.json(prompt,{modelTier:"quick",signal}); return parseJSON(await call(task,prompt,signal)); },
+    async text(prompt,{task,signal,onText}){ if(mode==="artifact") return sample(prompt,{signal,onText}); const t=await call(task,prompt,signal); if(onText) onText({text:t}); return {text:t,truncated:false}; },
+    disable(){ mode=null; }
+  };
+})();
+window.addEventListener("pagehide",()=>AI.forget());
+
+function refreshAIButtons(){
+  const ok=AI.ready();
+  $("ask-classify").disabled=!ok||!(M&&M.review.length);
+  $("ask-memo").disabled=!ok;
+  const why=ok?"":"Connect Claude in step 2 first";
+  $("ask-classify").title=why; $("ask-memo").title=why;
+}
+function setConnStatus(){
+  const st=$("conn-status");
+  if(AI.mode==="server") st.textContent=AI.needsCode?"Locked":"Connected · server key";
+  else if(AI.mode==="byok") st.textContent=AI.ready()?"Connected · "+AI.hint():"Not connected";
+  st.className="chip "+(AI.ready()?"on":"off");
+  $("key-forget").hidden=!(AI.mode==="byok"&&AI.ready());
+  refreshAIButtons();
+}
+function setupConnect(){
+  if(AI.mode==="artifact"){ refreshAIButtons(); return; }   // inside claude.ai: no key needed
+  $("connect").hidden=false;
+  if(AI.mode==="server"){ $("conn-server").hidden=false; $("code-row").hidden=!AI.needsCode; }
+  else $("conn-byok").hidden=false;
+  setConnStatus();
+}
+$("key-use").onclick=()=>{
+  const inp=$("api-key"), v=inp.value.trim(); inp.value="";           // clear the field immediately
+  const msg=$("key-msg");
+  if(!/^sk-ant-[A-Za-z0-9_\-]{20,}$/.test(v)){ msg.textContent="That doesn't look like an Anthropic API key. It should start with sk-ant-."; return; }
+  AI.setKey(v); msg.textContent=""; setConnStatus();
+};
+$("api-key").addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); $("key-use").click(); } });
+$("key-forget").onclick=()=>{ AI.forget(); setConnStatus(); $("key-msg").textContent="Key forgotten."; };
+$("code-use").onclick=()=>{ const c=$("access-code").value.trim(); $("access-code").value=""; if(c){ AI.setCode(c); $("code-row").hidden=true; setConnStatus(); } };
+
+/* ---------- Claude: classify + memo ---------- */
+const errCopy=c=>({invalid_key:"That API key was rejected. Check it in the Claude Console and paste it again.",forbidden:"That access code isn't right.",no_key:"Paste an API key in Connect Claude first.",not_connected:"Connect Claude first (step 2).",network:"Couldn't reach Claude. Check your connection and try again.",overloaded:"Claude is busy right now. Try again in a minute.",bad_request:"Claude couldn't process that request.",no_server_key:"This site's server has no API key set.",not_granted:"Claude isn't allowed on this page. You can still pick buckets by hand.",sampling_disabled:"Claude isn't available on this account.",rate_limited:"Too many requests right now. Try again in a minute.",refused:"Claude declined that request.",invalid_json:"Claude's answer couldn't be read. Try again.",session_expired:"Sign in again to use Claude."}[c]||"Something went wrong reaching Claude. Try again.");
+let clsCtl=null;
+$("ask-classify").onclick=async()=>{
+  if(!AI.ready()) return;
+  const uniq=[]; const seen=new Set();
+  M.review.forEach(r=>{const k=key(r.field,r.raw); if(!seen.has(k)){seen.add(k);uniq.push({field:r.field,raw:r.raw});}});
+  const lines=uniq.map((u,i)=>`${i}\t${u.field}\t${u.raw}`).join("\n");
+  const prompt=`You classify messy CRM and GL labels for a B2B software company that sells back-office software (Confido) to consumer packaged goods brands.
+For each row below, choose a bucket from the allowed list for that field. If none fits, answer "Unassigned".
+Allowed buckets:
+- industry: ${R.industries.join("; ")}
+- products (choose one or more): ${R.products.join("; ")}
+- lead_source (how the deal was sourced): ${R.channels.join("; ")}; Expansion
+- spend (GTM spend line to a marketing/sales channel): ${R.channels.join("; ")}; ${R.spend_only_buckets.join("; ")}
+Rows (index, field, raw value):
+${lines}
+Reply with only a JSON array, one object per row: {"i": index, "bucket": "..." or ["..."] for products, "why": "under 12 words"}.`;
+  clsCtl=new AbortController(); $("ask-classify").disabled=true; $("stop-classify").hidden=false; $("classify-out").textContent="Thinking...";
+  try{
+    const res=await AI.json(prompt,{task:"classify",signal:clsCtl.signal});
+    let n=0; const notes=[];
+    for(const o of (Array.isArray(res)?res:[])){
+      const u=uniq[+o.i]; if(!u) continue; const allowed=optionsFor(u.field);
+      let b=o.bucket; if(u.field==="products"){ b=(Array.isArray(b)?b:[b]).filter(x=>R.products.includes(x)); if(!b.length) b=UN; } else if(!allowed.includes(b)) continue;
+      const k=key(u.field,u.raw); S.ov[k]=b; S.ovSrc[k]="ai"; n++; if(o.why) notes.push(`${u.raw} → ${Array.isArray(b)?b.join(" + "):b}: ${o.why}`);
+    }
+    render(); $("classify-out").textContent=n?`Claude placed ${n} label${n>1?"s":""}. Check them below; change any with the dropdown. ${notes.slice(0,4).join(" · ")}`:"Claude didn't return usable buckets. Pick them by hand.";
+  }catch(e){ if(e&&e.code!=="cancelled") $("classify-out").textContent=errCopy(e&&e.code); else $("classify-out").textContent=""; if(e&&e.code==="not_granted"){AI.disable();hideAI();} }
+  finally{ $("stop-classify").hidden=true; $("ask-classify").disabled=!AI.ready()||!M.review.length; }
+};
+$("stop-classify").onclick=()=>clsCtl&&clsCtl.abort();
+
+let memoCtl=null;
+$("ask-memo").onclick=async()=>{
+  if(!AI.ready()) return;
+  const s=M.sum;
+  const data={period:`${s.from} to ${s.to}`,gross_margin:M.gm,summary:{new_arr:Math.round(s.newArr),expansion_arr:Math.round(s.expArr),gtm_spend:Math.round(s.totalSpend),new_customers:s.newCust,blended_roi:+(s.roi||0).toFixed(2),blended_cac:Math.round(s.cac||0),payback_months:+(s.payback||0).toFixed(1)},
+    channels:M.ch.map(c=>({channel:c.channel,spend:Math.round(c.spend),opps:c.opps,won:c.won,win_rate:+c.win.toFixed(2),new_arr:Math.round(c.arr),cac:c.cac?Math.round(c.cac):null,roi:c.roi?+c.roi.toFixed(2):null})),
+    industries:M.ind.map(r=>({industry:r.industry,allocated_spend:Math.round(r.spend),opps:r.opps,won:r.won,win_rate:+r.win.toFixed(2),new_arr:Math.round(r.arr),expansion_arr:Math.round(r.exp),median_cycle_days:r.cycle?Math.round(r.cycle):null,roi:r.roi?+r.roi.toFixed(2):null})),
+    avg_new_arr_by_products_per_deal:M.bySize.map(b=>({products:b.n<4?b.n:"4+",deals:b.count,avg_arr:Math.round(b.avg)})),
+    product_by_industry_arr:Object.fromEntries(Object.entries(M.mat).map(([p,o])=>[p,Object.fromEntries(Object.entries(o).map(([i,v])=>[i,Math.round(v)]))])),
+    computed_plays:M.plays.map(p=>p.h+": "+p.p)};
+  const prompt=`You are a strategic finance associate at Confido, a software platform for consumer packaged goods brands (products: ${R.products.join(", ")}; industries: ${R.industries.join(", ")}).
+Write a short memo to the founders on where to put next quarter's go-to-market budget, using only the numbers below. ${S.isSample?"These numbers are synthetic demo data; say so in one line at the top.":""}
+Format: a one-line headline, then 4-5 numbered recommendations. Each has a bold-free title line, two sentences citing the specific numbers, and an "Expected impact:" line with a rough dollar figure and the assumption behind it. End with "Watch out:" and the single biggest risk in the data (small samples, attribution, allocation). Plain text, no markdown symbols, under 330 words.
+DATA:
+${JSON.stringify(data)}`;
+  memoCtl=new AbortController(); $("ask-memo").disabled=true; $("stop-memo").hidden=false; $("memo-status").textContent="Thinking..."; $("memo").textContent="";
+  try{
+    const r=await AI.text(prompt,{task:"memo",signal:memoCtl.signal,onText:({text})=>{$("memo-status").textContent="";$("memo").textContent=text;}});
+    $("memo-status").textContent=r.truncated?"The memo was cut short.":"Drafted by Claude from the tables above. Check the numbers before sending.";
+  }catch(e){ $("memo").textContent=(e&&e.text)||""; $("memo-status").textContent=e&&e.code==="cancelled"?"Stopped.":errCopy(e&&e.code); if(e&&e.code==="not_granted"){AI.disable();hideAI();} }
+  finally{ $("stop-memo").hidden=true; $("ask-memo").disabled=!AI.ready(); }
+};
+$("stop-memo").onclick=()=>memoCtl&&memoCtl.abort();
+function hideAI(){ $("ask-classify").hidden=true; $("ask-memo").hidden=true; $("stop-memo").hidden=true; $("stop-classify").hidden=true; }
+
+/* ---------- downloads ---------- */
+const toCSV=(rows,fields)=>[fields.join(","),...rows.map(r=>fields.map(f=>{const v=r[f]??"";const s=String(v);return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;}).join(","))].join("\n");
+let dl=null;
+async function save(name,data,btn){
+  const old=btn.textContent;
+  if(dl){ try{ await dl.save({filename:name,data}); btn.textContent="Saved"; }catch(e){ btn.textContent=e&&e.code==="declined"?old:"Couldn't save"; } }
+  else { const url=URL.createObjectURL(new Blob([data],{type:"text/csv"})); const a=document.createElement("a"); a.href=url; a.download=name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),1500); btn.textContent="Downloaded"; }
+  setTimeout(()=>btn.textContent=old,2000);
+}
+$("dl-sales").onclick=e=>save("sales_bucketed.csv",toCSV(M.deals.map(d=>({...d,is_won:d.is_won,is_expansion:d.is_exp})),["deal_id","created_date","close_date","customer","industry","industry_bucket","products","product_buckets","lead_source","channel_bucket","stage","deal_type","arr_usd","is_won","is_expansion"]),e.currentTarget);
+$("dl-spend").onclick=e=>save("spend_bucketed.csv",toCSV(M.spend,["row_id","date","vendor","description","gl_account","amount_usd","channel_bucket","target_industry","industry_bucket"]),e.currentTarget);
+$("dl-roi").onclick=e=>save("channel_roi.csv",toCSV(M.ch.map(c=>({...c,win:c.win.toFixed(4),roi:c.roi?.toFixed(3),cac:c.cac?.toFixed(2),payback:c.payback?.toFixed(2)})),["channel","spend","opps","won","win","arr","avg","cac","roi","payback"]),e.currentTarget);
+
+/* ---------- boot ---------- */
+$("ask-classify").disabled=true; $("ask-memo").disabled=true;
+loadSample();
+(async()=>{
+  const C=window.claude;
+  dl = C&&C.use ? await C.use("downloads").catch(()=>null) : null;
+  if(C&&!dl) $("export-row").remove();   // inside a viewer that can't save files
+  await AI.init(); setupConnect();
+})();
+</script>
+</body></html>

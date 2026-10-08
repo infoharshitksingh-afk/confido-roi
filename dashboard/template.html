@@ -1,0 +1,762 @@
+<title>GTM ROI Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Archivo:wght@400;600;800;900&family=Instrument+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: four numbered workbench cards (load → bucket → analyze → strategy) on the same sunny packaging ground as the shelf map */
+:root{
+  --ground:#FFD23F; --ground-2:#FFC21A; --ink:#1B1430; --paper:#FFFDF6; --white:#FFFFFF;
+  --muted:#5B5270; --line:#E6DFCB; --soft:#F6F1E2;
+  --spend:#E0661A; --arr:#2F6BE0;            /* the two chart series */
+  --heat:#2F6BE0;                            /* sequential hue for the heatmap */
+  --good:#1E8C50; --warn:#B87900; --bad:#C8352A;  /* status: verdict pills only */
+  --font-display:"Bagel Fat One","Arial Black",system-ui,sans-serif;
+  --font-body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-label:"Archivo","Helvetica Neue",Arial,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{background:var(--ground)}
+body{color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.5;padding-inline:16px;padding-block:28px 48px;
+  background:radial-gradient(circle at 10% 4%,var(--ground-2) 0 120px,transparent 121px),radial-gradient(circle at 95% 14%,var(--ground-2) 0 80px,transparent 81px),var(--ground)}
+.wrap{max-width:1200px;margin:0 auto;display:grid;gap:22px}
+header{display:grid;gap:8px}
+.eyebrow{font-family:var(--font-label);font-weight:800;font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+.eyebrow span{background:var(--ink);color:var(--ground);padding:3px 9px;border-radius:999px}
+h1{font-family:var(--font-display);font-weight:400;font-size:clamp(40px,7.5vw,84px);line-height:.95;margin:6px 0 0;text-wrap:balance}
+h1 em{font-style:normal;color:var(--arr);-webkit-text-stroke:2px var(--ink)}
+.sub{font-size:clamp(16px,2vw,19px);max-width:64ch;margin:0;font-weight:500}
+.steps{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.steps a{font-family:var(--font-label);font-weight:800;font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink);text-decoration:none;background:var(--paper);border:2px solid var(--ink);border-radius:999px;padding:4px 12px}
+.steps a b{font-family:var(--font-display);font-weight:400;margin-right:6px}
+
+.card{background:var(--paper);border:3px solid var(--ink);border-radius:22px;box-shadow:6px 6px 0 var(--ink);padding:20px;display:grid;gap:16px;min-width:0}
+.card-h{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.num{font-family:var(--font-display);font-size:34px;line-height:1;background:var(--ink);color:var(--ground);width:52px;height:52px;border-radius:14px;display:grid;place-items:center;flex:none}
+.card-h h2{font-family:var(--font-display);font-weight:400;font-size:clamp(26px,3.4vw,36px);line-height:1.05;margin:0}
+.card-h p{margin:0;color:var(--muted);flex-basis:100%;max-width:70ch}
+.card-h .titles{display:grid;gap:4px;min-width:0;flex:1}
+h3{font-family:var(--font-label);font-weight:900;font-size:13px;letter-spacing:.1em;text-transform:uppercase;margin:0}
+.note{font-size:12.5px;color:var(--muted);margin:0}
+
+button,.btn{font-family:var(--font-label);font-weight:800;font-size:13px;letter-spacing:.03em;border:2px solid var(--ink);border-radius:999px;padding:8px 16px;background:var(--paper);color:var(--ink);cursor:pointer;transition:transform .12s}
+button:hover{transform:translateY(-1px)}
+button.primary{background:var(--ink);color:var(--ground)}
+button:disabled{opacity:.45;cursor:not-allowed;transform:none}
+button:focus-visible,select:focus-visible,input:focus-visible,label.drop:focus-within{outline:3px solid var(--arr);outline-offset:2px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+
+/* step 1 */
+.drops{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+label.drop{display:grid;gap:6px;border:2px dashed var(--ink);border-radius:16px;padding:16px;background:var(--white);cursor:pointer;min-width:0}
+label.drop.over{background:var(--soft)}
+label.drop input{position:absolute;opacity:0;width:1px;height:1px}
+.drop .t{font-family:var(--font-label);font-weight:900;font-size:15px}
+.drop .s{font-size:13px;color:var(--muted)}
+.drop .st{font-size:13px;font-weight:600;overflow-wrap:anywhere}
+.badge{display:inline-block;font-family:var(--font-label);font-weight:800;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;border:1.5px solid var(--ink);border-radius:5px;padding:1px 6px;vertical-align:1px;background:var(--paper)}
+.badge.sample{background:var(--ground)}
+.badge.ai{background:#DCE7FB}
+.badge.manual{background:var(--soft)}
+details{border-top:1px dashed var(--ink);padding-top:10px}
+summary{cursor:pointer;font-family:var(--font-label);font-weight:800;font-size:13px}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;font-size:13px;margin-top:8px}
+.cols code{font-size:12px;background:var(--soft);padding:1px 5px;border-radius:4px}
+.gm{display:flex;align-items:center;gap:8px;font-size:14px}
+.gm input{width:72px;font:inherit;border:2px solid var(--ink);border-radius:10px;padding:4px 8px;background:var(--white)}
+.err{color:var(--bad);font-weight:600;font-size:14px;margin:0}
+
+/* step 2 */
+.log{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.log li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;font-size:14px}
+.log .bar{grid-column:1/-1;height:8px;background:var(--line);border-radius:4px;overflow:hidden}
+.log .bar span{display:block;height:100%;background:var(--ink);border-radius:4px}
+.log b{font-variant-numeric:tabular-nums}
+.tablebox{overflow-x:auto;border:2px solid var(--ink);border-radius:14px;background:var(--white)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{padding:7px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-family:var(--font-label);font-weight:800;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:var(--soft);white-space:nowrap}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+select{font:inherit;font-size:13px;border:2px solid var(--ink);border-radius:8px;padding:3px 6px;background:var(--white);max-width:200px}
+.ai-out{font-size:13.5px;min-height:1.2em;margin:0}
+
+/* step 3 */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.kpi{border:2px solid var(--ink);border-radius:14px;background:var(--white);padding:12px 14px;display:grid;gap:2px;min-width:0}
+.kpi .l{font-family:var(--font-label);font-weight:800;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.kpi .v{font-family:var(--font-display);font-size:30px;line-height:1.1;font-variant-numeric:tabular-nums}
+.kpi .d{font-size:12.5px;color:var(--muted)}
+.panel{border:2px solid var(--ink);border-radius:16px;background:var(--white);padding:14px;display:grid;gap:10px;min-width:0;align-content:start}
+.panel-h{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline}
+.seg{display:inline-flex;border:2px solid var(--ink);border-radius:999px;overflow:hidden}
+.seg button{border:0;border-radius:0;padding:4px 12px;font-size:12px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--ground)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px}
+.heat td.cell{text-align:right;font-variant-numeric:tabular-nums;font-weight:600;cursor:default;border:2px solid var(--white);border-radius:6px}
+.heat th.rowh{position:sticky;left:0;background:var(--white);color:var(--ink);text-transform:none;letter-spacing:0;font-size:13px;font-family:var(--font-body);font-weight:600}
+.heat td.tot,.heat th.tot{font-weight:800;background:var(--soft)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12.5px;color:var(--muted);align-items:center}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.ramp{width:120px;height:10px;border-radius:5px;background:linear-gradient(90deg,color-mix(in oklab,var(--heat) 6%,white),var(--heat))}
+
+.bars{display:grid;gap:10px}
+.brow{display:grid;grid-template-columns:120px minmax(0,1fr);gap:4px 10px;align-items:center;font-size:13px}
+.brow .lab{font-weight:600;min-width:0;overflow-wrap:anywhere}
+.track{display:grid;gap:3px;min-width:0}
+.b{height:12px;border-radius:0 4px 4px 0;position:relative;min-width:2px}
+.bwrap{display:flex;align-items:center;gap:6px;min-width:0}
+.bwrap .val{font-size:12px;font-variant-numeric:tabular-nums;color:var(--ink);white-space:nowrap}
+.pill{display:inline-flex;align-items:center;gap:4px;font-family:var(--font-label);font-weight:800;font-size:11px;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:2px 8px;color:#fff;white-space:nowrap}
+.pill.good{background:var(--good)} .pill.warn{background:var(--warn)} .pill.bad{background:var(--bad)}
+
+/* step 4 */
+.plays{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;list-style:none;margin:0;padding:0}
+.play{border:2px solid var(--ink);border-radius:14px;background:var(--white);padding:12px 14px;display:grid;gap:6px;align-content:start}
+.play .k{font-family:var(--font-label);font-weight:900;font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+.play .h{font-weight:600;font-size:15px}
+.play .p{font-size:13.5px;color:var(--muted);margin:0}
+.memo{border:2px solid var(--ink);border-radius:14px;background:var(--white);padding:14px 16px;font-size:14.5px;white-space:pre-wrap;max-width:80ch;min-height:2em}
+.memo:empty{display:none}
+
+.keyrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.keyrow input{flex:1 1 260px;min-width:0;font:inherit;font-size:14px;border:2px solid var(--ink);border-radius:10px;padding:7px 10px;background:var(--white)}
+.chip{font-family:var(--font-label);font-weight:800;font-size:11px;letter-spacing:.06em;text-transform:uppercase;border:2px solid var(--ink);border-radius:999px;padding:2px 10px}
+.chip.on{background:var(--good);color:#fff}.chip.off{background:var(--paper)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.note a{color:var(--ink);font-weight:600}
+#tip{position:fixed;z-index:20;pointer-events:none;background:var(--ink);color:var(--paper);font-size:12.5px;padding:7px 10px;border-radius:8px;max-width:260px;line-height:1.4;box-shadow:3px 3px 0 rgba(0,0,0,.15)}
+#tip b{color:var(--ground)}
+footer{font-size:12px;line-height:1.55;max-width:100ch}
+@media (max-width:520px){.brow{grid-template-columns:92px minmax(0,1fr)}.card{padding:16px}.num{width:44px;height:44px;font-size:28px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow"><span>Finance &amp; Strategy work sample · Oct 2026</span></div>
+    <h1>The GTM <em>ROI</em> Lab</h1>
+    <p class="sub">Drop in a sales export and a GTM spend export. The agent sorts every row into Confido's eight products, six industries and seven GTM channels, then shows where revenue comes from and which dollars pay back.</p>
+    <nav class="steps" aria-label="Steps">
+      <a href="#load"><b>1</b>Load</a><a href="#bucket"><b>2</b>Bucket</a><a href="#analyze"><b>3</b>Analyze</a><a href="#strategy"><b>4</b>Strategy</a>
+    </nav>
+  </header>
+
+  <!-- 1 LOAD -->
+  <section class="card" id="load">
+    <div class="card-h"><div class="num">1</div><div class="titles"><h2>Load your CSVs</h2>
+      <p>Two files: closed deals from the CRM, and GTM spend from the GL or card feed. Messy labels are fine; that's what step 2 is for. Files stay in your browser.</p></div></div>
+    <div class="drops">
+      <label class="drop" id="drop-sales">
+        <input type="file" id="file-sales" accept=".csv,text/csv">
+        <span class="t">Sales / deals CSV</span>
+        <span class="s">Drop a file here or click to choose</span>
+        <span class="st" id="st-sales"></span>
+      </label>
+      <label class="drop" id="drop-spend">
+        <input type="file" id="file-spend" accept=".csv,text/csv">
+        <span class="t">GTM spend CSV</span>
+        <span class="s">Drop a file here or click to choose</span>
+        <span class="st" id="st-spend"></span>
+      </label>
+    </div>
+    <div class="row">
+      <button type="button" id="use-sample">Reload sample data</button>
+      <label class="gm" for="gm">Gross margin <input id="gm" type="number" min="1" max="100" step="1" value="75">%</label>
+      <p class="note">Used for ROI and payback. 75% is a common SaaS assumption; change it to yours.</p>
+    </div>
+    <p class="err" id="load-err" hidden></p>
+    <details>
+      <summary>Columns the agent looks for</summary>
+      <div class="cols">
+        <div><h3>Sales CSV</h3>
+          <p class="note">Required: <code>deal_id</code> <code>close_date</code> <code>industry</code> <code>products</code> <code>arr_usd</code> <code>stage</code> <code>lead_source</code>. Optional: <code>created_date</code> (for sales cycle), <code>deal_type</code> (New / Expansion), <code>customer</code>. Common aliases like <code>amount</code>, <code>ACV</code>, <code>source</code>, <code>segment</code> are recognised.</p></div>
+        <div><h3>GTM spend CSV</h3>
+          <p class="note">Required: <code>date</code> <code>amount_usd</code> and at least one of <code>vendor</code> / <code>description</code> / <code>gl_account</code>. Optional: <code>target_industry</code>, so event spend aimed at one aisle counts against that aisle.</p></div>
+      </div>
+    </details>
+  </section>
+
+  <!-- 2 BUCKET -->
+  <section class="card" id="bucket">
+    <div class="card-h"><div class="num">2</div><div class="titles"><h2>Bucket every row</h2>
+      <p>Keyword rules place what they can. Anything ambiguous lands in the review list instead of being guessed. Ask Claude to classify those, or pick a bucket yourself.</p></div></div>
+    <ul class="log" id="log"></ul>
+    <div class="panel" id="connect" hidden>
+      <div class="panel-h"><h3>Connect Claude</h3><span class="chip off" id="conn-status">Not connected</span></div>
+      <div id="conn-byok" hidden>
+        <div class="keyrow">
+          <label for="api-key" class="sr">Anthropic API key</label>
+          <input id="api-key" type="password" placeholder="sk-ant-api03-…  paste your Anthropic API key" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" data-1p-ignore data-lpignore="true" data-form-type="other">
+          <button type="button" class="primary" id="key-use">Use key</button>
+          <button type="button" id="key-forget" hidden>Forget key</button>
+        </div>
+        <p class="note" id="key-msg" aria-live="polite"></p>
+        <p class="note"><a href="https://platform.claude.com/settings/keys" target="_blank" rel="noopener noreferrer">Get an API key in the Claude Console ↗</a> · Your key stays in this tab's memory only. It is sent straight to api.anthropic.com and nowhere else, never saved in the browser, the URL or on a server, and it's forgotten when you close the tab. Tip: use a key with a monthly spend limit.</p>
+      </div>
+      <div id="conn-server" hidden>
+        <p class="note">Claude runs through this site's server, which holds the API key. Your browser never sees it.</p>
+        <div class="keyrow" id="code-row" hidden>
+          <label for="access-code" class="sr">Access code</label>
+          <input id="access-code" type="password" placeholder="Access code" autocomplete="off" spellcheck="false" data-1p-ignore data-lpignore="true">
+          <button type="button" class="primary" id="code-use">Unlock</button>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-h"><h3 id="review-title">Needs review</h3>
+        <div class="row"><button type="button" class="primary" id="ask-classify">Classify with Claude</button><button type="button" id="stop-classify" hidden>Stop</button></div></div>
+      <p class="ai-out" id="classify-out"></p>
+      <div class="tablebox"><table id="review"><thead><tr><th>Rows</th><th>Field</th><th>Raw value</th><th>Bucket</th><th>Source</th></tr></thead><tbody></tbody></table></div>
+    </div>
+    <div class="row" id="export-row" hidden>
+      <button type="button" id="dl-sales">Download bucketed sales CSV</button>
+      <button type="button" id="dl-spend">Download bucketed spend CSV</button>
+      <button type="button" id="dl-roi">Download channel ROI CSV</button>
+    </div>
+  </section>
+
+  <!-- 3 ANALYZE -->
+  <section class="card" id="analyze">
+    <div class="card-h"><div class="num">3</div><div class="titles"><h2>ROI analysis</h2>
+      <p id="period"></p></div></div>
+    <div class="kpis" id="kpis"></div>
+
+    <div class="panel">
+      <div class="panel-h"><h3>Product × industry contribution (won ARR, new + expansion)</h3>
+        <div class="seg" role="group" aria-label="Heatmap values"><button type="button" id="hm-usd" aria-pressed="true">$ ARR</button><button type="button" id="hm-pct" aria-pressed="false">% of industry</button></div></div>
+      <p class="note">Multi-product deals are split across products in proportion to list price. Darker means more ARR.</p>
+      <div class="tablebox"><table class="heat" id="heat"></table></div>
+      <div class="legend"><span class="ramp"></span><span>Less → more ARR</span></div>
+    </div>
+
+    <div class="grid2">
+      <div class="panel">
+        <div class="panel-h"><h3>Spend vs new ARR by channel</h3></div>
+        <div class="legend"><span><i style="background:var(--spend)"></i>GTM spend</span><span><i style="background:var(--arr)"></i>New ARR won</span></div>
+        <div class="bars" id="spend-arr"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-h"><h3>ROI multiple by channel</h3></div>
+        <p class="note">First-year gross profit per $1 of spend. 2× or more: scale. 1–2×: keep and tune. Under 1×: fix or cut.</p>
+        <div class="bars" id="roi-bars"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-h"><h3>Channel scorecard</h3></div>
+      <div class="tablebox"><table id="ch-table"></table></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-h"><h3>Industry scorecard</h3></div>
+      <p class="note">Spend tagged to an industry counts against it. Untagged spend is spread by each industry's share of new opportunities.</p>
+      <div class="tablebox"><table id="ind-table"></table></div>
+    </div>
+
+    <div class="grid2">
+      <div class="panel">
+        <div class="panel-h"><h3>What drives deal size: products per deal</h3></div>
+        <div class="bars" id="f-products"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-h"><h3>What drives speed: median sales cycle</h3></div>
+        <div class="bars" id="f-cycle"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 STRATEGY -->
+  <section class="card" id="strategy">
+    <div class="card-h"><div class="num">4</div><div class="titles"><h2>Where to push next</h2>
+      <p>Plays computed straight from the tables above. Ask Claude to turn them into a short memo for the exec team.</p></div></div>
+    <ul class="plays" id="plays"></ul>
+    <div class="row"><button type="button" class="primary" id="ask-memo">Write the strategy memo with Claude</button><button type="button" id="stop-memo" hidden>Stop</button></div>
+    <p class="ai-out" id="memo-status"></p>
+    <div class="memo" id="memo"></div>
+  </section>
+
+  <footer>Independent work sample by Harshit Singh; not affiliated with or endorsed by Confido. The sample files are synthetic and invented for this demo. Nothing you upload leaves your browser unless you press a Claude button, which sends only the unmatched labels or the summary tables to Anthropic.</footer>
+</div>
+<div id="tip" hidden></div>
+
+<script id="rules-json" type="application/json">/*RULES*/</script>
+<script id="sample-sales" type="text/csv">/*SALES*/</script>
+<script id="sample-spend" type="text/csv">/*SPEND*/</script>
+<script>
+const R = JSON.parse(document.getElementById("rules-json").textContent);
+const UN = "Unassigned";
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt$ = v => v==null||!isFinite(v) ? "–" : (Math.abs(v)>=1e6 ? "$"+(v/1e6).toFixed(2)+"M" : Math.abs(v)>=1e3 ? "$"+Math.round(v/1e3).toLocaleString()+"K" : "$"+Math.round(v));
+const fmtX = v => v==null||!isFinite(v) ? "–" : v.toFixed(1)+"×";
+const pct = v => v==null||!isFinite(v) ? "–" : Math.round(v*100)+"%";
+
+/* ---------- CSV ---------- */
+function parseCSV(text){
+  text = text.replace(/^﻿/,"");
+  const rows=[]; let row=[], f="", q=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(q){ if(c==='"'){ if(text[i+1]==='"'){f+='"';i++;} else q=false; } else f+=c; }
+    else if(c==='"') q=true;
+    else if(c===','){ row.push(f); f=""; }
+    else if(c==='\n'||c==='\r'){ if(c==='\r'&&text[i+1]==='\n') i++; row.push(f); f=""; if(row.some(x=>x.trim()!=="")) rows.push(row); row=[]; }
+    else f+=c;
+  }
+  row.push(f); if(row.some(x=>x.trim()!=="")) rows.push(row);
+  if(!rows.length) return {head:[],rows:[]};
+  const head=rows[0].map(h=>h.trim().toLowerCase().replace(/[^a-z0-9]+/g,"_").replace(/^_|_$/g,""));
+  return {head, rows: rows.slice(1).map(r=>Object.fromEntries(head.map((h,i)=>[h,(r[i]??"").trim()])))};
+}
+const ALIASES = {
+  sales:{deal_id:["deal_id","id","opportunity_id","opp_id","deal"],close_date:["close_date","closed_date","closedate","date_closed","close"],
+    created_date:["created_date","create_date","created","created_at","open_date"],customer:["customer","account","account_name","company"],
+    industry:["industry","category","segment","vertical"],products:["products","product","modules","module","sku"],
+    arr_usd:["arr_usd","arr","amount","acv","amount_usd","value"],stage:["stage","status","outcome"],deal_type:["deal_type","type","opportunity_type"],
+    lead_source:["lead_source","source","channel","lead_channel","original_source"]},
+  spend:{date:["date","txn_date","posted_date","month"],vendor:["vendor","payee","merchant"],description:["description","memo","desc","line_item"],
+    amount_usd:["amount_usd","amount","cost","spend","usd"],gl_account:["gl_account","gl","account","category"],target_industry:["target_industry","industry","segment"]}
+};
+const REQUIRED = {sales:["deal_id","close_date","industry","products","arr_usd","stage","lead_source"], spend:["date","amount_usd"]};
+function normalize(kind, parsed){
+  const map={}; const A=ALIASES[kind];
+  for(const k in A){ const hit=A[k].find(a=>parsed.head.includes(a)); if(hit) map[k]=hit; }
+  const missing=REQUIRED[kind].filter(k=>!map[k]);
+  if(kind==="spend" && !map.vendor && !map.description && !map.gl_account) missing.push("vendor or description or gl_account");
+  if(missing.length) throw new Error(`${kind==="sales"?"Sales":"Spend"} CSV is missing: ${missing.join(", ")}.`);
+  return parsed.rows.map(r=>{const o={}; for(const k in A) o[k]=map[k]?r[map[k]]:""; return o;});
+}
+const num = s => { const v=parseFloat(String(s).replace(/[$,\s]/g,"")); return isFinite(v)?v:0; };
+
+/* ---------- rules (mirror of pipeline.py) ---------- */
+const firstMatch=(t,rules)=>{t=t.toLowerCase(); for(const [b,ws] of rules) if(ws.some(w=>t.includes(w))) return b; return null;};
+function ruleIndustry(raw){ const t=(raw||"").toLowerCase().trim(); if(!t||R.industry_exclude.some(x=>t.includes(x))) return null; return firstMatch(t,R.industry_rules); }
+function ruleProducts(raw){
+  const t=(raw||"").toLowerCase().trim();
+  if(!t||R.product_exclude.some(x=>t.includes(x))) return null;
+  if(R.product_full_platform.some(x=>t.includes(x))) return [...R.products];
+  const out=[];
+  for(const tok of t.split(/[+;,&/]/).map(x=>x.trim()).filter(Boolean)){
+    let hit=null;
+    for(const [b,ws] of R.product_rules){ if(ws.some(w=>R.product_exact_tokens.includes(w)?tok===w:tok.includes(w))){hit=b;break;} }
+    if(!hit) return null;
+    if(!out.includes(hit)) out.push(hit);
+  }
+  return out.length?out:null;
+}
+function ruleLead(raw){ const t=(raw||"").toLowerCase(); if(R.expansion_sources.some(x=>t.includes(x))) return "Expansion"; return firstMatch(t,R.lead_source_rules); }
+function ruleSpend(r){ return firstMatch([r.vendor,r.description,r.gl_account].join(" "),R.spend_rules); }
+
+/* ---------- state ---------- */
+const S = { salesRaw:[], spendRaw:[], salesName:"", spendName:"", isSample:true, ov:{} , ovSrc:{} };
+const key=(field,raw)=>field+"|"+String(raw||"").toLowerCase().trim();
+let M=null; // computed model
+
+function compute(){
+  const gm=Math.min(1,Math.max(.01,num($("gm").value)/100));
+  const review=[]; const stats={industry:[0,0],products:[0,0],lead_source:[0,0],spend:[0,0]};
+  const pickOv=(field,raw,ruled)=>{ const k=key(field,raw); if(k in S.ov) return {v:S.ov[k],src:S.ovSrc[k]}; return {v:ruled,src:ruled==null?null:"rule"}; };
+  const deals=S.salesRaw.map(r=>{
+    const ri=ruleIndustry(r.industry), rp=ruleProducts(r.products), rl=ruleLead(r.lead_source);
+    const ind=pickOv("industry",r.industry,ri), pr=pickOv("products",r.products,rp), ld=pickOv("lead_source",r.lead_source,rl);
+    stats.industry[1]++; stats.products[1]++; stats.lead_source[1]++;
+    if(ri) stats.industry[0]++; if(rp) stats.products[0]++; if(rl) stats.lead_source[0]++;
+    const prods = pr.v==null||pr.v===UN ? null : (Array.isArray(pr.v)?pr.v:[pr.v]);
+    for(const [f,ruled,res] of [["industry",ri,ind],["products",rp,pr],["lead_source",rl,ld]]) if(ruled==null) review.push({file:"sales",id:r.deal_id,field:f,raw:r[f],res});
+    const dt=(r.deal_type||"").toLowerCase().trim();
+    const ch=ld.v||UN;
+    return {...r, industry_bucket:ind.v||UN, products_list:prods, product_buckets:prods?prods.join("|"):UN, channel_bucket:ch,
+      is_won:(r.stage||"").toLowerCase().trim()==="closed won", is_exp:dt==="expansion"||dt==="upsell"||ch==="Expansion", arr:num(r.arr_usd)};
+  });
+  const spend=S.spendRaw.map((r,i)=>{
+    const rc=ruleSpend(r); const raw=[r.vendor,r.description].filter(Boolean).join(" | ")||r.gl_account;
+    const c=pickOv("spend",raw,rc); stats.spend[1]++; if(rc) stats.spend[0]++;
+    if(rc==null) review.push({file:"spend",id:"S-"+(i+1),field:"spend",raw,res:c});
+    const ti=(r.target_industry||"").trim();
+    return {...r,row_id:"S-"+(i+1),channel_bucket:c.v||UN,industry_bucket:ti?(ruleIndustry(ti)||""):"",amount:num(r.amount_usd)};
+  });
+  const won=deals.filter(d=>d.is_won), newWon=won.filter(d=>!d.is_exp), newOpps=deals.filter(d=>!d.is_exp);
+
+  // product x industry
+  const mat={}; const add=(p,i,v)=>{mat[p]=mat[p]||{}; mat[p][i]=(mat[p][i]||0)+v;};
+  for(const d of won){
+    if(!d.products_list){ add(UN,d.industry_bucket,d.arr); continue; }
+    const tot=d.products_list.reduce((a,p)=>a+R.list_price_usd[p],0);
+    for(const p of d.products_list) add(p,d.industry_bucket,d.arr*R.list_price_usd[p]/tot);
+  }
+  // channels
+  const spendBy={}; spend.forEach(s=>spendBy[s.channel_bucket]=(spendBy[s.channel_bucket]||0)+s.amount);
+  const ch=R.channels.map(c=>{
+    const o=newOpps.filter(d=>d.channel_bucket===c), w=o.filter(d=>d.is_won), arr=w.reduce((a,d)=>a+d.arr,0), sp=spendBy[c]||0, gp=arr*gm;
+    return {channel:c,spend:sp,opps:o.length,won:w.length,win:o.length?w.length/o.length:0,arr,avg:w.length?arr/w.length:0,
+      cac:w.length?sp/w.length:null,roi:sp?gp/sp:null,payback:gp?sp/(gp/12):null};
+  });
+  const unSpend=Object.entries(spendBy).filter(([k])=>!R.channels.includes(k)).reduce((a,[,v])=>a+v,0);
+  // industries
+  const oppShare={}; newOpps.forEach(d=>oppShare[d.industry_bucket]=(oppShare[d.industry_bucket]||0)+1);
+  const totOpps=R.industries.reduce((a,i)=>a+(oppShare[i]||0),0)||1;
+  const indSpend={}; R.industries.forEach(i=>indSpend[i]=0);
+  spend.forEach(s=>{ if(R.industries.includes(s.industry_bucket)) indSpend[s.industry_bucket]+=s.amount; else R.industries.forEach(i=>indSpend[i]+=s.amount*(oppShare[i]||0)/totOpps); });
+  const days=d=>d.created_date&&d.close_date?(new Date(d.close_date)-new Date(d.created_date))/864e5:null;
+  const median=a=>{a=a.filter(x=>x!=null&&isFinite(x)).sort((x,y)=>x-y); if(!a.length) return null; const m=a.length>>1; return a.length%2?a[m]:(a[m-1]+a[m])/2;};
+  const ind=R.industries.map(i=>{
+    const o=newOpps.filter(d=>d.industry_bucket===i), w=o.filter(d=>d.is_won), arr=w.reduce((a,d)=>a+d.arr,0);
+    const exp=won.filter(d=>d.is_exp&&d.industry_bucket===i).reduce((a,d)=>a+d.arr,0);
+    return {industry:i,spend:indSpend[i],opps:o.length,won:w.length,win:o.length?w.length/o.length:0,arr,exp,cycle:median(w.map(days)),roi:indSpend[i]?arr*gm/indSpend[i]:null};
+  });
+  // factors
+  const bySize=[1,2,3,4].map(n=>{const w=newWon.filter(d=>d.products_list&&(n<4?d.products_list.length===n:d.products_list.length>=4)); return {n,count:w.length,avg:w.length?w.reduce((a,d)=>a+d.arr,0)/w.length:0};});
+  const totalSpend=spend.reduce((a,s)=>a+s.amount,0), newArr=newWon.reduce((a,d)=>a+d.arr,0), expArr=won.filter(d=>d.is_exp).reduce((a,d)=>a+d.arr,0);
+  const dates=deals.map(d=>d.close_date).filter(Boolean).sort();
+  M={gm,deals,spend,review,stats,mat,ch,ind,bySize,unSpend,
+     sum:{newArr,expArr,totalSpend,newCust:newWon.length,cac:newWon.length?totalSpend/newWon.length:null,roi:totalSpend?newArr*gm/totalSpend:null,payback:newArr?totalSpend/(newArr*gm/12):null,from:dates[0],to:dates[dates.length-1]}};
+  return M;
+}
+
+/* ---------- render ---------- */
+let hmMode="usd";
+function render(){
+  compute();
+  renderLoadStatus(); renderLog(); renderReview(); renderKpis(); renderHeat(); renderChannels(); renderIndustries(); renderFactors(); renderPlays();
+  $("export-row").hidden=false;
+}
+function renderLoadStatus(){
+  const tag=S.isSample?' <span class="badge sample">Sample data</span>':"";
+  $("st-sales").innerHTML=`${esc(S.salesName)} · ${S.salesRaw.length} rows${tag}`;
+  $("st-spend").innerHTML=`${esc(S.spendName)} · ${S.spendRaw.length} rows${tag}`;
+}
+function renderLog(){
+  const L=[["Industry → 6 aisles",M.stats.industry],["Products → 8 modules",M.stats.products],["Lead source → 7 channels",M.stats.lead_source],["Spend lines → channels",M.stats.spend]];
+  const fixed=M.review.filter(r=>r.res.v!=null).length;
+  $("log").innerHTML=L.map(([l,[a,b]])=>`<li><span>${l}: rules placed <b>${a}</b> of <b>${b}</b></span><b>${pct(b?a/b:0)}</b><div class="bar"><span style="width:${b?a/b*100:0}%"></span></div></li>`).join("")+
+    `<li><span>Rows needing review: <b>${M.review.length}</b> · resolved <b>${fixed}</b></span><b></b></li>`;
+}
+function optionsFor(field){
+  if(field==="industry") return [...R.industries,UN];
+  if(field==="products") return [...R.products,UN];
+  if(field==="lead_source") return [...R.channels,"Expansion",UN];
+  return [...R.channels,...R.spend_only_buckets,UN];
+}
+function renderReview(){
+  $("review-title").textContent=`Needs review (${M.review.length})`;
+  const tb=$("review").querySelector("tbody");
+  if(!M.review.length){ tb.innerHTML=`<tr><td colspan="5">Every row was placed by the rules.</td></tr>`; $("ask-classify").disabled=true; return; }
+  $("ask-classify").disabled=!AI.ready();
+  const groups=[]; const gi={};
+  M.review.forEach(r=>{const k=key(r.field,r.raw); if(!(k in gi)){gi[k]=groups.length;groups.push({...r,ids:[]});} groups[gi[k]].ids.push(r.id);});
+  M.reviewGroups=groups;
+  $("review-title").textContent=`Needs review: ${groups.length} label${groups.length>1?"s":""} across ${M.review.length} rows`;
+  tb.innerHTML=groups.map((r,idx)=>{
+    const cur=Array.isArray(r.res.v)?r.res.v[0]:r.res.v;
+    const opts=optionsFor(r.field).map(o=>`<option${o===(cur||UN)?" selected":""}>${esc(o)}</option>`).join("");
+    const src=r.res.src==="ai"?'<span class="badge ai">Claude</span>':r.res.src==="manual"?'<span class="badge manual">You</span>':'<span class="note">Unplaced</span>';
+    const label={industry:"Industry",products:"Products",lead_source:"Lead source",spend:"Spend channel"}[r.field];
+    const multi=Array.isArray(r.res.v)&&r.res.v.length>1?` <span class="note">+${r.res.v.length-1} more</span>`:"";
+    const ids=esc(r.ids[0])+(r.ids.length>1?` <span class="note">+${r.ids.length-1}</span>`:"");
+    return `<tr><td style="white-space:nowrap" title="${esc(r.ids.join(", "))}">${ids}</td><td>${label}</td><td>${esc(r.raw)}</td><td><select id="rv-${idx}" data-idx="${idx}" aria-label="Bucket for ${esc(r.raw)}">${opts}</select>${multi}</td><td>${src}</td></tr>`;
+  }).join("");
+  tb.querySelectorAll("select").forEach(s=>s.onchange=()=>{
+    const r=M.reviewGroups[+s.dataset.idx]; const k=key(r.field,r.raw);
+    S.ov[k]= s.value===UN?UN:(r.field==="products"?[s.value]:s.value); S.ovSrc[k]="manual"; render();
+  });
+}
+function renderKpis(){
+  const s=M.sum;
+  $("period").textContent=`Closed deals ${s.from||"?"} to ${s.to||"?"} · gross margin ${Math.round(M.gm*100)}%`;
+  const K=[["New ARR won",fmt$(s.newArr),`${s.newCust} new customers`],["Expansion ARR",fmt$(s.expArr),`${pct(s.expArr/(s.newArr+s.expArr||1))} of all won ARR`],
+    ["GTM spend",fmt$(s.totalSpend),M.unSpend?`${fmt$(M.unSpend)} not tied to a channel`:"all tied to a channel"],["Blended ROI",fmtX(s.roi),"first-year gross profit per $1"],
+    ["Blended CAC",fmt$(s.cac),"spend per new customer"],["Payback",s.payback?s.payback.toFixed(1)+" mo":"–","on gross profit"]];
+  $("kpis").innerHTML=K.map(([l,v,d])=>`<div class="kpi"><span class="l">${l}</span><span class="v">${v}</span><span class="d">${d}</span></div>`).join("");
+}
+function heatColor(t){ return `color-mix(in oklab, var(--heat) ${Math.round(6+t*94)}%, white)`; }
+function renderHeat(){
+  const prods=[...R.products]; if(M.mat[UN]) prods.push(UN);
+  const inds=[...R.industries]; if(prods.some(p=>M.mat[p]&&M.mat[p][UN])) inds.push(UN);
+  const cell=(p,i)=>(M.mat[p]&&M.mat[p][i])||0;
+  const colT=Object.fromEntries(inds.map(i=>[i,prods.reduce((a,p)=>a+cell(p,i),0)]));
+  const rowT=Object.fromEntries(prods.map(p=>[p,inds.reduce((a,i)=>a+cell(p,i),0)]));
+  const grand=Object.values(colT).reduce((a,b)=>a+b,0);
+  const val=(p,i)=>hmMode==="usd"?cell(p,i):(colT[i]?cell(p,i)/colT[i]:0);
+  const max=Math.max(...prods.flatMap(p=>inds.map(i=>val(p,i))),1e-9);
+  const short={"Beauty & Personal Care":"Beauty & PC","Health & Wellness":"Health & Well."};
+  let h=`<thead><tr><th>Product</th>${inds.map(i=>`<th class="n">${esc(short[i]||i)}</th>`).join("")}<th class="n tot">Total</th></tr></thead><tbody>`;
+  for(const p of prods){
+    h+=`<tr><th class="rowh">${esc(p)}</th>`;
+    for(const i of inds){
+      const v=val(p,i), t=v/max, dark=t>.55;
+      const shown=hmMode==="usd"?(v?fmt$(v):"–"):(v?Math.round(v*100)+"%":"–");
+      const tip=`<b>${esc(p)}</b> in <b>${esc(i)}</b><br>${fmt$(cell(p,i))} ARR · ${pct(colT[i]?cell(p,i)/colT[i]:0)} of ${esc(i)} · ${pct(rowT[p]?cell(p,i)/rowT[p]:0)} of ${esc(p)}`;
+      h+=`<td class="cell" data-tip="${esc(tip)}" style="background:${heatColor(t)};color:${dark?"#fff":"var(--ink)"}">${shown}</td>`;
+    }
+    h+=`<td class="n tot">${fmt$(rowT[p])}</td></tr>`;
+  }
+  h+=`<tr><th class="rowh tot">Total</th>${inds.map(i=>`<td class="n tot">${fmt$(colT[i])}</td>`).join("")}<td class="n tot">${fmt$(grand)}</td></tr></tbody>`;
+  $("heat").innerHTML=h;
+}
+const verdict=(r,ind)=>r==null?["warn","No spend"]:r>=2?["good",ind?"▲ Grow":"▲ Scale"]:r>=1?["warn","● Tune"]:["bad",ind?"▼ Rethink":"▼ Fix or cut"];
+const pct1=v=>v==null||!isFinite(v)?"–":(v>0&&v<.01?(v*100).toFixed(1)+"%":Math.round(v*100)+"%");
+function renderChannels(){
+  const max=Math.max(...M.ch.flatMap(c=>[c.spend,c.arr]),1);
+  $("spend-arr").innerHTML=M.ch.map(c=>`<div class="brow"><span class="lab">${esc(c.channel)}</span><div class="track">
+     <div class="bwrap" data-tip="<b>${esc(c.channel)}</b><br>Spend ${fmt$(c.spend)}"><div class="b" style="width:${c.spend/max*100*.82}%;background:var(--spend)"></div><span class="val">${fmt$(c.spend)}</span></div>
+     <div class="bwrap" data-tip="<b>${esc(c.channel)}</b><br>New ARR ${fmt$(c.arr)} from ${c.won} deals"><div class="b" style="width:${c.arr/max*100*.82}%;background:var(--arr)"></div><span class="val">${fmt$(c.arr)}</span></div></div></div>`).join("");
+  const rmax=Math.max(...M.ch.map(c=>c.roi||0),2.2);
+  $("roi-bars").innerHTML=M.ch.map(c=>{const [k,l]=verdict(c.roi);
+    return `<div class="brow"><span class="lab">${esc(c.channel)}</span><div class="bwrap" data-tip="<b>${esc(c.channel)}</b><br>${fmtX(c.roi)} · CAC ${fmt$(c.cac)} · payback ${c.payback?c.payback.toFixed(1)+" mo":"–"}">
+      <div class="b" style="width:${(c.roi||0)/rmax*100*.6}%;background:var(--ink)"></div><span class="val">${fmtX(c.roi)}</span><span class="pill ${k}">${l}</span></div></div>`;}).join("");
+  $("ch-table").innerHTML=`<thead><tr><th>Channel</th><th class="n">Spend</th><th class="n">Opps</th><th class="n">Won</th><th class="n">Win rate</th><th class="n">New ARR</th><th class="n">Avg deal</th><th class="n">CAC</th><th class="n">ROI</th><th class="n">Payback</th><th>Verdict</th></tr></thead><tbody>`+
+    M.ch.map(c=>{const [k,l]=verdict(c.roi); return `<tr><td>${esc(c.channel)}</td><td class="n">${fmt$(c.spend)}</td><td class="n">${c.opps}</td><td class="n">${c.won}</td><td class="n">${pct(c.win)}</td><td class="n">${fmt$(c.arr)}</td><td class="n">${fmt$(c.avg)}</td><td class="n">${fmt$(c.cac)}</td><td class="n">${fmtX(c.roi)}</td><td class="n">${c.payback?c.payback.toFixed(1)+" mo":"–"}</td><td><span class="pill ${k}">${l}</span></td></tr>`;}).join("")+"</tbody>";
+}
+function renderIndustries(){
+  $("ind-table").innerHTML=`<thead><tr><th>Industry</th><th class="n">Allocated spend</th><th class="n">Opps</th><th class="n">Won</th><th class="n">Win rate</th><th class="n">New ARR</th><th class="n">Expansion ARR</th><th class="n">Median cycle</th><th class="n">ROI</th><th>Verdict</th></tr></thead><tbody>`+
+    M.ind.map(r=>{const [k,l]=verdict(r.roi,true); return `<tr><td>${esc(r.industry)}</td><td class="n">${fmt$(r.spend)}</td><td class="n">${r.opps}</td><td class="n">${r.won}</td><td class="n">${pct(r.win)}</td><td class="n">${fmt$(r.arr)}</td><td class="n">${fmt$(r.exp)}</td><td class="n">${r.cycle!=null?Math.round(r.cycle)+" days":"–"}</td><td class="n">${fmtX(r.roi)}</td><td><span class="pill ${k}">${l}</span></td></tr>`;}).join("")+"</tbody>";
+}
+function renderFactors(){
+  const mx=Math.max(...M.bySize.map(b=>b.avg),1);
+  $("f-products").innerHTML=M.bySize.map(b=>`<div class="brow"><span class="lab">${b.n<4?b.n:"4+"} product${b.n>1?"s":""} <span class="note">(${b.count})</span></span>
+    <div class="bwrap" data-tip="<b>${b.n<4?b.n:"4+"} products</b><br>avg new ARR ${fmt$(b.avg)} across ${b.count} deals"><div class="b" style="width:${b.avg/mx*100*.8}%;background:var(--arr)"></div><span class="val">${fmt$(b.avg)}</span></div></div>`).join("");
+  const cy=M.ind.filter(r=>r.cycle!=null); const cm=Math.max(...cy.map(r=>r.cycle),1);
+  $("f-cycle").innerHTML=cy.map(r=>`<div class="brow"><span class="lab">${esc(r.industry)}</span>
+    <div class="bwrap" data-tip="<b>${esc(r.industry)}</b><br>median ${Math.round(r.cycle)} days, created to closed won"><div class="b" style="width:${r.cycle/cm*100*.8}%;background:var(--ink)"></div><span class="val">${Math.round(r.cycle)} days</span></div></div>`).join("");
+}
+function plays(){
+  const P=[]; const ch=M.ch.filter(c=>c.spend>0&&c.roi!=null);
+  const best=[...ch].sort((a,b)=>b.roi-a.roi)[0], worst=[...ch].sort((a,b)=>a.roi-b.roi)[0];
+  if(best) P.push({k:"Scale",tone:"good",h:`Put more behind ${best.channel}`,p:`${fmtX(best.roi)} ROI with a ${fmt$(best.cac)} CAC and ${best.payback.toFixed(1)}-month payback. Win rate ${pct(best.win)} on ${best.opps} opportunities.`});
+  if(worst&&worst!==best) P.push({k:"Fix or cut",tone:"bad",h:`Rework ${worst.channel}`,p:`${fmt$(worst.spend)} spent for ${fmt$(worst.arr)} new ARR (${fmtX(worst.roi)}). CAC is ${fmt$(worst.cac)}. Moving half of it to ${best?best.channel:"the top channel"}, even at half that channel's current ROI, would buy about ${fmt$((worst.spend/2)*((best?best.roi:1)/2)/M.gm)} in new ARR instead of ${fmt$(worst.arr/2)}.`});
+  const inds=M.ind.filter(r=>r.roi!=null&&r.won>0); const bi=[...inds].sort((a,b)=>b.roi-a.roi)[0];
+  if(bi) P.push({k:"Focus aisle",tone:"good",h:`${bi.industry} pays back fastest`,p:`${fmtX(bi.roi)} ROI, ${pct(bi.win)} win rate${bi.cycle?`, ${Math.round(bi.cycle)}-day median cycle`:""}. Aim the next event and partner push here.`});
+  // whitespace
+  const prods=R.products, all=R.industries; const cell=(p,i)=>(M.mat[p]&&M.mat[p][i])||0;
+  const colT=Object.fromEntries(all.map(i=>[i,[...prods,UN].reduce((a,p)=>a+cell(p,i),0)]));
+  const grand=Object.values(colT).reduce((a,b)=>a+b,0)||1;
+  const rowT=Object.fromEntries(prods.map(p=>[p,all.reduce((a,i)=>a+cell(p,i),0)]));
+  let ws=[];
+  for(const p of prods) for(const i of all){ const sp=rowT[p]/grand, si=colT[i]?cell(p,i)/colT[i]:0;
+    if(colT[i]/grand>=.08&&sp>=.08&&si<sp*.5) ws.push({p,i,gap:(sp-si)*colT[i],si,sp}); }
+  ws.sort((a,b)=>b.gap-a.gap); const w=ws[0];
+  if(w) P.push({k:"Cross-sell",tone:"warn",h:`${w.p} is under-sold in ${w.i}`,p:`${pct1(w.si)} of ${w.i} ARR vs ${pct1(w.sp)} across all aisles. Closing half that gap is about ${fmt$(w.gap/2)} in expansion ARR.`});
+  const one=M.bySize[0], three=M.bySize.filter(b=>b.n>=3&&b.count>0);
+  const big=three.length?three.reduce((a,b)=>({count:a.count+b.count,sum:a.sum+b.avg*b.count}),{count:0,sum:0}):null;
+  if(one.count&&big&&big.count){ const avg3=big.sum/big.count; P.push({k:"Bundle",tone:"good",h:`Lead with a 3-module bundle`,p:`Deals with 3+ products average ${fmt$(avg3)} vs ${fmt$(one.avg)} for a single product (${(avg3/one.avg).toFixed(1)}×). ${pct(one.count/(M.sum.newCust||1))} of new deals still start with one product.`}); }
+  return P;
+}
+function renderPlays(){
+  M.plays=plays();
+  const ic={good:"▲",warn:"●",bad:"▼"};
+  $("plays").innerHTML=M.plays.map(p=>`<li class="play"><span class="k"><span class="pill ${p.tone}">${ic[p.tone]} ${esc(p.k)}</span></span><span class="h">${esc(p.h)}</span><p class="p">${esc(p.p)}</p></li>`).join("");
+}
+
+/* ---------- tooltip ---------- */
+const tip=$("tip");
+document.addEventListener("pointerover",e=>{const t=e.target.closest("[data-tip]"); if(!t){tip.hidden=true;return;} tip.innerHTML=t.dataset.tip; tip.hidden=false;});
+document.addEventListener("pointermove",e=>{ if(tip.hidden) return; const w=tip.offsetWidth,h=tip.offsetHeight; let x=e.clientX+14,y=e.clientY+14; if(x+w>innerWidth-8)x=e.clientX-w-14; if(y+h>innerHeight-8)y=e.clientY-h-14; tip.style.left=x+"px"; tip.style.top=y+"px";});
+document.addEventListener("scroll",()=>tip.hidden=true,{passive:true});
+
+/* ---------- loading ---------- */
+function showErr(m){ $("load-err").textContent=m; $("load-err").hidden=!m; }
+function loadSample(){
+  S.salesRaw=normalize("sales",parseCSV($("sample-sales").textContent.trim())); S.salesName="sample_sales.csv";
+  S.spendRaw=normalize("spend",parseCSV($("sample-spend").textContent.trim())); S.spendName="sample_gtm_spend.csv";
+  S.isSample=true; S.ov={}; S.ovSrc={}; showErr(""); $("memo").textContent=""; $("memo-status").textContent=""; $("classify-out").textContent=""; render();
+}
+function readFile(kind,file){
+  const fr=new FileReader();
+  fr.onload=()=>{ try{
+      const rows=normalize(kind,parseCSV(String(fr.result)));
+      if(!rows.length) throw new Error(`${file.name} has no data rows.`);
+      if(kind==="sales"){S.salesRaw=rows;S.salesName=file.name;} else {S.spendRaw=rows;S.spendName=file.name;}
+      S.isSample=false; S.ov={}; S.ovSrc={}; showErr(""); $("memo").textContent=""; render();
+    }catch(e){ showErr(e.message+" Check the column list below."); } };
+  fr.onerror=()=>showErr(`Could not read ${file.name}.`);
+  fr.readAsText(file);
+}
+for(const kind of ["sales","spend"]){
+  const inp=$("file-"+kind), drop=$("drop-"+kind);
+  inp.onchange=()=>inp.files[0]&&readFile(kind,inp.files[0]);
+  drop.addEventListener("dragover",e=>{e.preventDefault();drop.classList.add("over");});
+  drop.addEventListener("dragleave",()=>drop.classList.remove("over"));
+  drop.addEventListener("drop",e=>{e.preventDefault();drop.classList.remove("over");const f=e.dataTransfer.files[0]; if(f) readFile(kind,f);});
+}
+$("use-sample").onclick=loadSample;
+$("gm").oninput=()=>{ if(num($("gm").value)>0) render(); };
+$("hm-usd").onclick=()=>{hmMode="usd";$("hm-usd").setAttribute("aria-pressed","true");$("hm-pct").setAttribute("aria-pressed","false");renderHeat();};
+$("hm-pct").onclick=()=>{hmMode="pct";$("hm-pct").setAttribute("aria-pressed","true");$("hm-usd").setAttribute("aria-pressed","false");renderHeat();};
+
+/* ---------- Claude connection ----------
+   Three ways to reach Claude, tried in this order:
+   1. Inside claude.ai (artifact): the viewer's own Claude account via window.claude "sample". No key involved.
+   2. Hosted with a server key: POST /api/claude. The key lives in a Vercel environment variable and never reaches the browser.
+   3. Bring your own key: the viewer pastes a key. It is held only in a closure variable in this tab's memory, sent only to
+      api.anthropic.com, never written to localStorage/sessionStorage/cookies, the URL, the DOM or the console,
+      and it is dropped on "Forget key" or when the tab closes. */
+const MODELS={classify:"claude-haiku-5-5",memo:"claude-sonnet-5-5"}, MAXTOK={classify:2000,memo:1200};
+const AI=(()=>{
+  let mode=null, sample=null, needsCode=false, accessCode=null, byoKey=null;
+  const fail=(code,text)=>{ throw {code,text}; };
+  const httpCode=s=>s===401?"invalid_key":s===403?"forbidden":s===429?"rate_limited":s===400?"bad_request":(s===503||s===529)?"overloaded":"upstream_error";
+  async function call(task,prompt,signal){
+    try{
+      if(mode==="server"){
+        const h={"content-type":"application/json"}; if(accessCode) h["x-access-code"]=accessCode;
+        const r=await fetch("/api/claude",{method:"POST",headers:h,body:JSON.stringify({task,prompt}),signal,credentials:"same-origin",cache:"no-store",referrerPolicy:"no-referrer"});
+        const d=await r.json().catch(()=>({}));
+        if(!r.ok) fail(d.error||httpCode(r.status));
+        return d.text||"";
+      }
+      if(mode==="byok"){
+        if(!byoKey) fail("no_key");
+        const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",signal,credentials:"omit",cache:"no-store",referrerPolicy:"no-referrer",
+          headers:{"content-type":"application/json","x-api-key":byoKey,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+          body:JSON.stringify({model:MODELS[task],max_tokens:MAXTOK[task],messages:[{role:"user",content:prompt}]})});
+        const d=await r.json().catch(()=>({}));
+        if(!r.ok) fail(httpCode(r.status));
+        return (d.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("");
+      }
+      fail("not_connected");
+    }catch(e){ if(e&&e.name==="AbortError") fail("cancelled"); if(e&&e.code) throw e; fail("network"); }
+  }
+  function parseJSON(t){
+    try{ return JSON.parse(t); }catch(_){}
+    const f=t.match(/```(?:json)?\s*([\s\S]*?)```/); if(f){ try{ return JSON.parse(f[1]); }catch(_){} }
+    const a=t.search(/[\[{]/), b=Math.max(t.lastIndexOf("]"),t.lastIndexOf("}"));
+    if(a>=0&&b>a){ try{ return JSON.parse(t.slice(a,b+1)); }catch(_){} }
+    fail("invalid_json",t);
+  }
+  return {
+    get mode(){ return mode; }, get needsCode(){ return needsCode&&!accessCode; },
+    ready(){ return mode==="artifact" || (mode==="server"&&!(needsCode&&!accessCode)) || (mode==="byok"&&!!byoKey); },
+    async init(){
+      const C=window.claude;
+      sample = C&&C.use ? await C.use("sample").catch(()=>null) : null;
+      if(sample){ mode="artifact"; return; }
+      if(/^https?:$/.test(location.protocol)){
+        try{ const r=await fetch("/api/claude",{method:"GET",cache:"no-store",credentials:"same-origin"});
+             if(r.ok){ const d=await r.json(); if(d&&d.serverKey){ mode="server"; needsCode=!!d.needsCode; return; } } }catch(_){}
+      }
+      mode="byok";
+    },
+    setKey(k){ byoKey=k; }, setCode(c){ accessCode=c; },
+    forget(){ byoKey=null; accessCode=null; },
+    hint(){ return byoKey?"sk-ant-…"+byoKey.slice(-4):""; },
+    async json(prompt,{task,signal}){ if(mode==="artifact") return sample.json(prompt,{modelTier:"quick",signal}); return parseJSON(await call(task,prompt,signal)); },
+    async text(prompt,{task,signal,onText}){ if(mode==="artifact") return sample(prompt,{signal,onText}); const t=await call(task,prompt,signal); if(onText) onText({text:t}); return {text:t,truncated:false}; },
+    disable(){ mode=null; }
+  };
+})();
+window.addEventListener("pagehide",()=>AI.forget());
+
+function refreshAIButtons(){
+  const ok=AI.ready();
+  $("ask-classify").disabled=!ok||!(M&&M.review.length);
+  $("ask-memo").disabled=!ok;
+  const why=ok?"":"Connect Claude in step 2 first";
+  $("ask-classify").title=why; $("ask-memo").title=why;
+}
+function setConnStatus(){
+  const st=$("conn-status");
+  if(AI.mode==="server") st.textContent=AI.needsCode?"Locked":"Connected · server key";
+  else if(AI.mode==="byok") st.textContent=AI.ready()?"Connected · "+AI.hint():"Not connected";
+  st.className="chip "+(AI.ready()?"on":"off");
+  $("key-forget").hidden=!(AI.mode==="byok"&&AI.ready());
+  refreshAIButtons();
+}
+function setupConnect(){
+  if(AI.mode==="artifact"){ refreshAIButtons(); return; }   // inside claude.ai: no key needed
+  $("connect").hidden=false;
+  if(AI.mode==="server"){ $("conn-server").hidden=false; $("code-row").hidden=!AI.needsCode; }
+  else $("conn-byok").hidden=false;
+  setConnStatus();
+}
+$("key-use").onclick=()=>{
+  const inp=$("api-key"), v=inp.value.trim(); inp.value="";           // clear the field immediately
+  const msg=$("key-msg");
+  if(!/^sk-ant-[A-Za-z0-9_\-]{20,}$/.test(v)){ msg.textContent="That doesn't look like an Anthropic API key. It should start with sk-ant-."; return; }
+  AI.setKey(v); msg.textContent=""; setConnStatus();
+};
+$("api-key").addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); $("key-use").click(); } });
+$("key-forget").onclick=()=>{ AI.forget(); setConnStatus(); $("key-msg").textContent="Key forgotten."; };
+$("code-use").onclick=()=>{ const c=$("access-code").value.trim(); $("access-code").value=""; if(c){ AI.setCode(c); $("code-row").hidden=true; setConnStatus(); } };
+
+/* ---------- Claude: classify + memo ---------- */
+const errCopy=c=>({invalid_key:"That API key was rejected. Check it in the Claude Console and paste it again.",forbidden:"That access code isn't right.",no_key:"Paste an API key in Connect Claude first.",not_connected:"Connect Claude first (step 2).",network:"Couldn't reach Claude. Check your connection and try again.",overloaded:"Claude is busy right now. Try again in a minute.",bad_request:"Claude couldn't process that request.",no_server_key:"This site's server has no API key set.",not_granted:"Claude isn't allowed on this page. You can still pick buckets by hand.",sampling_disabled:"Claude isn't available on this account.",rate_limited:"Too many requests right now. Try again in a minute.",refused:"Claude declined that request.",invalid_json:"Claude's answer couldn't be read. Try again.",session_expired:"Sign in again to use Claude."}[c]||"Something went wrong reaching Claude. Try again.");
+let clsCtl=null;
+$("ask-classify").onclick=async()=>{
+  if(!AI.ready()) return;
+  const uniq=[]; const seen=new Set();
+  M.review.forEach(r=>{const k=key(r.field,r.raw); if(!seen.has(k)){seen.add(k);uniq.push({field:r.field,raw:r.raw});}});
+  const lines=uniq.map((u,i)=>`${i}\t${u.field}\t${u.raw}`).join("\n");
+  const prompt=`You classify messy CRM and GL labels for a B2B software company that sells back-office software (Confido) to consumer packaged goods brands.
+For each row below, choose a bucket from the allowed list for that field. If none fits, answer "Unassigned".
+Allowed buckets:
+- industry: ${R.industries.join("; ")}
+- products (choose one or more): ${R.products.join("; ")}
+- lead_source (how the deal was sourced): ${R.channels.join("; ")}; Expansion
+- spend (GTM spend line to a marketing/sales channel): ${R.channels.join("; ")}; ${R.spend_only_buckets.join("; ")}
+Rows (index, field, raw value):
+${lines}
+Reply with only a JSON array, one object per row: {"i": index, "bucket": "..." or ["..."] for products, "why": "under 12 words"}.`;
+  clsCtl=new AbortController(); $("ask-classify").disabled=true; $("stop-classify").hidden=false; $("classify-out").textContent="Thinking...";
+  try{
+    const res=await AI.json(prompt,{task:"classify",signal:clsCtl.signal});
+    let n=0; const notes=[];
+    for(const o of (Array.isArray(res)?res:[])){
+      const u=uniq[+o.i]; if(!u) continue; const allowed=optionsFor(u.field);
+      let b=o.bucket; if(u.field==="products"){ b=(Array.isArray(b)?b:[b]).filter(x=>R.products.includes(x)); if(!b.length) b=UN; } else if(!allowed.includes(b)) continue;
+      const k=key(u.field,u.raw); S.ov[k]=b; S.ovSrc[k]="ai"; n++; if(o.why) notes.push(`${u.raw} → ${Array.isArray(b)?b.join(" + "):b}: ${o.why}`);
+    }
+    render(); $("classify-out").textContent=n?`Claude placed ${n} label${n>1?"s":""}. Check them below; change any with the dropdown. ${notes.slice(0,4).join(" · ")}`:"Claude didn't return usable buckets. Pick them by hand.";
+  }catch(e){ if(e&&e.code!=="cancelled") $("classify-out").textContent=errCopy(e&&e.code); else $("classify-out").textContent=""; if(e&&e.code==="not_granted"){AI.disable();hideAI();} }
+  finally{ $("stop-classify").hidden=true; $("ask-classify").disabled=!AI.ready()||!M.review.length; }
+};
+$("stop-classify").onclick=()=>clsCtl&&clsCtl.abort();
+
+let memoCtl=null;
+$("ask-memo").onclick=async()=>{
+  if(!AI.ready()) return;
+  const s=M.sum;
+  const data={period:`${s.from} to ${s.to}`,gross_margin:M.gm,summary:{new_arr:Math.round(s.newArr),expansion_arr:Math.round(s.expArr),gtm_spend:Math.round(s.totalSpend),new_customers:s.newCust,blended_roi:+(s.roi||0).toFixed(2),blended_cac:Math.round(s.cac||0),payback_months:+(s.payback||0).toFixed(1)},
+    channels:M.ch.map(c=>({channel:c.channel,spend:Math.round(c.spend),opps:c.opps,won:c.won,win_rate:+c.win.toFixed(2),new_arr:Math.round(c.arr),cac:c.cac?Math.round(c.cac):null,roi:c.roi?+c.roi.toFixed(2):null})),
+    industries:M.ind.map(r=>({industry:r.industry,allocated_spend:Math.round(r.spend),opps:r.opps,won:r.won,win_rate:+r.win.toFixed(2),new_arr:Math.round(r.arr),expansion_arr:Math.round(r.exp),median_cycle_days:r.cycle?Math.round(r.cycle):null,roi:r.roi?+r.roi.toFixed(2):null})),
+    avg_new_arr_by_products_per_deal:M.bySize.map(b=>({products:b.n<4?b.n:"4+",deals:b.count,avg_arr:Math.round(b.avg)})),
+    product_by_industry_arr:Object.fromEntries(Object.entries(M.mat).map(([p,o])=>[p,Object.fromEntries(Object.entries(o).map(([i,v])=>[i,Math.round(v)]))])),
+    computed_plays:M.plays.map(p=>p.h+": "+p.p)};
+  const prompt=`You are a strategic finance associate at Confido, a software platform for consumer packaged goods brands (products: ${R.products.join(", ")}; industries: ${R.industries.join(", ")}).
+Write a short memo to the founders on where to put next quarter's go-to-market budget, using only the numbers below. ${S.isSample?"These numbers are synthetic demo data; say so in one line at the top.":""}
+Format: a one-line headline, then 4-5 numbered recommendations. Each has a bold-free title line, two sentences citing the specific numbers, and an "Expected impact:" line with a rough dollar figure and the assumption behind it. End with "Watch out:" and the single biggest risk in the data (small samples, attribution, allocation). Plain text, no markdown symbols, under 330 words.
+DATA:
+${JSON.stringify(data)}`;
+  memoCtl=new AbortController(); $("ask-memo").disabled=true; $("stop-memo").hidden=false; $("memo-status").textContent="Thinking..."; $("memo").textContent="";
+  try{
+    const r=await AI.text(prompt,{task:"memo",signal:memoCtl.signal,onText:({text})=>{$("memo-status").textContent="";$("memo").textContent=text;}});
+    $("memo-status").textContent=r.truncated?"The memo was cut short.":"Drafted by Claude from the tables above. Check the numbers before sending.";
+  }catch(e){ $("memo").textContent=(e&&e.text)||""; $("memo-status").textContent=e&&e.code==="cancelled"?"Stopped.":errCopy(e&&e.code); if(e&&e.code==="not_granted"){AI.disable();hideAI();} }
+  finally{ $("stop-memo").hidden=true; $("ask-memo").disabled=!AI.ready(); }
+};
+$("stop-memo").onclick=()=>memoCtl&&memoCtl.abort();
+function hideAI(){ $("ask-classify").hidden=true; $("ask-memo").hidden=true; $("stop-memo").hidden=true; $("stop-classify").hidden=true; }
+
+/* ---------- downloads ---------- */
+const toCSV=(rows,fields)=>[fields.join(","),...rows.map(r=>fields.map(f=>{const v=r[f]??"";const s=String(v);return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;}).join(","))].join("\n");
+let dl=null;
+async function save(name,data,btn){
+  const old=btn.textContent;
+  if(dl){ try{ await dl.save({filename:name,data}); btn.textContent="Saved"; }catch(e){ btn.textContent=e&&e.code==="declined"?old:"Couldn't save"; } }
+  else { const url=URL.createObjectURL(new Blob([data],{type:"text/csv"})); const a=document.createElement("a"); a.href=url; a.download=name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),1500); btn.textContent="Downloaded"; }
+  setTimeout(()=>btn.textContent=old,2000);
+}
+$("dl-sales").onclick=e=>save("sales_bucketed.csv",toCSV(M.deals.map(d=>({...d,is_won:d.is_won,is_expansion:d.is_exp})),["deal_id","created_date","close_date","customer","industry","industry_bucket","products","product_buckets","lead_source","channel_bucket","stage","deal_type","arr_usd","is_won","is_expansion"]),e.currentTarget);
+$("dl-spend").onclick=e=>save("spend_bucketed.csv",toCSV(M.spend,["row_id","date","vendor","description","gl_account","amount_usd","channel_bucket","target_industry","industry_bucket"]),e.currentTarget);
+$("dl-roi").onclick=e=>save("channel_roi.csv",toCSV(M.ch.map(c=>({...c,win:c.win.toFixed(4),roi:c.roi?.toFixed(3),cac:c.cac?.toFixed(2),payback:c.payback?.toFixed(2)})),["channel","spend","opps","won","win","arr","avg","cac","roi","payback"]),e.currentTarget);
+
+/* ---------- boot ---------- */
+$("ask-classify").disabled=true; $("ask-memo").disabled=true;
+loadSample();
+(async()=>{
+  const C=window.claude;
+  dl = C&&C.use ? await C.use("downloads").catch(()=>null) : null;
+  if(C&&!dl) $("export-row").remove();   // inside a viewer that can't save files
+  await AI.init(); setupConnect();
+})();
+</script>

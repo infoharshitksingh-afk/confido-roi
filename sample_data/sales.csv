@@ -1,0 +1,323 @@
+deal_id,created_date,close_date,customer,industry,products,arr_usd,stage,deal_type,lead_source
+D-1193,2026-01-01,2026-02-08,Pebble Home,Hair care,Cash-app / demand plan,74000,Closed Won,New,Expo West 2026
+D-1100,2026-01-05,2026-02-26,Clever Goods,Frozen foods,Cash App,6000,Closed Won,New,SDR outbound
+D-1278,2026-01-12,2026-03-02,Wildfern Pantry,Skincare,DM,24500,Closed Lost,New,Webinar w/ partner
+D-1265,2026-01-06,2026-03-04,Maple Sips,Pet food,Forecasting,14000,Closed Lost,New,Apollo sequence
+D-1239,2026-01-02,2026-03-08,Field Tonic,Pet food,Cash App,9500,Closed Lost,New,Apollo sequence
+D-1122,2026-01-16,2026-03-10,Coast Naturals,Deodorant & soap,Production planning & sales forecast,13000,Closed Lost,New,linkedin paid
+D-1046,2026-01-10,2026-03-12,Hearth Sips,Beauty/PC,Auto disputes,35000,Closed Lost,New,linkedin paid
+D-1175,2026-01-01,2026-03-12,Meadow Kitchen,Coffee/tea,POS analytics,9000,Closed Lost,New,SEO
+D-1055,2026-01-01,2026-03-14,Oak Glow,Home & kitchen,supply plan; Auto disputes,14500,Closed Lost,New,Google Ads
+D-1197,2026-01-01,2026-03-15,Golden Paws,Skincare,Auto disputes / sales forecast,21500,Closed Lost,New,Indie Beauty Expo
+D-1020,2026-01-01,2026-03-16,Field Supply,Beverage,TPM; Deduction management,39500,Closed Won,New,SEO
+D-1052,2026-01-11,2026-03-17,Wildfern Co.,Functional soda,Auto disputes; Sales analytics,17000,Closed Lost,New,SuperZoo
+D-1238,2026-01-09,2026-03-17,Sunny Goods,Food,Sales analytics / Deductions,26500,Closed Lost,New,Indie Beauty Expo
+D-1037,2026-01-16,2026-03-21,Willow Co.,Pet,AR cash app / Supply planning,37500,Closed Won,New,Indie Beauty Expo
+D-1040,2026-01-01,2026-03-21,Juniper Pantry,Multi-category,Cash-app & Analytics,16500,Closed Lost,New,Inbound - direct
+D-1049,2026-01-28,2026-03-23,Hearth Botanics,Beverage,AR cash app,5500,Closed Lost,New,Newsletter sponsor
+D-1058,2026-01-15,2026-03-23,Meadow Sips,Frozen foods,Trade spend planning,20000,Closed Lost,New,Investor intro
+D-1138,2026-01-26,2026-03-26,Cedar Kitchen,Pet food,Cash-app,11500,Closed Won,New,Referral - customer
+D-1044,2026-01-26,2026-03-27,Peak Paws,Multi-category,cash application,11500,Closed Lost,New,Indie Beauty Expo
+D-1089,2026-01-06,2026-03-27,Hearth Wellness,Sports nutrition,POS analytics,8000,Closed Won,New,NetSuite partner
+D-1114,2026-01-02,2026-03-27,Pebble Provisions,Spirits & RTD,"deductions mgmt, demand plan, cash application",40000,Closed Lost,New,LinkedIn Ads
+D-1206,2026-02-05,2026-03-27,Lark Provisions,vitamins,POS analytics,9500,Closed Lost,New,SDR outbound
+D-1237,2026-01-31,2026-03-27,Maple Naturals,Bev,Auto disputes,20000,Closed Lost,New,Expo West 2026
+D-1257,2026-01-12,2026-03-27,Bright Paws,Wellness,DM,15500,Closed Lost,New,Cold call
+D-1080,2026-01-26,2026-03-28,Sunny Brands,Food & Snacks,"deductions mgmt, Analytics",42500,Closed Lost,New,Cold call
+D-1236,2026-02-08,2026-03-29,Peak Pantry,Pet,Forecasting,29500,Closed Lost,New,Indie Beauty Expo
+D-1001,2026-01-10,2026-03-30,Bold Pantry,Functional soda,Deductions / Trade spend planning / Auto disputes,100500,Closed Won,New,Natural Products Expo West
+D-1021,2026-01-23,2026-03-30,Clever Snacks,beverages,deductions mgmt / Trade spend planning,52000,Closed Won,New,Podcast sponsorship
+D-1143,2026-02-14,2026-03-30,Bold Snacks,Functional soda,trade promotions,15500,Closed Won,New,Founder network
+D-1072,2026-02-22,2026-03-31,Fresh Sips,Skincare,Auto disputes,12000,Closed Lost,New,Inbound - direct
+D-1076,2026-01-15,2026-04-01,Lark Tonic,Bev,"AR cash app, DM",61500,Closed Won,New,Customer referral
+D-1115,2026-02-03,2026-04-01,Bright Supply,Bev,cash application; Deduction management,29000,Closed Won,New,Paid search
+D-1268,2026-02-12,2026-04-01,Juniper Home,Deodorant & soap,Demand planning,7000,Closed Lost,New,linkedin paid
+D-1228,2026-01-29,2026-04-03,Coast Snacks,Supplements,Production planning; DM; cash application,20500,Closed Lost,New,Meta ads
+D-1296,2026-01-11,2026-04-03,Fresh Glow,Home goods,Cash App; Deductions; trade promotions,77500,Closed Lost,New,Cold email
+D-1066,2026-01-07,2026-04-05,Cedar Labs,Sports nutrition,Trade spend planning; Supply planning,42000,Closed Lost,New,Paid search
+D-1074,2026-02-03,2026-04-05,Wildfern Harvest,Hair care,AR cash app & demand plan,20000,Closed Lost,New,Website demo request
+D-1151,2026-01-17,2026-04-05,Meadow Tonic,FOOD,Forecasting / POS analytics,42500,Closed Lost,New,Cold email
+D-1095,2026-02-12,2026-04-06,Meadow Co.,Packaged food,AR cash app,15000,Closed Lost,New,Blog / content
+D-1196,2026-02-04,2026-04-06,Sunny Co.,Pet food,sales forecast,13000,Closed Won,New,Fractional CFO partner
+D-1172,2026-02-22,2026-04-07,Hearth Snacks,Beauty/PC,AR cash app & Forecasting & Deduction management,72500,Closed Won,New,Indie Beauty Expo
+D-1181,2026-02-12,2026-04-07,Meadow Provisions,Cleaning,"Demand planning, POS analytics",28000,Closed Lost,New,Trade show
+D-1014,2026-02-06,2026-04-08,Lark Goods,Food,Sales analytics; DP; DM,53500,Closed Won,New,Trade show
+D-1199,2026-01-18,2026-04-08,Cedar Pantry,Pet,Sales Forecasting; TPM; POS analytics; demand plan,75500,Closed Lost,New,Natural Products Expo West
+D-1290,2026-02-04,2026-04-09,Field Harvest,Wellness,Demand planning,21000,Closed Won,New,Broker partner
+D-1034,2026-02-27,2026-04-10,Sunny Sips,Beauty/PC,sales forecast,12000,Closed Lost,New,Indie Beauty Expo
+D-1166,2026-01-24,2026-04-11,Bright Botanics,Pet,trade promotions; Cash App; Disputes automation; DP,20000,Closed Won,New,Inbound - direct
+D-1090,2026-01-22,2026-04-12,Peak Supply,Home & kitchen,Deductions,20500,Closed Won,New,Organic / website
+D-1035,2026-02-19,2026-04-14,Bright Kitchen,beverages,auto-dispute,11000,Closed Lost,New,Outbound - SDR
+D-1053,2026-02-12,2026-04-14,Coast Home,Pet food,cash application & supply plan & Trade spend planning,101000,Closed Lost,New,Distributor referral
+D-1137,2026-02-07,2026-04-15,Maple Labs,vitamins,TPM,15500,Closed Lost,New,Meta ads
+D-1030,2026-02-05,2026-04-16,Oak Pantry,FOOD,cash application / Supply planning,47500,Closed Won,New,Investor intro
+D-1182,2026-01-17,2026-04-16,Wildfern Bites,Foodservice,trade promotions; Production planning,39500,Closed Lost,New,Cold call
+D-1246,2026-02-01,2026-04-19,Willow Brands,vitamins,sales forecast; cash application,26500,Closed Lost,New,Website demo request
+D-1221,2026-01-14,2026-04-20,Lark Bites,Food,Auto disputes & deductions mgmt & Trade promo,122500,Closed Won,New,Distributor referral
+D-1230,2026-01-29,2026-04-20,Bright Naturals,Health & Wellness,Cash App + DM + Supply planning,55000,Closed Lost,New,LinkedIn Ads
+D-1240,2026-02-10,2026-04-20,Pebble Tonic,Pet,POS analytics,8500,Closed Lost,New,Outbound - SDR
+D-1264,2026-01-26,2026-04-20,Pebble Harvest,Packaged food,Production planning / Cash-app,16000,Closed Lost,New,Taste Radio podcast
+D-1073,2026-03-06,2026-04-24,Sunny Pantry,Pet treats,Demand planning + sales forecast,26000,Closed Won,New,Indie Beauty Expo
+D-1042,2026-03-09,2026-04-25,Hearth Paws,Frozen foods,AR cash app & Production planning,76000,Closed Lost,New,Newtopia Now
+D-1159,2026-02-21,2026-04-25,Peak Botanics,Pantry / grocery,Sales analytics,8000,Closed Lost,New,Paid search
+D-1164,2026-02-27,2026-04-26,Bright Goods,Personal care,sales forecast & cash application,33000,Closed Lost,New,Accounting firm partner
+D-1226,2026-02-23,2026-04-27,Meadow Wellness,Sports nutrition,Forecasting & Auto disputes,44000,Closed Won,New,Customer referral
+D-1050,2026-02-20,2026-04-28,Golden Wellness,Packaged food,Demand planning + Trade promo + POS analytics,33000,Closed Lost,New,Accounting firm partner
+D-1202,2026-02-12,2026-04-28,Golden Botanics,Pantry / grocery,auto-dispute & Trade promo & DM & sales forecast,47500,Closed Lost,New,Website demo request
+D-1209,2026-01-21,2026-04-28,Willow Naturals,FOOD,"Production planning, DM, Auto disputes, Sales analytics",55500,Closed Lost,New,Podcast sponsorship
+D-1260,2026-02-17,2026-04-28,Hearth Harvest,Foodservice,Production planning; Demand planning,28000,Closed Lost,New,linkedin paid
+D-1059,2026-02-14,2026-04-29,Meadow Labs,Beverage,"Disputes automation, DP",44000,Closed Lost,New,SDR outbound
+D-1126,2026-03-06,2026-04-29,Peak Harvest,Drinks,cash application + deductions mgmt,68000,Closed Lost,New,SDR outbound
+D-1231,2026-02-20,2026-04-29,Juniper Naturals,Bev,trade promotions,17000,Closed Won,New,Trade show
+D-1116,2026-02-28,2026-04-30,Lark Labs,Drinks,Production planning & deductions mgmt,61500,Closed Lost,New,NetSuite partner
+D-1259,2026-02-10,2026-04-30,Field Snacks,Home goods,"Disputes automation, Cash App",40500,Closed Won,New,Investor intro
+D-1113,2026-02-14,2026-05-01,Bold Home,Packaged food,cash application,24500,Closed Won,New,Natural Products Expo West
+D-1133,2026-01-23,2026-05-01,Meadow Brands,Frozen foods,Supply planning + auto-dispute + Deduction management,96500,Closed Lost,New,Expo West 2026
+D-1018,2026-02-15,2026-05-02,Sunny Labs,Food,Analytics,5500,Closed Lost,New,Meta ads
+D-1063,2026-03-14,2026-05-02,Coast Co.,Hair care,sales forecast,21000,Closed Won,New,NOSH Live
+D-1156,2026-02-09,2026-05-02,Bold Paws,pet care,trade promotions / AR cash app / Deductions,49500,Closed Lost,New,Indie Beauty Expo
+D-1256,2026-03-20,2026-05-03,Clever Supply,Hair care,cash application,21000,Closed Lost,New,Indie Beauty Expo
+D-1003,2026-03-18,2026-05-05,Field Goods,Pet,cash application,10000,Closed Lost,New,Paid search
+D-1251,2026-03-08,2026-05-06,Bold Botanics,Pantry / grocery,Deduction management,23500,Closed Won,New,Website demo request
+D-1068,2026-02-11,2026-05-08,Hearth Labs,Spirits & RTD,deductions mgmt + AR cash app + Trade promo,49500,Closed Won,New,Accounting firm partner
+D-1005,2026-03-13,2026-05-11,Coast Provisions,Household,Auto disputes; supply plan,43500,Closed Lost,New,Newtopia Now
+D-1031,2026-03-13,2026-05-11,Fresh Bites,Personal care,sales forecast & Cash-app,22000,Closed Lost,New,Podcast sponsorship
+D-1218,2026-01-16,2026-05-11,Field Botanics,FOOD,"Deductions, Cash-app, Disputes automation, Trade promo, Forecasting, Sales analytics, DP, Supply planning",99500,Closed Won,New,Organic / website
+D-1311,2026-04-16,2026-05-11,Pebble Home,Hair care,Sales analytics,8500,Closed Won,expansion,Existing customer
+D-1079,2026-02-02,2026-05-12,Maple Botanics,Beverage,AR cash app + deductions mgmt + TPM + Auto disputes,61500,Closed Lost,New,Inbound - direct
+D-1201,2026-03-09,2026-05-12,Meadow Snacks,Home goods,Sales analytics,10500,Closed Won,New,BevNET Live
+D-1267,2026-03-16,2026-05-13,Juniper Paws,snacks,Trade promo / POS analytics / demand plan,37500,Closed Lost,New,BevNET Live
+D-1016,2026-03-08,2026-05-14,Pebble Bites,Frozen foods,AR cash app; Deductions; trade promotions,122000,Closed Lost,New,NOSH Live
+D-1085,2026-03-21,2026-05-14,Oak Provisions,Pet treats,"Disputes automation, Forecasting, supply plan",47000,Closed Lost,New,Accounting firm partner
+D-1160,2026-02-21,2026-05-14,Clever Glow,Health & Wellness,DP; Deductions,29000,Closed Lost,New,Newtopia Now
+D-1189,2026-03-13,2026-05-14,Bold Glow,Beverage,Auto disputes + Forecasting,21000,Closed Lost,New,Meta ads
+D-1232,2026-03-12,2026-05-14,Clever Bites,Food & Snacks,demand plan + Forecasting,14000,Closed Lost,New,Google Ads
+D-1083,2026-03-07,2026-05-16,Peak Snacks,Multi-category,"deductions mgmt, Analytics, Sales Forecasting",23000,Closed Lost,New,Customer referral
+D-1286,2026-03-15,2026-05-16,Bright Harvest,Health & Wellness,sales forecast + DM + Demand planning + Supply planning,74000,Closed Lost,New,Podcast sponsorship
+D-1019,2026-03-20,2026-05-17,Oak Co.,Frozen foods,"Forecasting, Trade promo, Auto disputes",72500,Closed Lost,New,Podcast sponsorship
+D-1039,2026-03-05,2026-05-17,Maple Snacks,Packaged food,Cash-app + Analytics,14000,Closed Lost,New,Outbound - SDR
+D-1041,2026-02-08,2026-05-17,Field Co.,Paper goods,deductions mgmt; supply plan,40500,Closed Lost,New,BevNET Live
+D-1195,2026-01-20,2026-05-17,Juniper Harvest,Packaged food,Full platform,107500,Closed Won,New,Cold call
+D-1152,2026-03-31,2026-05-18,Bright Pantry,Personal care,auto-dispute,5000,Closed Lost,New,Newsletter sponsor
+D-1123,2026-03-16,2026-05-20,North Harvest,snacks,TPM & Demand planning,39000,Closed Won,New,Outbound - SDR
+D-1180,2026-03-15,2026-05-20,Willow Sips,Coffee/tea,"sales forecast, cash application, Auto disputes",49500,Closed Lost,New,SDR outbound
+D-1147,2026-03-24,2026-05-21,Sunny Paws,Food,"Forecasting, cash application",23500,Closed Lost,New,Inbound - direct
+D-1229,2026-03-12,2026-05-21,Hearth Bites,Health & Wellness,DP; Auto disputes,30500,Closed Won,New,Expo West 2026
+D-1227,2026-03-25,2026-05-22,Field Bites,Pet food,S&OP bundle,19000,Closed Won,New,Distributor referral
+D-1243,2026-02-17,2026-05-22,Fresh Labs,Food & Snacks,Analytics; sales forecast,12000,Closed Lost,New,Podcast sponsorship
+D-1043,2026-03-13,2026-05-23,Coast Labs,Household,Analytics; Sales Forecasting,15500,Closed Lost,New,linkedin paid
+D-1060,2026-02-13,2026-05-23,Oak Harvest,vitamins,supply plan; AR cash app; demand plan; POS analytics,65500,Closed Lost,New,Apollo sequence
+D-1318,2026-04-28,2026-05-23,Field Supply,Beverage,Supply planning,12500,Closed Won,expansion,Account management
+D-1075,2026-03-19,2026-05-24,North Naturals,Beverage,sales forecast,15500,Closed Lost,New,Indie Beauty Expo
+D-1017,2026-03-28,2026-05-25,Bold Labs,Pet,Deduction management; Demand planning; cash application,62500,Closed Lost,New,Cold email
+D-1214,2026-03-11,2026-05-26,Sunny Roots,Household,Deductions; Cash App,27500,Closed Won,New,Other
+D-1253,2026-02-20,2026-05-26,Pebble Botanics,vitamins,DM & Production planning & AR cash app,43000,Closed Lost,New,Taste Radio podcast
+D-1178,2026-04-08,2026-05-27,Clever Tonic,Coffee/tea,Supply planning + trade promotions,38000,Closed Lost,New,Cold email
+D-1179,2026-03-10,2026-05-27,Juniper Goods,Drinks,Disputes automation,8000,Closed Won,New,Indie Beauty Expo
+D-1258,2026-03-29,2026-05-27,Golden Tonic,Bev,auto-dispute,21500,Closed Won,New,Fractional CFO partner
+D-1284,2026-04-14,2026-05-27,Maple Harvest,Pet food,TPM & Sales analytics,19500,Closed Lost,New,Google Ads
+D-1200,2026-02-14,2026-05-28,Meadow Goods,Supplements,supply plan; trade promotions; demand plan; Deductions,38000,Closed Lost,New,Podcast sponsorship
+D-1184,2026-02-25,2026-05-29,Bright Bites,Home & kitchen,Auto disputes,30500,Closed Won,New,Expo West 2026
+D-1186,2026-02-04,2026-05-29,Hearth Co.,Pet,Deductions / AR cash app / Auto disputes / Trade promo / sales forecast / Sales analytics / DP / Production planning,107500,Closed Lost,New,Google Ads
+D-1082,2026-02-03,2026-05-30,Bright Wellness,Deodorant & soap,Full suite,263500,Closed Lost,New,Expo West 2026
+D-1006,2026-03-23,2026-05-31,Fresh Home,Home goods,Deductions,20500,Closed Lost,New,SuperZoo
+D-1144,2026-04-17,2026-05-31,Wildfern Sips,Pet food,auto-dispute,12500,Closed Lost,New,Customer referral
+D-1289,2026-03-27,2026-05-31,Bright Labs,Pet treats,"Auto disputes, DP",29000,Closed Won,New,Fractional CFO partner
+D-1313,2026-05-06,2026-05-31,Sunny Co.,Pet food,AR cash app,18500,Closed Won,expansion,Account management
+D-1139,2026-03-24,2026-06-02,North Bites,Bev,TPM; AR cash app,45500,Closed Lost,New,SDR outbound
+D-1169,2026-03-11,2026-06-04,Pebble Snacks,snacks,cash application; Auto disputes; deductions mgmt,45500,Closed Lost,New,SDR outbound
+D-1213,2026-03-22,2026-06-04,Clever Harvest,Coffee/tea,Trade spend planning,13000,Closed Won,New,Taste Radio podcast
+D-1170,2026-02-09,2026-06-05,Maple Home,Cleaning,Auto disputes / Demand planning / cash application / Sales Forecasting,71000,Closed Lost,New,Natural Products Expo West
+D-1266,2026-04-07,2026-06-05,Field Provisions,Packaged food,Production planning,14500,Closed Won,New,Accounting firm partner
+D-1307,2026-05-12,2026-06-06,Bold Pantry,Functional soda,AR cash app,18500,Closed Won,Upsell,Account management
+D-1317,2026-05-13,2026-06-07,Meadow Wellness,Sports nutrition,trade promotions,29500,Closed Won,Upsell,CSM upsell
+D-1162,2026-03-24,2026-06-08,Oak Goods,Supplements,Forecasting,11000,Closed Won,New,Trade show
+D-1185,2026-04-19,2026-06-08,Clever Paws,Hair care,Analytics,13500,Closed Lost,New,Apollo sequence
+D-1241,2026-04-07,2026-06-08,Meadow Home,Drinks,Sales Forecasting & Deduction management,21500,Closed Lost,New,Google Ads
+D-1255,2026-03-31,2026-06-08,Willow Goods,Food & Snacks,Deduction management; TPM; Cash App,37000,Closed Won,New,Fractional CFO partner
+D-1282,2026-03-23,2026-06-08,Fresh Botanics,vitamins,Forecasting,9000,Closed Lost,New,Blog / content
+D-1288,2026-04-13,2026-06-08,Bright Brands,Personal care,"Sales Forecasting, supply plan",19500,Closed Won,New,Cold call
+D-1103,2026-03-11,2026-06-09,Peak Home,Home goods,trade promotions,23500,Closed Lost,New,Founder network
+D-1167,2026-03-31,2026-06-09,Coast Roots,Pantry / grocery,Deductions,30500,Closed Lost,New,Natural Products Expo West
+D-1106,2026-03-12,2026-06-11,Fresh Paws,Wellness,Demand planning + DM,37000,Closed Lost,New,Website demo request
+D-1225,2026-03-25,2026-06-12,Cedar Wellness,beverages,"DP, Deductions, Disputes automation",54000,Closed Lost,New,NetSuite partner
+D-1148,2026-03-01,2026-06-13,Field Naturals,vitamins,Supply planning / sales forecast / Deduction management / Auto disputes,47000,Closed Lost,New,Newsletter sponsor
+D-1161,2026-04-12,2026-06-13,Cedar Botanics,Packaged food,deductions mgmt; TPM,38000,Closed Lost,New,Cold call
+D-1071,2026-04-15,2026-06-14,Golden Co.,Beauty/PC,cash application / Forecasting,18500,Closed Lost,New,Broker partner
+D-1245,2026-05-01,2026-06-14,Clever Co.,Beverage,demand plan,41000,Closed Lost,New,Natural Products Expo West
+D-1102,2026-04-01,2026-06-15,Bold Sips,Pet food,Forecasting + Auto disputes,23000,Closed Lost,New,Paid search
+D-1108,2026-04-22,2026-06-17,Fresh Naturals,snacks,TPM + Production planning,46000,Closed Lost,New,Indie Beauty Expo
+D-1008,2026-05-03,2026-06-18,Golden Bites,Foodservice,"Cash App, Deduction management",30500,Closed Lost,New,Organic / website
+D-1027,2026-04-06,2026-06-18,Maple Wellness,Packaged food,Deduction management + Production planning + Sales analytics,59000,Closed Won,New,Broker partner
+D-1220,2026-04-27,2026-06-18,Bright Glow,Hair care,supply plan + DP,17500,Closed Won,New,Paid search
+D-1032,2026-05-02,2026-06-19,North Sips,Paper goods,deductions mgmt,25000,Closed Lost,New,Founder network
+D-1275,2026-03-20,2026-06-19,Pebble Paws,Sports nutrition,Deductions; trade promotions; Cash-app; Supply planning,77000,Closed Won,New,Outbound - SDR
+D-1012,2026-05-02,2026-06-21,Coast Glow,Pet food,Trade promo / sales forecast,30000,Closed Lost,New,Webinar w/ partner
+D-1087,2026-04-28,2026-06-21,Pebble Brands,Supplements,Cash-app / auto-dispute,26000,Closed Lost,New,Cold call
+D-1292,2026-04-09,2026-06-21,Wildfern Tonic,Drinks,supply plan + POS analytics + Trade spend planning,44000,Closed Lost,New,Customer referral
+D-1247,2026-01-17,2026-06-22,Hearth Supply,Sports nutrition,Deduction management + Cash App + Auto disputes + TPM + sales forecast + Sales analytics + demand plan + Supply planning,77500,Closed Lost,New,LinkedIn Ads
+D-1069,2026-04-10,2026-06-23,Bold Kitchen,pet care,TPM & cash application & sales forecast,57500,Closed Lost,New,Accounting firm partner
+D-1223,2026-05-28,2026-06-23,Bright Home,Beauty,trade promotions,19000,Closed Lost,New,Google Ads
+D-1211,2026-05-01,2026-06-24,Field Sips,snacks,"Forecasting, DM",24500,Closed Lost,New,linkedin paid
+D-1210,2026-05-12,2026-06-25,Clever Brands,Pet food,trade promotions; DP,54000,Closed Lost,New,Referral - customer
+D-1235,2026-04-10,2026-06-26,Pebble Sips,beverages,TPM & Sales analytics,20000,Closed Won,New,Paid search
+D-1254,2026-04-08,2026-06-26,North Labs,Frozen foods,DM,31000,Closed Lost,New,Trade show
+D-1051,2026-04-23,2026-06-27,Sunny Home,Wellness,Sales analytics & Trade spend planning,16500,Closed Lost,New,Meta ads
+D-1094,2026-04-26,2026-06-27,Field Kitchen,pet care,DM; Trade promo; AR cash app; Supply planning,103000,Closed Lost,New,Investor intro
+D-1252,2026-05-08,2026-06-28,Cedar Bites,Beverage,Trade promo,24500,Closed Won,New,Website demo request
+D-1272,2026-05-10,2026-06-28,Coast Wellness,Beauty,sales forecast & AR cash app,36500,Closed Lost,New,SDR outbound
+D-1084,2026-04-03,2026-06-29,North Provisions,Packaged food,"Auto disputes, POS analytics",21500,Closed Lost,New,Meta ads
+D-1132,2026-05-12,2026-06-30,Golden Harvest,Pantry / grocery,demand plan + Supply planning,13500,Closed Won,New,Taste Radio podcast
+D-1024,2026-04-28,2026-07-02,Maple Pantry,Deodorant & soap,Sales analytics,12000,Closed Won,New,Customer referral
+D-1104,2026-04-15,2026-07-02,Wildfern Supply,Packaged food,deductions mgmt & Cash-app,41500,Closed Lost,New,Blog / content
+D-1303,2026-06-07,2026-07-02,Hearth Wellness,Sports nutrition,auto-dispute,13500,Closed Won,expansion,Account management
+D-1038,2026-04-18,2026-07-03,Meadow Supply,Bev,Supply planning & Auto disputes & DM,56500,Closed Lost,New,NetSuite partner
+D-1110,2026-05-11,2026-07-03,Bold Roots,Coffee/tea,TPM + Deduction management + DP,34000,Closed Lost,New,Website demo request
+D-1109,2026-04-18,2026-07-04,Willow Home,FOOD,Forecasting + supply plan,24500,Closed Lost,New,Blog / content
+D-1271,2026-04-23,2026-07-04,Coast Goods,FOOD,Deduction management; auto-dispute,33500,Closed Lost,New,SEO
+D-1004,2026-05-02,2026-07-05,Wildfern Snacks,Cleaning,trade promotions & Auto disputes & AR cash app,45500,Closed Lost,New,Paid search
+D-1244,2026-04-24,2026-07-05,Bold Tonic,Pet,Sales Forecasting & Supply planning & Analytics & Trade promo,17000,Closed Lost,New,linkedin paid
+D-1015,2026-04-28,2026-07-06,Sunny Provisions,pet care,TPM; Deductions,32000,Closed Lost,New,NOSH webinar
+D-1128,2026-04-07,2026-07-06,Willow Wellness,Paper goods,supply plan,21000,Closed Won,New,Natural Products Expo West
+D-1131,2026-05-06,2026-07-06,Pebble Wellness,Frozen foods,DM,23000,Closed Won,New,Customer referral
+D-1250,2026-05-08,2026-07-07,Peak Kitchen,Food & Snacks,cash application,14000,Closed Won,New,Broker partner
+D-1283,2026-05-21,2026-07-07,Wildfern Labs,Pet food,POS analytics,6000,Closed Lost,New,Website demo request
+D-1119,2026-04-13,2026-07-08,Meadow Roots,beverages,demand plan + Deductions + Sales Forecasting,12000,Closed Won,New,Accounting firm partner
+D-1121,2026-04-11,2026-07-08,Juniper Kitchen,Food,"AR cash app, Production planning, Sales analytics",67500,Closed Lost,New,SuperZoo
+D-1165,2026-05-20,2026-07-08,Hearth Goods,Personal care,"Deductions, Sales Forecasting",24500,Closed Lost,New,Inbound - direct
+D-1145,2026-05-03,2026-07-09,Cedar Supply,Drinks,"deductions mgmt, supply plan, TPM, AR cash app",39500,Closed Lost,New,SDR outbound
+D-1191,2026-04-13,2026-07-10,North Home,Wellness,TPM; DM; DP,78500,Closed Lost,New,Outbound - SDR
+D-1207,2026-05-04,2026-07-10,North Brands,Spirits & RTD,deductions mgmt,38500,Closed Won,New,BevNET Live
+D-1091,2026-05-10,2026-07-11,Willow Roots,Personal care,Cash-app,37000,Closed Lost,New,BevNET Live
+D-1173,2026-05-07,2026-07-11,Maple Co.,Packaged food,DM,23500,Closed Lost,New,Investor intro
+D-1291,2026-04-16,2026-07-11,Lark Snacks,Food & Snacks,Deductions + trade promotions,28500,Closed Won,New,Trade show
+D-1309,2026-06-16,2026-07-11,Clever Snacks,beverages,Sales Forecasting,12000,Closed Won,expansion,Existing customer
+D-1078,2026-05-15,2026-07-12,Bold Co.,Hair care,demand plan,12500,Closed Lost,New,SDR outbound
+D-1088,2026-05-28,2026-07-15,Maple Bites,Bev,Deduction management,36000,Closed Lost,New,Trade show
+D-1157,2026-05-13,2026-07-15,Lark Brands,Frozen foods,Deduction management & Sales analytics,22500,Closed Lost,New,Google Ads
+D-1096,2026-04-10,2026-07-16,Golden Snacks,Cleaning,supply plan / cash application / DM,62000,Closed Won,New,Expo West 2026
+D-1168,2026-05-29,2026-07-16,Lark Naturals,Skincare,trade promotions,29500,Closed Won,New,Newtopia Now
+D-1187,2026-04-17,2026-07-16,Pebble Labs,Household,"Deductions, Demand planning, Trade promo",52500,Closed Won,New,Google Ads
+D-1304,2026-06-21,2026-07-16,Coast Co.,Hair care,supply plan / Deduction management,30000,Closed Won,Expansion,CSM upsell
+D-1093,2026-05-04,2026-07-17,Lark Sips,Supplements,Auto disputes,13500,Closed Won,New,Accounting firm partner
+D-1174,2026-06-04,2026-07-18,Lark Co.,Beauty,"Deduction management, Cash App",59000,Closed Won,New,Trade show
+D-1070,2026-06-14,2026-07-19,Oak Roots,Beauty/PC,demand plan + Forecasting,18500,Closed Lost,New,SDR outbound
+D-1204,2026-05-04,2026-07-19,Clever Home,Pantry / grocery,Cash App / Auto disputes,27000,Closed Lost,New,LinkedIn Ads
+D-1320,2026-06-24,2026-07-19,Juniper Naturals,Bev,Cash App,21500,Closed Won,expansion,CSM upsell
+D-1045,2026-04-06,2026-07-20,Golden Goods,Pantry / grocery,Full suite,72000,Closed Lost,New,Expo West 2026
+D-1249,2026-03-11,2026-07-20,Peak Naturals,Frozen foods,"Deduction management, Cash-app, Disputes automation, Trade promo, Forecasting, Sales analytics, Demand planning, Supply planning",209000,Closed Won,New,Referral - customer
+D-1314,2026-06-25,2026-07-20,Meadow Snacks,Home goods,Trade promo,21500,Closed Won,Upsell,Existing customer
+D-1319,2026-06-25,2026-07-20,Lark Goods,Food,Trade promo,22500,Closed Won,Upsell,Existing customer
+D-1025,2026-05-10,2026-07-21,Willow Labs,Supplements,trade promotions,13500,Closed Lost,New,LinkedIn Ads
+D-1047,2026-05-17,2026-07-21,Golden Provisions,Packaged food,auto-dispute + DP,22500,Closed Won,New,Taste Radio podcast
+D-1099,2026-05-14,2026-07-23,Fresh Pantry,Frozen foods,Deductions & trade promotions,53500,Closed Lost,New,Referral - customer
+D-1262,2026-05-21,2026-07-23,Bright Tonic,Drinks,auto-dispute & cash application & deductions mgmt,23500,Closed Lost,New,LinkedIn Ads
+D-1105,2026-05-12,2026-07-25,Clever Provisions,Baby & kids,"auto-dispute, Cash-app",26500,Closed Lost,New,Cold email
+D-1279,2026-04-08,2026-07-25,Maple Provisions,Sports nutrition,Deduction management & Forecasting & Sales analytics & Trade spend planning,125500,Closed Lost,New,Broker partner
+D-1033,2026-05-22,2026-07-26,Sunny Glow,Food,"Production planning, Sales Forecasting, Trade spend planning",41000,Closed Lost,New,SDR outbound
+D-1125,2026-06-17,2026-07-26,Lark Botanics,Spirits & RTD,trade promotions,25500,Closed Won,New,Newtopia Now
+D-1310,2026-07-01,2026-07-26,Golden Tonic,Bev,supply plan,11000,Closed Won,Upsell,Existing customer
+D-1112,2026-05-13,2026-07-28,Meadow Pantry,Paper goods,Deductions + Cash-app,40500,Closed Lost,New,Founder network
+D-1203,2026-04-28,2026-07-28,North Pantry,Home & kitchen,demand plan & Deductions & Cash App,56000,Closed Lost,New,Newtopia Now
+D-1192,2026-05-23,2026-07-29,Peak Glow,Packaged food,Supply planning + Demand planning,25500,Closed Lost,New,NOSH webinar
+D-1316,2026-07-04,2026-07-29,North Harvest,snacks,POS analytics,7500,Closed Won,Upsell,CSM upsell
+D-1140,2026-05-27,2026-07-31,Field Pantry,Functional soda,demand plan / Trade spend planning / Deduction management,36000,Closed Lost,New,Meta ads
+D-1097,2026-05-27,2026-08-01,Hearth Home,Food,deductions mgmt; Trade promo,68000,Closed Won,New,Founder network
+D-1287,2026-05-29,2026-08-01,Wildfern Kitchen,Pet food,Deductions,26500,Closed Lost,New,Google Ads
+D-1299,2026-07-07,2026-08-01,Field Snacks,Home goods,DM; sales forecast,33000,Closed Won,Upsell,CSM upsell
+D-1007,2026-06-03,2026-08-02,Sunny Wellness,Beverage,S&OP bundle,9000,Closed Won,New,Blog / content
+D-1013,2026-06-05,2026-08-02,Lark Roots,Paper goods,Disputes automation,24500,Closed Won,New,Expo West 2026
+D-1155,2026-06-10,2026-08-03,Oak Home,Skincare,"Trade spend planning, Sales Forecasting, Sales analytics",22500,Closed Lost,New,Paid search
+D-1280,2026-05-31,2026-08-04,Bold Goods,Food & Snacks,DM + trade promotions,57000,Closed Lost,New,Outbound - SDR
+D-1293,2026-07-14,2026-08-05,Sunny Tonic,Personal care,Sales Forecasting,24500,Closed Lost,New,Apollo sequence
+D-1308,2026-07-11,2026-08-05,Peak Supply,Home & kitchen,DP,18000,Closed Won,Upsell,CSM upsell
+D-1056,2026-05-17,2026-08-06,Clever Botanics,Supplements,Forecasting,14000,Closed Won,New,Trade show
+D-1065,2026-05-28,2026-08-06,Cedar Harvest,Bev,Analytics + Production planning + TPM,75000,Closed Lost,New,Natural Products Expo West
+D-1150,2026-05-09,2026-08-06,Willow Provisions,beverages,Trade promo + Sales analytics + Deductions + Supply planning,96500,Closed Lost,New,SuperZoo
+D-1234,2026-06-01,2026-08-06,Golden Supply,Supplements,Production planning + Deduction management + Trade spend planning,73000,Closed Lost,New,Cold email
+D-1002,2026-05-29,2026-08-07,Hearth Brands,Pet,auto-dispute / Deduction management / AR cash app / Sales Forecasting,82500,Closed Lost,New,BevNET Live
+D-1026,2026-05-05,2026-08-07,Golden Sips,Pet treats,trade promotions & Demand planning & sales forecast,63500,Closed Won,New,Newtopia Now
+D-1111,2026-06-26,2026-08-08,Cedar Provisions,Pet,trade promotions,21500,Closed Lost,New,Cold email
+D-1285,2026-05-02,2026-08-09,Juniper Brands,Pantry / grocery,Supply planning; Sales analytics; DP,36000,Closed Won,New,Distributor referral
+D-1297,2026-07-15,2026-08-09,Bright Botanics,Pet,Supply planning,11500,Closed Won,Expansion,Account management
+D-1009,2026-06-06,2026-08-10,Hearth Kitchen,Spirits & RTD,"Cash App, TPM",26000,Closed Lost,New,Investor intro
+D-1277,2026-05-23,2026-08-10,Hearth Glow,Frozen foods,Retail data add-on,153000,Closed Won,New,Board member intro
+D-1061,2026-06-09,2026-08-11,Clever Roots,Beauty,POS analytics; Forecasting,24000,Closed Lost,New,Investor intro
+D-1081,2026-06-01,2026-08-12,Bold Supply,Frozen foods,Supply planning & Auto disputes,39000,Closed Lost,New,Accounting firm partner
+D-1023,2026-06-10,2026-08-13,Oak Tonic,Packaged food,DM + demand plan,34000,Closed Lost,New,Natural Products Expo West
+D-1101,2026-05-19,2026-08-15,Maple Roots,Food,POS analytics / Deductions,50000,Closed Lost,New,Newsletter sponsor
+D-1177,2026-06-05,2026-08-15,North Glow,Baby & kids,DP; Cash-app; Sales Forecasting; Auto disputes,53500,Closed Lost,New,Expo West 2026
+D-1154,2026-06-08,2026-08-16,Peak Provisions,beverages,"sales forecast, Production planning, Sales analytics",22000,Closed Lost,New,Inbound - direct
+D-1120,2026-06-13,2026-08-17,Clever Kitchen,Frozen foods,auto-dispute,21500,Closed Lost,New,SuperZoo
+D-1163,2026-06-02,2026-08-18,Sunny Supply,Household,Trade promo / deductions mgmt,65000,Closed Lost,New,NOSH Live
+D-1208,2026-07-17,2026-08-18,Juniper Labs,Beauty/PC,TPM,24000,Closed Won,New,SuperZoo
+D-1141,2026-05-20,2026-08-19,Golden Labs,Pet,demand plan / POS analytics / Disputes automation,46500,Closed Won,New,Apollo sequence
+D-1298,2026-07-25,2026-08-19,Lark Tonic,Bev,Production planning & sales forecast,24500,Closed Won,expansion,Existing customer
+D-1233,2026-05-27,2026-08-20,Peak Tonic,Spirits & RTD,trade promotions / cash application,46000,Closed Lost,New,Newsletter sponsor
+D-1276,2026-06-28,2026-08-20,Oak Botanics,Hair care,DM,30000,Closed Lost,New,Trade show
+D-1127,2026-04-23,2026-08-21,Juniper Bites,snacks,All modules,105000,Closed Lost,New,NOSH webinar
+D-1224,2026-06-23,2026-08-22,Peak Roots,pet care,"Trade promo, cash application",25000,Closed Lost,New,Google Ads
+D-1146,2026-04-13,2026-08-23,Juniper Glow,FOOD,Deduction management / cash application / Auto disputes / Trade promo / Sales Forecasting / Sales analytics / demand plan / Production planning,164500,Closed Lost,New,Distributor referral
+D-1158,2026-06-05,2026-08-23,Coast Kitchen,Functional soda,sales forecast / Cash App / deductions mgmt / Analytics,88000,Closed Lost,New,Distributor referral
+D-1205,2026-06-19,2026-08-23,Wildfern Paws,Drinks,Auto disputes,12500,Closed Lost,New,Accounting firm partner
+D-1270,2026-06-21,2026-08-23,Pebble Goods,Coffee/tea,sales forecast,25000,Closed Won,New,Investor intro
+D-1300,2026-07-29,2026-08-23,Pebble Wellness,Frozen foods,AR cash app / sales forecast,39000,Closed Won,Upsell,CSM upsell
+D-1136,2026-06-09,2026-08-24,Golden Brands,snacks,"Auto disputes, trade promotions",24000,Closed Won,New,Inbound - direct
+D-1176,2026-06-09,2026-08-24,Coast Botanics,Home & kitchen,supply plan & demand plan,23500,Closed Lost,New,NOSH webinar
+D-1190,2026-06-13,2026-08-24,Sunny Kitchen,beverages,Trade promo; DM; auto-dispute; POS analytics,107000,Closed Lost,New,Natural Products Expo West
+D-1302,2026-07-30,2026-08-24,Sunny Pantry,Pet treats,Disputes automation + TPM,32000,Closed Won,Upsell,Account management
+D-1274,2026-05-18,2026-08-25,Fresh Tonic,Food,Auto disputes / DM / cash application / Analytics,43000,Closed Lost,New,linkedin paid
+D-1315,2026-07-31,2026-08-25,Oak Pantry,FOOD,Auto disputes / Sales analytics,18000,Closed Won,Upsell,CSM upsell
+D-1217,2026-05-25,2026-08-26,Sunny Harvest,Supplements,"DP, Analytics, Deduction management",91500,Closed Lost,New,Trade show
+D-1281,2026-07-04,2026-08-26,North Botanics,Wellness,Deduction management,25500,Closed Lost,New,Board member intro
+D-1130,2026-05-23,2026-08-27,Bold Brands,Sports nutrition,cash application; DP; POS analytics,46500,Closed Lost,New,SDR outbound
+D-1219,2026-07-03,2026-08-28,Juniper Provisions,Beverage,Trade spend planning,19500,Closed Lost,New,BevNET Live
+D-1242,2026-06-24,2026-08-28,North Paws,Coffee/tea,Trade promo / sales forecast / DM,41500,Closed Lost,New,SDR outbound
+D-1212,2026-07-01,2026-08-29,Lark Kitchen,snacks,auto-dispute / Deductions,28500,Closed Lost,New,Website demo request
+D-1261,2026-06-04,2026-08-29,Willow Paws,Packaged food,cash application + Deductions,30000,Closed Won,New,Apollo sequence
+D-1194,2026-06-16,2026-08-30,Coast Paws,Bev,"Deduction management, Analytics, sales forecast",46000,Closed Lost,New,Natural Products Expo West
+D-1149,2026-06-24,2026-08-31,Willow Harvest,Household,Auto disputes,10000,Closed Lost,New,Google Ads
+D-1321,2026-08-08,2026-09-02,Bright Bites,Home & kitchen,supply plan,13500,Closed Won,expansion,CSM upsell
+D-1077,2026-06-12,2026-09-03,Peak Co.,Health & Wellness,TPM; Supply planning,62500,Closed Lost,New,Founder network
+D-1306,2026-08-09,2026-09-03,Oak Goods,Supplements,Trade spend planning,30500,Closed Won,expansion,CSM upsell
+D-1057,2026-07-27,2026-09-04,Sunny Snacks,Hair care,AR cash app,11000,Closed Lost,New,Blog / content
+D-1301,2026-08-11,2026-09-05,Cedar Bites,Beverage,DM,15500,Closed Won,Expansion,Existing customer
+D-1216,2026-07-12,2026-09-06,Bold Provisions,Beverage,TPM,34000,Closed Won,New,NOSH webinar
+D-1064,2026-07-02,2026-09-07,Wildfern Wellness,Food & Snacks,TPM,27500,Closed Lost,New,Blog / content
+D-1054,2026-06-11,2026-09-08,Maple Brands,beverages,TPM; demand plan,107500,Closed Lost,New,Customer referral
+D-1010,2026-07-05,2026-09-09,Coast Pantry,Personal care,Sales Forecasting,7500,Closed Lost,New,Taste Radio podcast
+D-1263,2026-07-12,2026-09-11,Wildfern Botanics,Personal care,Trade promo + demand plan,56000,Closed Lost,New,Customer referral
+D-1305,2026-08-17,2026-09-11,Bold Home,Packaged food,Forecasting + Production planning,28000,Closed Won,Expansion,CSM upsell
+D-1107,2026-06-15,2026-09-12,Willow Botanics,vitamins,Demand planning / Cash App / auto-dispute / trade promotions,47500,Closed Lost,New,SuperZoo
+D-1322,2026-08-18,2026-09-12,Field Harvest,Wellness,Analytics,6500,Closed Won,Upsell,CSM upsell
+D-1098,2026-07-04,2026-09-13,Fresh Brands,Wellness,Sales analytics & Deduction management & cash application,47000,Closed Lost,New,Fractional CFO partner
+D-1022,2026-07-03,2026-09-14,Bold Bites,Hair care,cash application + Sales analytics,39500,Closed Lost,New,Distributor referral
+D-1086,2026-07-18,2026-09-14,Coast Supply,Paper goods,supply plan,11000,Closed Lost,New,Inbound - direct
+D-1135,2026-07-24,2026-09-14,Wildfern Roots,Pet treats,AR cash app,9500,Closed Lost,New,Newtopia Now
+D-1188,2026-08-08,2026-09-14,North Tonic,Skincare,Sales analytics,8500,Closed Won,New,Newsletter sponsor
+D-1312,2026-08-21,2026-09-15,Lark Co.,Beauty,POS analytics,9000,Closed Won,Upsell,CSM upsell
+D-1117,2026-07-03,2026-09-17,Cedar Sips,Food,Deductions + DP + sales forecast,54000,Closed Lost,New,Accounting firm partner
+D-1153,2026-07-03,2026-09-17,Pebble Naturals,Food & Snacks,TPM; Auto disputes; POS analytics,75000,Closed Lost,New,Apollo sequence
+D-1029,2026-07-09,2026-09-18,Bright Provisions,snacks,TPM,13500,Closed Lost,New,Inbound - direct
+D-1124,2026-07-12,2026-09-18,Field Wellness,Spirits & RTD,Deduction management / Cash App,101500,Closed Lost,New,Newsletter sponsor
+D-1215,2026-05-14,2026-09-18,Cedar Naturals,Pantry / grocery,"Deductions, Cash App, Disputes automation, TPM, Sales Forecasting, Analytics, Demand planning, Production planning",103500,Closed Lost,New,Organic / website
+D-1198,2026-06-26,2026-09-19,Golden Home,Frozen foods,trade promotions; supply plan,16500,Closed Lost,New,SDR outbound
+D-1118,2026-07-29,2026-09-20,Cedar Brands,Beauty/PC,Sales analytics,13000,Closed Lost,New,Accounting firm partner
+D-1134,2026-07-22,2026-09-20,Bright Roots,pet care,sales forecast / Deduction management,36500,Closed Won,New,Paid search
+D-1183,2026-08-18,2026-09-20,Cedar Glow,Deodorant & soap,POS analytics,11500,Closed Won,New,Referral - customer
+D-1248,2026-07-31,2026-09-20,Golden Kitchen,Pet,DM & TPM,45000,Closed Lost,New,Meta ads
+D-1222,2026-07-07,2026-09-21,Hearth Tonic,Hair care,Retail data add-on,38000,Closed Lost,New,Investor intro
+D-1273,2026-07-23,2026-09-21,Pebble Supply,Supplements,DP,24500,Closed Lost,New,Investor intro
+D-1171,2026-07-17,2026-09-23,Cedar Co.,Beauty/PC,Retail data add-on,59500,Closed Lost,New,Podcast sponsorship
+D-1092,2026-07-09,2026-09-24,North Snacks,snacks,Production planning,12000,Closed Lost,New,Cold email
+D-1048,2026-07-06,2026-09-26,Sunny Naturals,Wellness,"supply plan, Demand planning",17000,Closed Lost,New,LinkedIn Ads
+D-1011,2026-07-12,2026-09-27,Golden Naturals,Cleaning,DP + deductions mgmt + Trade promo,81500,Closed Won,New,Newsletter sponsor
+D-1129,2026-07-27,2026-09-27,Field Home,Functional soda,Deduction management; trade promotions,39500,Closed Won,New,SDR outbound
+D-1269,2026-07-31,2026-09-27,Pebble Kitchen,Pet food,sales forecast,10000,Closed Lost,New,SEO
+D-1295,2026-07-18,2026-09-27,Coast Sips,Coffee/tea,Analytics,7500,Closed Lost,New,LinkedIn Ads
+D-1028,2026-07-27,2026-09-29,Maple Supply,Frozen foods,Deduction management; Trade spend planning,62000,Closed Lost,New,Paid search
+D-1036,2026-07-29,2026-09-29,Willow Kitchen,Skincare,Analytics; sales forecast; Cash App,57000,Closed Won,New,Trade show
+D-1062,2026-07-15,2026-09-30,Pebble Pantry,Pantry / grocery,deductions mgmt; Cash App,99500,Closed Lost,New,SuperZoo
+D-1067,2026-06-19,2026-09-30,Field Roots,vitamins,POS analytics; Auto disputes; Cash-app,53000,Closed Lost,New,Accounting firm partner
+D-1142,2026-07-28,2026-09-30,Field Glow,Baby & kids,deductions mgmt,19000,Closed Lost,New,LinkedIn Ads
+D-1294,2026-07-07,2026-09-30,Maple Kitchen,Paper goods,Auto disputes; Supply planning; Trade spend planning,38500,Closed Lost,New,NetSuite partner

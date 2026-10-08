@@ -1,0 +1,49 @@
+{
+  "_about": "Bucketing rules. Each list is checked in order; the first keyword found (case-insensitive substring) wins. Edit these to fit your data.",
+  "products": ["Cash Application","Deductions Management","Auto-Disputes","Trade Promotions","Sales Forecasting","Sales Analytics","Demand Planning","Supply Planning"],
+  "list_price_usd": {"Cash Application":14000,"Deductions Management":24000,"Auto-Disputes":12000,"Trade Promotions":20000,"Sales Forecasting":12000,"Sales Analytics":9000,"Demand Planning":16000,"Supply Planning":12000},
+  "industries": ["Beauty & Personal Care","Beverage","Food","Health & Wellness","Home Goods","Pet"],
+  "channels": ["Events","Paid digital","Content & media","Outbound","Partners","Referrals","Inbound organic"],
+  "spend_only_buckets": ["Brand & overhead"],
+  "industry_exclude": ["foodservice","multi","baby"],
+  "industry_rules": [
+    ["Pet", ["pet","dog","cat food"]],
+    ["Beauty & Personal Care", ["beauty","personal care","skin","hair","deodorant","soap","cosmetic","/pc"]],
+    ["Health & Wellness", ["health","wellness","supplement","vitamin","nutrition","protein"]],
+    ["Home Goods", ["home","household","clean","paper","laundry"]],
+    ["Beverage", ["bev","drink","soda","spirit","rtd","coffee","tea","juice","water","kombucha"]],
+    ["Food", ["food","snack","pantry","grocery","frozen","bakery"]]
+  ],
+  "product_full_platform": ["full platform","all modules","full suite"],
+  "product_exclude": ["s&op","retail data"],
+  "product_rules": [
+    ["Deductions Management", ["deduction","dm"]],
+    ["Cash Application", ["cash"]],
+    ["Auto-Disputes", ["dispute"]],
+    ["Trade Promotions", ["tpm","trade"]],
+    ["Sales Forecasting", ["forecast"]],
+    ["Sales Analytics", ["analytic"]],
+    ["Demand Planning", ["demand","dp"]],
+    ["Supply Planning", ["supply","production"]]
+  ],
+  "product_exact_tokens": ["dm","dp"],
+  "expansion_sources": ["existing customer","csm","account management"],
+  "lead_source_rules": [
+    ["Events", ["expo","newtopia"," live","superzoo","trade show","booth"]],
+    ["Paid digital", ["ads","paid","linkedin","google","meta"]],
+    ["Content & media", ["webinar","podcast","radio","newsletter","blog","content"]],
+    ["Outbound", ["outbound","sdr","cold","apollo"]],
+    ["Partners", ["partner","broker","distributor","accounting","netsuite","cfo"]],
+    ["Referrals", ["referral","investor","founder network"]],
+    ["Inbound organic", ["organic","website","seo","inbound","direct"]]
+  ],
+  "spend_rules": [
+    ["Events", ["expo","booth","newtopia","bevnet live","nosh live","superzoo","events","swag","drayage"]],
+    ["Paid digital", ["linkedin","google ads","advertising","paid"]],
+    ["Content & media", ["newsletter","webinar","podcast","sponsorship","content"]],
+    ["Outbound", ["sdr","apollo","sales tools","sales comp"]],
+    ["Referrals", ["referral"]],
+    ["Partners", ["partner","broker","co-marketing"]],
+    ["Inbound organic", ["seo","website","web"]]
+  ]
+}
