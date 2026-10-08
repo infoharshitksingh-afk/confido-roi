@@ -10,7 +10,7 @@ From those buckets it shows:
 
 - each product's contribution by industry
 - ROI, CAC and payback for each channel and each industry
-- the factors behind deal size and sales speed
+- a channel × industry grid of ROI, new ARR and spend, showing which channel pays back in which industry
 - a short list of strategy plays
 
 Independent work sample. Not affiliated with or endorsed by Confido. The sample data is synthetic.
@@ -49,6 +49,7 @@ It writes these files to `output/`:
 | `product_industry_arr.csv` | won ARR by product and industry |
 | `channel_roi.csv` | ROI, CAC and payback by channel |
 | `industry_roi.csv` | the same by industry |
+| `channel_industry_roi.csv` | spend, opportunities, wins, new ARR, CAC and ROI for each channel and industry pair |
 | `needs_review.csv` | labels the rules couldn't place, with `source_row` (the Excel row), ID, reference and amount |
 | `summary.json` | headline totals |
 
@@ -60,7 +61,7 @@ The dashboard and the pipeline use the same `rules.json`. On the sample data the
 - **CAC** = channel spend ÷ new customers won.
 - **Payback** = spend ÷ (new ARR × gross margin ÷ 12), in months.
 - **Multi-product deals** are split across products in proportion to list price, so the heatmap adds up to total won ARR.
-- **Industry spend:** lines with a `target_industry` count against that industry. All other spend is spread by each industry's share of new opportunities.
+- **Industry spend:** lines with a `target_industry` count against that industry. Untagged channel spend is split by that channel's own new opportunities per industry, so Events money follows the industries Events reached. Other untagged spend is spread by all new opportunities. The channel × industry grid and the industry scorecard use the same split, so they tie out.
 - **Expansion deals** count toward product and industry contribution. They are kept out of channel ROI, because no new GTM dollar sourced them.
 
 ## Key safety

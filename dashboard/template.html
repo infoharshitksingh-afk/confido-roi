@@ -106,6 +106,8 @@ details.links .lbl{width:52px;font-weight:600;font-size:13px}
 .heat td.cell{text-align:right;font-variant-numeric:tabular-nums;font-weight:600;cursor:default;border:2px solid var(--white);border-radius:6px}
 .heat th.rowh{position:sticky;left:0;background:var(--white);color:var(--ink);text-transform:none;letter-spacing:0;font-size:13px;font-family:var(--font-body);font-weight:600}
 .heat td.tot,.heat th.tot{font-weight:800;background:var(--soft)}
+.heat td.thin{opacity:.55;border-style:dashed;border-color:var(--line)}
+.legend .sw{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px;border:1px solid var(--line)}
 .legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12.5px;color:var(--muted);align-items:center}
 .legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
 .ramp{width:120px;height:10px;border-radius:5px;background:linear-gradient(90deg,color-mix(in oklab,var(--heat) 6%,white),var(--heat))}
@@ -267,19 +269,16 @@ footer{font-size:12px;line-height:1.55;max-width:100ch}
 
     <div class="panel">
       <div class="panel-h"><h3>Industry scorecard</h3></div>
-      <p class="note">Spend tagged to an industry counts against it. Untagged spend is spread by each industry's share of new opportunities.</p>
+      <p class="note">Spend tagged to an industry counts against it. Untagged channel spend is split by that channel's new opportunities per industry; other untagged spend by all new opportunities.</p>
       <div class="tablebox"><table id="ind-table"></table></div>
     </div>
 
-    <div class="grid2">
-      <div class="panel">
-        <div class="panel-h"><h3>What drives deal size: products per deal</h3></div>
-        <div class="bars" id="f-products"></div>
-      </div>
-      <div class="panel">
-        <div class="panel-h"><h3>What drives speed: median sales cycle</h3></div>
-        <div class="bars" id="f-cycle"></div>
-      </div>
+    <div class="panel">
+      <div class="panel-h"><h3>Channel × industry scorecard</h3>
+        <div class="seg" role="group" aria-label="Channel by industry values"><button type="button" id="cx-roi" aria-pressed="true">ROI</button><button type="button" id="cx-arr" aria-pressed="false">$ new ARR</button><button type="button" id="cx-spend" aria-pressed="false">$ spend</button></div></div>
+      <p class="note">Which channel pays back in which industry. New ARR comes from deals each channel sourced in that industry. Spend tagged to an industry stays there; the rest of a channel's spend is split by that channel's new opportunities per industry. Deals still missing an industry are left out until reviewed.</p>
+      <div class="tablebox"><table class="heat" id="cx"></table></div>
+      <div class="legend" id="cx-legend"></div>
     </div>
   </section>
 
@@ -414,10 +413,20 @@ function compute(){
   });
   const unSpend=Object.entries(spendBy).filter(([k])=>!R.channels.includes(k)).reduce((a,[,v])=>a+v,0);
   // industries
-  const oppShare={}; newOpps.forEach(d=>oppShare[d.industry_bucket]=(oppShare[d.industry_bucket]||0)+1);
-  const totOpps=R.industries.reduce((a,i)=>a+(oppShare[i]||0),0)||1;
+  // spend by industry: tagged lines stay in their industry; untagged channel spend follows that channel's
+  // new opportunities by industry; anything else follows all new opportunities
+  const shareOf=list=>{ const c={}; list.forEach(d=>{ if(R.industries.includes(d.industry_bucket)) c[d.industry_bucket]=(c[d.industry_bucket]||0)+1; });
+    const tot=Object.values(c).reduce((a,b)=>a+b,0); return tot?Object.fromEntries(R.industries.map(i=>[i,(c[i]||0)/tot])):null; };
+  const allShare=shareOf(newOpps)||{};
+  const chShare=Object.fromEntries(R.channels.map(c=>[c,shareOf(newOpps.filter(d=>d.channel_bucket===c))||allShare]));
+  const cx={}; R.channels.forEach(c=>{ cx[c]={}; R.industries.forEach(i=>cx[c][i]={spend:0,arr:0,opps:0,won:0}); });
   const indSpend={}; R.industries.forEach(i=>indSpend[i]=0);
-  spend.forEach(s=>{ if(R.industries.includes(s.industry_bucket)) indSpend[s.industry_bucket]+=s.amount; else R.industries.forEach(i=>indSpend[i]+=s.amount*(oppShare[i]||0)/totOpps); });
+  spend.forEach(s=>{
+    const isCh=R.channels.includes(s.channel_bucket);
+    const share=R.industries.includes(s.industry_bucket)?{[s.industry_bucket]:1}:isCh?chShare[s.channel_bucket]:allShare;
+    for(const i of R.industries){ const v=s.amount*(share[i]||0); indSpend[i]+=v; if(isCh) cx[s.channel_bucket][i].spend+=v; }
+  });
+  newOpps.forEach(d=>{ const c=cx[d.channel_bucket]&&cx[d.channel_bucket][d.industry_bucket]; if(!c) return; c.opps++; if(d.is_won){ c.won++; c.arr+=d.arr; } });
   const days=d=>d.created_date&&d.close_date?(new Date(d.close_date)-new Date(d.created_date))/864e5:null;
   const median=a=>{a=a.filter(x=>x!=null&&isFinite(x)).sort((x,y)=>x-y); if(!a.length) return null; const m=a.length>>1; return a.length%2?a[m]:(a[m-1]+a[m])/2;};
   const ind=R.industries.map(i=>{
@@ -429,7 +438,7 @@ function compute(){
   const bySize=[1,2,3,4].map(n=>{const w=newWon.filter(d=>d.products_list&&(n<4?d.products_list.length===n:d.products_list.length>=4)); return {n,count:w.length,avg:w.length?w.reduce((a,d)=>a+d.arr,0)/w.length:0};});
   const totalSpend=spend.reduce((a,s)=>a+s.amount,0), newArr=newWon.reduce((a,d)=>a+d.arr,0), expArr=won.filter(d=>d.is_exp).reduce((a,d)=>a+d.arr,0);
   const dates=deals.map(d=>d.close_date).filter(Boolean).sort();
-  M={gm,deals,spend,review,stats,mat,ch,ind,bySize,unSpend,
+  M={gm,deals,spend,review,stats,mat,ch,ind,cx,bySize,unSpend,
      sum:{newArr,expArr,totalSpend,newCust:newWon.length,cac:newWon.length?totalSpend/newWon.length:null,roi:totalSpend?newArr*gm/totalSpend:null,payback:newArr?totalSpend/(newArr*gm/12):null,from:dates[0],to:dates[dates.length-1]}};
   return M;
 }
@@ -438,7 +447,7 @@ function compute(){
 let hmMode="usd";
 function render(){
   compute();
-  renderLoadStatus(); renderLog(); renderReview(); renderKpis(); renderHeat(); renderChannels(); renderIndustries(); renderFactors(); renderPlays();
+  renderLoadStatus(); renderLog(); renderReview(); renderKpis(); renderHeat(); renderChannels(); renderIndustries(); renderCx(); renderPlays();
   $("export-row").hidden=false;
 }
 function renderLoadStatus(){
@@ -570,14 +579,36 @@ function renderIndustries(){
   $("ind-table").innerHTML=`<thead><tr><th>Industry</th><th class="n">Allocated spend</th><th class="n">Opps</th><th class="n">Won</th><th class="n">Win rate</th><th class="n">New ARR</th><th class="n">Expansion ARR</th><th class="n">Median cycle</th><th class="n">ROI</th><th>Verdict</th></tr></thead><tbody>`+
     M.ind.map(r=>{const [k,l]=verdict(r.roi,true); return `<tr><td>${esc(r.industry)}</td><td class="n">${fmt$(r.spend)}</td><td class="n">${r.opps}</td><td class="n">${r.won}</td><td class="n">${pct(r.win)}</td><td class="n">${fmt$(r.arr)}</td><td class="n">${fmt$(r.exp)}</td><td class="n">${r.cycle!=null?Math.round(r.cycle)+" days":"–"}</td><td class="n">${fmtX(r.roi)}</td><td><span class="pill ${k}">${l}</span></td></tr>`;}).join("")+"</tbody>";
 }
-function renderFactors(){
-  const mx=Math.max(...M.bySize.map(b=>b.avg),1);
-  $("f-products").innerHTML=M.bySize.map(b=>`<div class="brow"><span class="lab">${b.n<4?b.n:"4+"} product${b.n>1?"s":""} <span class="note">(${b.count})</span></span>
-    <div class="bwrap" data-tip="<b>${b.n<4?b.n:"4+"} products</b><br>avg new ARR ${fmt$(b.avg)} across ${b.count} deals"><div class="b" style="width:${b.avg/mx*100*.8}%;background:var(--arr)"></div><span class="val">${fmt$(b.avg)}</span></div></div>`).join("");
-  const cy=M.ind.filter(r=>r.cycle!=null); const cm=Math.max(...cy.map(r=>r.cycle),1);
-  $("f-cycle").innerHTML=cy.map(r=>`<div class="brow"><span class="lab">${esc(r.industry)}</span>
-    <div class="bwrap" data-tip="<b>${esc(r.industry)}</b><br>median ${Math.round(r.cycle)} days, created to closed won"><div class="b" style="width:${r.cycle/cm*100*.8}%;background:var(--ink)"></div><span class="val">${Math.round(r.cycle)} days</span></div></div>`).join("");
+let cxMode="roi";
+const roiTint=r=>`color-mix(in oklab, var(--${r>=2?"good":r>=1?"warn":"bad"}) ${r>=2?34:r>=1?30:24}%, white)`;
+function renderCx(){
+  const inds=R.industries, chs=R.channels, gm=M.gm;
+  const short={"Beauty & Personal Care":"Beauty & PC","Health & Wellness":"Health & Well."};
+  const roi=c=>c.spend?c.arr*gm/c.spend:null;
+  const sum=cells=>cells.reduce((a,c)=>({spend:a.spend+c.spend,arr:a.arr+c.arr,opps:a.opps+c.opps,won:a.won+c.won}),{spend:0,arr:0,opps:0,won:0});
+  const max=Math.max(...chs.flatMap(c=>inds.map(i=>M.cx[c][i][cxMode==="spend"?"spend":"arr"])),1e-9);
+  const td=(c,label,tot)=>{
+    const r=roi(c), empty=!c.spend&&!c.arr&&!c.opps;
+    const tip=`<b>${esc(label)}</b><br>New ARR ${fmt$(c.arr)} from ${c.won} of ${c.opps} opps<br>Spend ${fmt$(c.spend)} · CAC ${c.won&&c.spend?fmt$(c.spend/c.won):"–"}<br>ROI ${r==null?"no spend":fmtX(r)}${!tot&&c.opps<3?"<br>Fewer than 3 opps: read with care":""}`;
+    if(tot) return `<td class="n tot" data-tip="${esc(tip)}">${cxMode==="roi"?fmtX(r):fmt$(cxMode==="arr"?c.arr:c.spend)}</td>`;
+    if(empty) return `<td class="cell" style="color:var(--muted)">–</td>`;
+    const thin=c.opps<3?" thin":"";
+    if(cxMode==="roi"){
+      const bg=r==null?"var(--white)":roiTint(r);
+      return `<td class="cell${thin}" data-tip="${esc(tip)}" style="background:${bg}">${r==null?'<span class="note">no spend</span>':fmtX(r)}</td>`;
+    }
+    const v=cxMode==="arr"?c.arr:c.spend, k=v/max;
+    return `<td class="cell${thin}" data-tip="${esc(tip)}" style="background:${heatColor(k)};color:${k>.55?"#fff":"var(--ink)"}">${v?fmt$(v):"–"}</td>`;
+  };
+  let h=`<thead><tr><th>Channel</th>${inds.map(i=>`<th class="n">${esc(short[i]||i)}</th>`).join("")}<th class="n tot">All industries</th></tr></thead><tbody>`;
+  for(const c of chs) h+=`<tr><th class="rowh">${esc(c)}</th>${inds.map(i=>td(M.cx[c][i],`${c} in ${i}`)).join("")}${td(sum(inds.map(i=>M.cx[c][i])),`${c}, all industries`,true)}</tr>`;
+  h+=`<tr><th class="rowh tot">All channels</th>${inds.map(i=>td(sum(chs.map(c=>M.cx[c][i])),`${i}, all channels`,true)).join("")}${td(sum(chs.flatMap(c=>inds.map(i=>M.cx[c][i]))),"All channels, all industries",true)}</tr></tbody>`;
+  $("cx").innerHTML=h;
+  $("cx-legend").innerHTML=cxMode==="roi"
+    ?`<span><i class="sw" style="background:${roiTint(2)}"></i>2× or more</span><span><i class="sw" style="background:${roiTint(1)}"></i>1–2×</span><span><i class="sw" style="background:${roiTint(0)}"></i>under 1×</span><span><i class="sw" style="border-style:dashed;opacity:.55"></i>faded: fewer than 3 opps</span>`
+    :`<span class="ramp"></span><span>Less → more ${cxMode==="arr"?"new ARR":"spend"}</span><span><i class="sw" style="border-style:dashed;opacity:.55"></i>faded: fewer than 3 opps</span>`;
 }
+for(const m of ["roi","arr","spend"]) $("cx-"+m).onclick=()=>{ cxMode=m; for(const n of ["roi","arr","spend"]) $("cx-"+n).setAttribute("aria-pressed",String(n===m)); renderCx(); };
 function plays(){
   const P=[]; const ch=M.ch.filter(c=>c.spend>0&&c.roi!=null);
   const best=[...ch].sort((a,b)=>b.roi-a.roi)[0], worst=[...ch].sort((a,b)=>a.roi-b.roi)[0];
@@ -777,6 +808,7 @@ $("ask-memo").onclick=async()=>{
   const data={period:`${s.from} to ${s.to}`,gross_margin:M.gm,summary:{new_arr:Math.round(s.newArr),expansion_arr:Math.round(s.expArr),gtm_spend:Math.round(s.totalSpend),new_customers:s.newCust,blended_roi:+(s.roi||0).toFixed(2),blended_cac:Math.round(s.cac||0),payback_months:+(s.payback||0).toFixed(1)},
     channels:M.ch.map(c=>({channel:c.channel,spend:Math.round(c.spend),opps:c.opps,won:c.won,win_rate:+c.win.toFixed(2),new_arr:Math.round(c.arr),cac:c.cac?Math.round(c.cac):null,roi:c.roi?+c.roi.toFixed(2):null})),
     industries:M.ind.map(r=>({industry:r.industry,allocated_spend:Math.round(r.spend),opps:r.opps,won:r.won,win_rate:+r.win.toFixed(2),new_arr:Math.round(r.arr),expansion_arr:Math.round(r.exp),median_cycle_days:r.cycle?Math.round(r.cycle):null,roi:r.roi?+r.roi.toFixed(2):null})),
+    channel_by_industry:Object.fromEntries(R.channels.map(c=>[c,Object.fromEntries(R.industries.filter(i=>M.cx[c][i].opps||M.cx[c][i].spend).map(i=>{const x=M.cx[c][i]; return [i,{spend:Math.round(x.spend),opps:x.opps,won:x.won,new_arr:Math.round(x.arr),roi:x.spend?+(x.arr*M.gm/x.spend).toFixed(2):null}];}))])),
     avg_new_arr_by_products_per_deal:M.bySize.map(b=>({products:b.n<4?b.n:"4+",deals:b.count,avg_arr:Math.round(b.avg)})),
     product_by_industry_arr:Object.fromEntries(Object.entries(M.mat).map(([p,o])=>[p,Object.fromEntries(Object.entries(o).map(([i,v])=>[i,Math.round(v)]))])),
     computed_plays:M.plays.map(p=>p.h+": "+p.p)};

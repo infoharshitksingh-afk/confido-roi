@@ -139,18 +139,42 @@ def run(sales_rows, spend_rows, R, gross_margin=0.75):
                         "roi_multiple": round(gp / sp, 3) if sp else None,
                         "payback_months": round(sp / (gp / 12), 2) if gp else None})
 
-    # industry ROI: tagged spend to its industry, the rest spread by share of new opportunities
-    opp_share = defaultdict(float)
-    for d in new_opps:
-        opp_share[d["industry_bucket"]] += 1
-    tot_opps = sum(opp_share[i] for i in R["industries"]) or 1
+    # spend by industry: tagged lines stay in their industry; untagged channel spend follows that channel's
+    # new opportunities by industry; anything else follows all new opportunities
+    def share_of(opps):
+        c = defaultdict(float)
+        for d in opps:
+            if d["industry_bucket"] in R["industries"]:
+                c[d["industry_bucket"]] += 1
+        tot = sum(c.values())
+        return {i: c[i] / tot for i in R["industries"]} if tot else None
+
+    all_share = share_of(new_opps) or {}
+    ch_share = {ch: share_of([d for d in new_opps if d["channel_bucket"] == ch]) or all_share for ch in R["channels"]}
+    cx = {(ch, i): {"spend": 0.0, "arr": 0.0, "opps": 0, "won": 0} for ch in R["channels"] for i in R["industries"]}
     ind_spend = defaultdict(float)
     for s in spend:
-        if s["industry_bucket"] in R["industries"]:
-            ind_spend[s["industry_bucket"]] += s["amount"]
-        else:
-            for i in R["industries"]:
-                ind_spend[i] += s["amount"] * opp_share[i] / tot_opps
+        is_ch = s["channel_bucket"] in R["channels"]
+        share = ({s["industry_bucket"]: 1.0} if s["industry_bucket"] in R["industries"]
+                 else ch_share[s["channel_bucket"]] if is_ch else all_share)
+        for i in R["industries"]:
+            v = s["amount"] * share.get(i, 0.0)
+            ind_spend[i] += v
+            if is_ch:
+                cx[(s["channel_bucket"], i)]["spend"] += v
+    for d in new_opps:
+        c = cx.get((d["channel_bucket"], d["industry_bucket"]))
+        if c:
+            c["opps"] += 1
+            if d["is_won"]:
+                c["won"] += 1
+                c["arr"] += d["arr"]
+    cx_rows = [{"channel": ch, "industry": i, "spend": round(c["spend"], 2), "opportunities": c["opps"], "won": c["won"],
+                "new_arr": round(c["arr"], 2), "cac": round(c["spend"] / c["won"], 2) if c["won"] and c["spend"] else None,
+                "roi_multiple": round(c["arr"] * gross_margin / c["spend"], 3) if c["spend"] else None}
+               for (ch, i), c in cx.items()]
+
+    # industry ROI
     ind_rows = []
     for i in R["industries"]:
         w = [d for d in new_won if d["industry_bucket"] == i]
@@ -172,7 +196,7 @@ def run(sales_rows, spend_rows, R, gross_margin=0.75):
                "blended_roi": round(new_arr * gross_margin / total_spend, 3) if total_spend else None,
                "payback_months": round(total_spend / (new_arr * gross_margin / 12), 2) if new_arr else None,
                "rows_needing_review": len(review)}
-    return deals, spend, matrix, ch_rows, ind_rows, summary, review
+    return deals, spend, matrix, ch_rows, ind_rows, cx_rows, summary, review
 
 
 def read_csv(path):
@@ -205,12 +229,13 @@ def main():
     ap.add_argument("--out", default="output")
     a = ap.parse_args()
     R = load_rules(a.rules)
-    deals, spend, matrix, ch_rows, ind_rows, summary, review = run(read_csv(a.sales), read_csv(a.spend), R, a.gross_margin)
+    deals, spend, matrix, ch_rows, ind_rows, cx_rows, summary, review = run(read_csv(a.sales), read_csv(a.spend), R, a.gross_margin)
     os.makedirs(a.out, exist_ok=True)
     write_csv(os.path.join(a.out, "sales_bucketed.csv"), deals)
     write_csv(os.path.join(a.out, "spend_bucketed.csv"), spend)
     write_csv(os.path.join(a.out, "channel_roi.csv"), ch_rows)
     write_csv(os.path.join(a.out, "industry_roi.csv"), ind_rows)
+    write_csv(os.path.join(a.out, "channel_industry_roi.csv"), cx_rows)
     write_csv(os.path.join(a.out, "needs_review.csv"), review)
     prods = R["products"] + [UNASSIGNED]
     inds = R["industries"] + [UNASSIGNED]
