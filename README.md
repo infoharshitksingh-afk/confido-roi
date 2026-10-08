@@ -19,7 +19,9 @@ Independent work sample. Not affiliated with or endorsed by Confido. The sample 
 
 **Dashboard (no install).** Open `dist/gtm-roi-lab.html` in a browser and drop in your CSVs. The page loads with sample data.
 
-Labels the rules can't place go to a review list instead of being guessed. You can fix them two ways:
+Labels the rules can't place go to a review list instead of being guessed. Click a label's row count to see the rows behind it: the spreadsheet row number (header = row 1, the same number Excel shows), the deal ID or spend reference, and the amount. The reviewed value is highlighted. To jump straight to the record, open **Link rows to your CRM or ERP** and enter a link pattern such as `https://yourco.lightning.force.com/lightning/r/Opportunity/{id}/view`, or add a `record_url` column to the CSV. **Download needs-review CSV** exports the same list.
+
+You can fix them two ways:
 
 - pick a bucket from the dropdown yourself
 - press **Classify with Claude**. Inside claude.ai this uses the viewer's Claude account. On Vercel it uses a server key or the visitor's own key (see below)
@@ -47,7 +49,7 @@ It writes these files to `output/`:
 | `product_industry_arr.csv` | won ARR by product and industry |
 | `channel_roi.csv` | ROI, CAC and payback by channel |
 | `industry_roi.csv` | the same by industry |
-| `needs_review.csv` | labels the rules couldn't place |
+| `needs_review.csv` | labels the rules couldn't place, with `source_row` (the Excel row), ID, reference and amount |
 | `summary.json` | headline totals |
 
 The dashboard and the pipeline use the same `rules.json`. On the sample data they produce identical numbers.
@@ -124,11 +126,11 @@ To regenerate the sample data, run `python scripts/make_sample_data.py 7`. The n
 **Sales CSV.**
 
 - Required: `deal_id`, `close_date`, `industry`, `products`, `arr_usd`, `stage` (Closed Won / Closed Lost), `lead_source`
-- Optional: `created_date`, `deal_type` (New / Expansion), `customer`
+- Optional: `created_date`, `deal_type` (New / Expansion), `customer`, `record_url` (link to the CRM record)
 
 **Spend CSV.**
 
 - Required: `date`, `amount_usd`, and at least one of `vendor`, `description` or `gl_account`
-- Optional: `target_industry`
+- Optional: `target_industry`, `reference` (invoice, PO or journal number; aliases include `invoice_number`, `po_number`, `transaction_id`), `record_url`
 
 The dashboard also recognises common aliases, such as `amount`, `ACV`, `source` and `segment`.

@@ -88,7 +88,8 @@ def run(sales_rows, spend_rows, R, gross_margin=0.75):
         ch = bucket_lead_source(r.get("lead_source"), R)
         for field, val in (("industry", ind), ("products", prods), ("lead_source", ch)):
             if val is None:
-                review.append({"file": "sales", "id": r["deal_id"], "field": field, "raw_value": r.get(field, ""), "bucket": ""})
+                review.append({"file": "sales", "source_row": r.get("source_row", ""), "id": r["deal_id"], "reference": r["deal_id"],
+                               "field": field, "raw_value": r.get(field, ""), "amount_usd": r.get("arr_usd", ""), "bucket": ""})
         is_exp = (r.get("deal_type", "").strip().lower() in ("expansion", "upsell")) or ch == "Expansion"
         deals.append({**r,
                       "industry_bucket": ind or UNASSIGNED,
@@ -102,7 +103,8 @@ def run(sales_rows, spend_rows, R, gross_margin=0.75):
     for i, r in enumerate(spend_rows):
         ch = bucket_spend(r, R)
         if ch is None:
-            review.append({"file": "spend", "id": f"S-{i+1}", "field": "channel", "raw_value": f'{r.get("vendor","")} | {r.get("description","")}', "bucket": ""})
+            review.append({"file": "spend", "source_row": r.get("source_row", ""), "id": f"S-{i+1}", "reference": r.get("reference", ""),
+                           "field": "channel", "raw_value": f'{r.get("vendor","")} | {r.get("description","")}', "amount_usd": r.get("amount_usd", ""), "bucket": ""})
         ti = (r.get("target_industry") or "").strip()
         spend.append({**r, "row_id": f"S-{i+1}", "channel_bucket": ch or UNASSIGNED,
                       "industry_bucket": bucket_industry(ti, R) if ti else "", "amount": float(r["amount_usd"])})
@@ -174,8 +176,14 @@ def run(sales_rows, spend_rows, R, gross_margin=0.75):
 
 
 def read_csv(path):
+    """Rows as dicts. source_row is the spreadsheet row number (header = row 1), so review rows can be found in Excel."""
     with open(path, newline="", encoding="utf-8-sig") as f:
-        return list(csv.DictReader(f))
+        recs = list(csv.reader(f))
+    filled = [(n, r) for n, r in enumerate(recs, start=1) if any(x.strip() for x in r)]
+    if not filled:
+        return []
+    head = filled[0][1]
+    return [{**{h: (r[i] if i < len(r) else "") for i, h in enumerate(head)}, "source_row": n} for n, r in filled[1:]]
 
 
 def write_csv(path, rows, fields=None):

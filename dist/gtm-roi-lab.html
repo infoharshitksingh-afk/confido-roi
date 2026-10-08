@@ -80,6 +80,16 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 tr:last-child td{border-bottom:0}
 select{font:inherit;font-size:13px;border:2px solid var(--ink);border-radius:8px;padding:3px 6px;background:var(--white);max-width:200px}
 .ai-out{font-size:13.5px;min-height:1.2em;margin:0}
+.rv-toggle{border:0;background:none;padding:0;font:inherit;font-weight:600;cursor:pointer;white-space:nowrap;color:var(--ink)}
+.rv-toggle .amt{display:block;font-weight:400;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+tr.rv-src>td{background:var(--soft);padding:6px 10px 12px}
+.srctab{font-size:12.5px;background:var(--white);border:1px solid var(--line);border-radius:8px}
+.srctab th{font-size:10px;background:var(--white)}
+.srctab td{padding:5px 8px}
+.srctab mark{background:var(--ground);padding:0 3px;border-radius:3px}
+.srctab a{color:var(--ink);font-weight:600}
+details.links{margin-top:12px;display:grid;gap:8px}
+details.links .lbl{width:52px;font-weight:600;font-size:13px}
 
 /* step 3 */
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
@@ -207,9 +217,16 @@ footer{font-size:12px;line-height:1.55;max-width:100ch}
       <div class="panel-h"><h3 id="review-title">Needs review</h3>
         <div class="row"><button type="button" class="primary" id="ask-classify">Classify with Claude</button><button type="button" id="stop-classify" hidden>Stop</button></div></div>
       <p class="ai-out" id="classify-out"></p>
-      <div class="tablebox"><table id="review"><thead><tr><th>Rows</th><th>Field</th><th>Raw value</th><th>Bucket</th><th>Source</th></tr></thead><tbody></tbody></table></div>
+      <div class="tablebox"><table id="review"><thead><tr><th>Source rows</th><th>Field</th><th>Raw value</th><th>Bucket</th><th>Source</th></tr></thead><tbody></tbody></table></div>
+      <details class="links"><summary>Link rows to your CRM or ERP</summary>
+        <p class="note">Row numbers match the spreadsheet: the header is row 1. A <code>record_url</code> column in either file links each row as is. Otherwise add a link pattern with <code>{id}</code>, filled with the deal ID for sales and the <code>reference</code> or invoice number for spend. Saved in this browser only.</p>
+        <div class="keyrow"><label for="link-sales" class="lbl">Sales</label><input id="link-sales" type="url" placeholder="https://yourco.lightning.force.com/lightning/r/Opportunity/{id}/view" autocomplete="off" spellcheck="false"></div>
+        <div class="keyrow"><label for="link-spend" class="lbl">Spend</label><input id="link-spend" type="url" placeholder="https://erp.example.com/invoices/{id}" autocomplete="off" spellcheck="false"></div>
+        <p class="err" id="link-err" hidden></p>
+      </details>
     </div>
     <div class="row" id="export-row" hidden>
+      <button type="button" id="dl-review">Download needs-review CSV</button>
       <button type="button" id="dl-sales">Download bucketed sales CSV</button>
       <button type="button" id="dl-spend">Download bucketed spend CSV</button>
       <button type="button" id="dl-roi">Download channel ROI CSV</button>
@@ -761,28 +778,31 @@ const pct = v => v==null||!isFinite(v) ? "–" : Math.round(v*100)+"%";
 /* ---------- CSV ---------- */
 function parseCSV(text){
   text = text.replace(/^﻿/,"");
-  const rows=[]; let row=[], f="", q=false;
+  const rows=[]; let row=[], f="", q=false, n=0;
   for(let i=0;i<text.length;i++){
     const c=text[i];
     if(q){ if(c==='"'){ if(text[i+1]==='"'){f+='"';i++;} else q=false; } else f+=c; }
     else if(c==='"') q=true;
     else if(c===','){ row.push(f); f=""; }
-    else if(c==='\n'||c==='\r'){ if(c==='\r'&&text[i+1]==='\n') i++; row.push(f); f=""; if(row.some(x=>x.trim()!=="")) rows.push(row); row=[]; }
+    else if(c==='\n'||c==='\r'){ if(c==='\r'&&text[i+1]==='\n') i++; row.push(f); f=""; n++; if(row.some(x=>x.trim()!=="")) rows.push([row,n]); row=[]; }
     else f+=c;
   }
-  row.push(f); if(row.some(x=>x.trim()!=="")) rows.push(row);
+  row.push(f); n++; if(row.some(x=>x.trim()!=="")) rows.push([row,n]);
   if(!rows.length) return {head:[],rows:[]};
-  const head=rows[0].map(h=>h.trim().toLowerCase().replace(/[^a-z0-9]+/g,"_").replace(/^_|_$/g,""));
-  return {head, rows: rows.slice(1).map(r=>Object.fromEntries(head.map((h,i)=>[h,(r[i]??"").trim()])))};
+  const head=rows[0][0].map(h=>h.trim().toLowerCase().replace(/[^a-z0-9]+/g,"_").replace(/^_|_$/g,""));
+  return {head, rows: rows.slice(1).map(([r,n])=>({...Object.fromEntries(head.map((h,i)=>[h,(r[i]??"").trim()])),__row:n}))};
 }
 const ALIASES = {
   sales:{deal_id:["deal_id","id","opportunity_id","opp_id","deal"],close_date:["close_date","closed_date","closedate","date_closed","close"],
     created_date:["created_date","create_date","created","created_at","open_date"],customer:["customer","account","account_name","company"],
     industry:["industry","category","segment","vertical"],products:["products","product","modules","module","sku"],
     arr_usd:["arr_usd","arr","amount","acv","amount_usd","value"],stage:["stage","status","outcome"],deal_type:["deal_type","type","opportunity_type"],
-    lead_source:["lead_source","source","channel","lead_channel","original_source"]},
+    lead_source:["lead_source","source","channel","lead_channel","original_source"],
+    record_url:["record_url","crm_url","crm_link","deal_url","url","link"]},
   spend:{date:["date","txn_date","posted_date","month"],vendor:["vendor","payee","merchant"],description:["description","memo","desc","line_item"],
-    amount_usd:["amount_usd","amount","cost","spend","usd"],gl_account:["gl_account","gl","account","category"],target_industry:["target_industry","industry","segment"]}
+    amount_usd:["amount_usd","amount","cost","spend","usd"],gl_account:["gl_account","gl","account","category"],target_industry:["target_industry","industry","segment"],
+    reference:["reference","ref","reference_number","ref_no","invoice","invoice_number","invoice_no","po","po_number","transaction_id","txn_id","journal_id","je_id","document_number","doc_no"],
+    record_url:["record_url","invoice_url","receipt_url","url","link"]}
 };
 const REQUIRED = {sales:["deal_id","close_date","industry","products","arr_usd","stage","lead_source"], spend:["date","amount_usd"]};
 function normalize(kind, parsed){
@@ -791,7 +811,7 @@ function normalize(kind, parsed){
   const missing=REQUIRED[kind].filter(k=>!map[k]);
   if(kind==="spend" && !map.vendor && !map.description && !map.gl_account) missing.push("vendor or description or gl_account");
   if(missing.length) throw new Error(`${kind==="sales"?"Sales":"Spend"} CSV is missing: ${missing.join(", ")}.`);
-  return parsed.rows.map(r=>{const o={}; for(const k in A) o[k]=map[k]?r[map[k]]:""; return o;});
+  return parsed.rows.map(r=>{const o={}; for(const k in A) o[k]=map[k]?r[map[k]]:""; o.__row=r.__row; return o;});
 }
 const num = s => { const v=parseFloat(String(s).replace(/[$,\s]/g,"")); return isFinite(v)?v:0; };
 
@@ -829,7 +849,7 @@ function compute(){
     stats.industry[1]++; stats.products[1]++; stats.lead_source[1]++;
     if(ri) stats.industry[0]++; if(rp) stats.products[0]++; if(rl) stats.lead_source[0]++;
     const prods = pr.v==null||pr.v===UN ? null : (Array.isArray(pr.v)?pr.v:[pr.v]);
-    for(const [f,ruled,res] of [["industry",ri,ind],["products",rp,pr],["lead_source",rl,ld]]) if(ruled==null) review.push({file:"sales",id:r.deal_id,field:f,raw:r[f],res});
+    for(const [f,ruled,res] of [["industry",ri,ind],["products",rp,pr],["lead_source",rl,ld]]) if(ruled==null) review.push({file:"sales",id:r.deal_id,src:r,field:f,raw:r[f],res});
     const dt=(r.deal_type||"").toLowerCase().trim();
     const ch=ld.v||UN;
     return {...r, industry_bucket:ind.v||UN, products_list:prods, product_buckets:prods?prods.join("|"):UN, channel_bucket:ch,
@@ -838,7 +858,7 @@ function compute(){
   const spend=S.spendRaw.map((r,i)=>{
     const rc=ruleSpend(r); const raw=[r.vendor,r.description].filter(Boolean).join(" | ")||r.gl_account;
     const c=pickOv("spend",raw,rc); stats.spend[1]++; if(rc) stats.spend[0]++;
-    if(rc==null) review.push({file:"spend",id:"S-"+(i+1),field:"spend",raw,res:c});
+    if(rc==null) review.push({file:"spend",id:"S-"+(i+1),src:r,field:"spend",raw,res:c});
     const ti=(r.target_industry||"").trim();
     return {...r,row_id:"S-"+(i+1),channel_bucket:c.v||UN,industry_bucket:ti?(ruleIndustry(ti)||""):"",amount:num(r.amount_usd)};
   });
@@ -904,13 +924,47 @@ function optionsFor(field){
   if(field==="lead_source") return [...R.channels,"Expansion",UN];
   return [...R.channels,...R.spend_only_buckets,UN];
 }
+/* ---------- review: trace each label back to its source rows ---------- */
+const reviewOpen=new Set();
+const LINKS={sales:"",spend:""};
+try{ Object.assign(LINKS, JSON.parse(localStorage.getItem("gtm-roi-lab.links")||"{}")); }catch(e){}
+const httpUrl=u=>/^https?:\/\/[^\s]+$/i.test(u||"");
+function recordUrl(file,d){
+  if(httpUrl(d.record_url)) return d.record_url;
+  const t=LINKS[file], ref=file==="sales"?d.deal_id:d.reference;
+  return httpUrl(t)&&t.includes("{id}")&&ref ? t.split("{id}").join(encodeURIComponent(ref)) : "";
+}
+function sourceTable(r){
+  const sales=r.file==="sales";
+  const hl=(f,v)=>f===r.field?`<mark>${esc(v)}</mark>`:esc(v);
+  const cols=sales?["Row","Deal","Customer","Closed","Stage","ARR","Industry","Products","Lead source"]:["Row","Reference","Date","Vendor","Description","GL account","Amount"];
+  const body=r.rows.map(d=>{
+    const u=recordUrl(r.file,d), id=sales?d.deal_id:(d.reference||"–");
+    const idCell=u?`<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">${esc(id)} ↗</a>`:esc(id);
+    const cells=sales?[idCell,esc(d.customer),esc(d.close_date),esc(d.stage),`<span class="n">${fmt$(num(d.arr_usd))}</span>`,hl("industry",d.industry),hl("products",d.products),hl("lead_source",d.lead_source)]
+      :[idCell,esc(d.date),hl("spend",d.vendor),hl("spend",d.description),esc(d.gl_account),`<span class="n">${fmt$(num(d.amount_usd))}</span>`];
+    return `<tr><td class="n">${d.__row}</td>${cells.map(c=>`<td>${c}</td>`).join("")}</tr>`;
+  }).join("");
+  const file=sales?S.salesName:S.spendName;
+  return `<p class="note">${esc(file)} · row numbers match the spreadsheet</p><div class="tablebox srctab"><table><thead><tr>${cols.map(c=>`<th${c==="ARR"||c==="Amount"||c==="Row"?' class="n"':""}>${c}</th>`).join("")}</tr></thead><tbody>${body}</tbody></table></div>`;
+}
+for(const f of ["sales","spend"]){
+  const inp=$("link-"+f); inp.value=LINKS[f]||"";
+  inp.onchange=()=>{
+    const v=inp.value.trim();
+    if(v&&!(httpUrl(v)&&v.includes("{id}"))){ $("link-err").textContent="Link patterns need to start with https:// and contain {id}."; $("link-err").hidden=false; return; }
+    $("link-err").hidden=true; LINKS[f]=v;
+    try{ localStorage.setItem("gtm-roi-lab.links",JSON.stringify(LINKS)); }catch(e){}
+    if(M) renderReview();
+  };
+}
 function renderReview(){
   $("review-title").textContent=`Needs review (${M.review.length})`;
   const tb=$("review").querySelector("tbody");
   if(!M.review.length){ tb.innerHTML=`<tr><td colspan="5">Every row was placed by the rules.</td></tr>`; $("ask-classify").disabled=true; return; }
   $("ask-classify").disabled=!AI.ready();
   const groups=[]; const gi={};
-  M.review.forEach(r=>{const k=key(r.field,r.raw); if(!(k in gi)){gi[k]=groups.length;groups.push({...r,ids:[]});} groups[gi[k]].ids.push(r.id);});
+  M.review.forEach(r=>{const k=key(r.field,r.raw); if(!(k in gi)){gi[k]=groups.length;groups.push({...r,k,ids:[],rows:[]});} groups[gi[k]].ids.push(r.id); groups[gi[k]].rows.push(r.src);});
   M.reviewGroups=groups;
   $("review-title").textContent=`Needs review: ${groups.length} label${groups.length>1?"s":""} across ${M.review.length} rows`;
   tb.innerHTML=groups.map((r,idx)=>{
@@ -919,9 +973,13 @@ function renderReview(){
     const src=r.res.src==="ai"?'<span class="badge ai">Claude</span>':r.res.src==="manual"?'<span class="badge manual">You</span>':'<span class="note">Unplaced</span>';
     const label={industry:"Industry",products:"Products",lead_source:"Lead source",spend:"Spend channel"}[r.field];
     const multi=Array.isArray(r.res.v)&&r.res.v.length>1?` <span class="note">+${r.res.v.length-1} more</span>`:"";
-    const ids=esc(r.ids[0])+(r.ids.length>1?` <span class="note">+${r.ids.length-1}</span>`:"");
-    return `<tr><td style="white-space:nowrap" title="${esc(r.ids.join(", "))}">${ids}</td><td>${label}</td><td>${esc(r.raw)}</td><td><select id="rv-${idx}" data-idx="${idx}" aria-label="Bucket for ${esc(r.raw)}">${opts}</select>${multi}</td><td>${src}</td></tr>`;
+    const open=reviewOpen.has(r.k), n=r.rows.length;
+    const amt=r.file==="sales"?fmt$(r.rows.reduce((a,d)=>a+num(d.arr_usd),0))+" ARR":fmt$(r.rows.reduce((a,d)=>a+num(d.amount_usd),0))+" spend";
+    const ids=`<button type="button" class="rv-toggle" data-k="${esc(r.k)}" aria-expanded="${open}" aria-controls="rv-src-${idx}">${open?"▾":"▸"} ${n} row${n>1?"s":""}<span class="amt">${amt}</span></button>`;
+    return `<tr><td>${ids}</td><td>${label}</td><td>${esc(r.raw)}</td><td><select id="rv-${idx}" data-idx="${idx}" aria-label="Bucket for ${esc(r.raw)}">${opts}</select>${multi}</td><td>${src}</td></tr>`+
+      (open?`<tr class="rv-src" id="rv-src-${idx}"><td colspan="5">${sourceTable(r)}</td></tr>`:"");
   }).join("");
+  tb.querySelectorAll(".rv-toggle").forEach(b=>b.onclick=()=>{ const k=b.dataset.k; reviewOpen.has(k)?reviewOpen.delete(k):reviewOpen.add(k); renderReview(); });
   tb.querySelectorAll("select").forEach(s=>s.onchange=()=>{
     const r=M.reviewGroups[+s.dataset.idx]; const k=key(r.field,r.raw);
     S.ov[k]= s.value===UN?UN:(r.field==="products"?[s.value]:s.value); S.ovSrc[k]="manual"; render();
@@ -1025,7 +1083,7 @@ function showErr(m){ $("load-err").textContent=m; $("load-err").hidden=!m; }
 function loadSample(){
   S.salesRaw=normalize("sales",parseCSV($("sample-sales").textContent.trim())); S.salesName="sample_sales.csv";
   S.spendRaw=normalize("spend",parseCSV($("sample-spend").textContent.trim())); S.spendName="sample_gtm_spend.csv";
-  S.isSample=true; S.ov={}; S.ovSrc={}; showErr(""); $("memo").textContent=""; $("memo-status").textContent=""; $("classify-out").textContent=""; render();
+  S.isSample=true; S.ov={}; S.ovSrc={}; reviewOpen.clear(); showErr(""); $("memo").textContent=""; $("memo-status").textContent=""; $("classify-out").textContent=""; render();
 }
 function readFile(kind,file){
   const fr=new FileReader();
@@ -1033,7 +1091,7 @@ function readFile(kind,file){
       const rows=normalize(kind,parseCSV(String(fr.result)));
       if(!rows.length) throw new Error(`${file.name} has no data rows.`);
       if(kind==="sales"){S.salesRaw=rows;S.salesName=file.name;} else {S.spendRaw=rows;S.spendName=file.name;}
-      S.isSample=false; S.ov={}; S.ovSrc={}; showErr(""); $("memo").textContent=""; render();
+      S.isSample=false; S.ov={}; S.ovSrc={}; reviewOpen.clear(); showErr(""); $("memo").textContent=""; render();
     }catch(e){ showErr(e.message+" Check the column list below."); } };
   fr.onerror=()=>showErr(`Could not read ${file.name}.`);
   fr.readAsText(file);
@@ -1214,6 +1272,9 @@ async function save(name,data,btn){
 }
 $("dl-sales").onclick=e=>save("sales_bucketed.csv",toCSV(M.deals.map(d=>({...d,is_won:d.is_won,is_expansion:d.is_exp})),["deal_id","created_date","close_date","customer","industry","industry_bucket","products","product_buckets","lead_source","channel_bucket","stage","deal_type","arr_usd","is_won","is_expansion"]),e.currentTarget);
 $("dl-spend").onclick=e=>save("spend_bucketed.csv",toCSV(M.spend,["row_id","date","vendor","description","gl_account","amount_usd","channel_bucket","target_industry","industry_bucket"]),e.currentTarget);
+$("dl-review").onclick=e=>save("needs_review.csv",toCSV(M.review.map(r=>({file:r.file,source_row:r.src.__row,id:r.id,reference:r.file==="spend"?r.src.reference:r.src.deal_id,
+  field:r.field,raw_value:r.raw,amount_usd:r.file==="sales"?r.src.arr_usd:r.src.amount_usd,bucket:Array.isArray(r.res.v)?r.res.v.join("|"):(r.res.v||""),bucket_source:r.res.src||"",record_url:recordUrl(r.file,r.src)})),
+  ["file","source_row","id","reference","field","raw_value","amount_usd","bucket","bucket_source","record_url"]),e.currentTarget);
 $("dl-roi").onclick=e=>save("channel_roi.csv",toCSV(M.ch.map(c=>({...c,win:c.win.toFixed(4),roi:c.roi?.toFixed(3),cac:c.cac?.toFixed(2),payback:c.payback?.toFixed(2)})),["channel","spend","opps","won","win","arr","avg","cac","roi","payback"]),e.currentTarget);
 
 /* ---------- boot ---------- */
